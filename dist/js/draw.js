@@ -5,11 +5,15 @@ var brush  = canvas.getContext('2d');
 function BubbleName() {
   this.x = 0;
   this.y = 0;
+  this.w = canvas.width;
+  this.h = canvas.height;
   this.gravity = 0.98;
   this.velocity = 0.4;
 }
 
 BubbleName.prototype.draw = function() {
+  // Fill the canvas with color
+  this.setBg(brush)
   // create geometry letters
   var at = getHex('I');
   // also need to loop through colors
@@ -33,9 +37,14 @@ BubbleName.prototype.draw = function() {
       var circle = new Circle(Letter.getX(at, i), Letter.getY(at, i),
                               Letter.getRadi(at, i), Color.getClr(_idx));
       circle.draw(brush);
-
-
     }
 
   }
+}
+
+// canvas background
+BubbleName.prototype.setBg = function (_brush) {
+  _brush.fillRect(0, 0, this.w, this.h);
+  _brush.fillStyle = 'black';
+  _brush.fill();
 }
