@@ -1,7 +1,7 @@
 var canvas = document.getElementById("canvas");
 var brush  = canvas.getContext('2d');
 
-// Test if the browser support canvas
+//  !!!!!   Test if the browser support canvas
 function BubbleName() {
   this.x = 0;
   this.y = 0;
@@ -33,6 +33,8 @@ BubbleName.prototype.draw = function() {
       i = i - 1;
       continue;
     }else {
+      // Store last selected color
+      // if next color is the same as this one then reselect
       index = _idx;
       var circle = new Circle(Letter.getX(at, i), Letter.getY(at, i),
                               Letter.getRadi(at, i), Color.getClr(_idx));
