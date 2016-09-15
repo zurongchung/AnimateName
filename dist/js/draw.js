@@ -9,10 +9,10 @@ function BubbleName() {
   this.velocity = 0.4;
 }
 
-BounceName.prototype.draw = function() {
+BubbleName.prototype.draw = function() {
   // create geometry letters
   var at = getHex('I');
   // get the length of the key of [p]
   // indicates how many shape needs to draw
-  Letter.numOfShape(at);
+  console.log(Letter.numOfShape(at));
 }
