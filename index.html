@@ -38,14 +38,26 @@
   <body>
     <div id="container">
       <div class="math">
-        <label for="width">width:
-        <input type="text" name="width" value="" placeholder="0px"></label>
-        <label for="height">height:
-        <input type="text" name="height" value="" placeholder="0px"></label>
-        <label> Which direction the slope goes:
-          <input type="radio" name="graphDir" >Raise</input>
-          <input type="radio" name="graphDir" >Drop</input>
-        </label>
+        <div>
+          <label for="width">w:
+            <input type="text" name="width" placeholder="0px"></label>
+          <label for="height">h:
+            <input type="text" name="height" placeholder="0px"></label>
+            <label for="division">division:
+              <input type="number" name="division" value="2" min="1" max="4">
+            </label>
+        </div>
+        <div>
+          <label for="gap">Gap: <input name="gap" type="number" value="10"></label>
+          <label for="quantity">Count:
+            <input type="number" name="quantity">
+          </label>
+        </div>
+        <div>
+          <p> Which direction the slope goes:</p>
+            <input checked="checked" type="radio" name="graphDir" value="Raise"><label for="Raise">Raise</label>
+            <input type="radio" name="graphDir" value="Drop"><label for="Drop">Drop</label>
+        </div>
       </div>
       <div class="wrapper flex">
         <canvas id="canvas" width="1280" height="720">
@@ -54,6 +66,7 @@
         </canvas>
       </div>
     </div>
+    <script src='helper/calcuCoords.js'></script>
     <script src="dist/controller/hex.js"></script>
     <script src="dist/model/alphabet.js"></script>
     <script src="dist/controller/letCoords.js"></script>
