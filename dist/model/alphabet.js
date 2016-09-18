@@ -6,7 +6,9 @@
 # 'p' short for 'position', that defines the coordinates
       used to create geometry shapes
 #
-
+  HERE is the equation to find any coordinates on the slope of two points
+    m = (y2-y1)/(x2-x1)
+or  (y2-y1) = (x2-x1)m
 */
 
 

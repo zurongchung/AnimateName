@@ -8,23 +8,51 @@
         margin: 0;
         padding: 0;
       }
+      div#container {
+        display: flex;
+        flex-flow: row;
+      }
+      .math {
+        width: auto;
+        height: auto;
+        flex: 1 1 auto;
+        align-self: auto;
+        order: 1;
+      }
       .wrapper {
-        position: relative;
-        margin: auto;
-        width: 1280px;
-        height: 720px;
+        order: 2;
+        flex: 0 1 auto;
+        align-self: auto;
+        justify-content: flex-end;
+        width: auto;
+        height: auto;
       }
       #canvas {
         border: 5px solid black;
       }
+      input {
+        width: 50px;
+      }
     </style>
   </head>
   <body>
-    <div class="wrapper">
-      <canvas id="canvas" width="1280" height="720">
-        Your browser dosen't support HTML5 canvas yet. Upgrade
-        your browser or use newer version of Firefox or Chrome instead.
-      </canvas>
+    <div id="container">
+      <div class="math">
+        <label for="width">width:
+        <input type="text" name="width" value="" placeholder="0px"></label>
+        <label for="height">height:
+        <input type="text" name="height" value="" placeholder="0px"></label>
+        <label> Which direction the slope goes:
+          <input type="radio" name="graphDir" >Raise</input>
+          <input type="radio" name="graphDir" >Drop</input>
+        </label>
+      </div>
+      <div class="wrapper flex">
+        <canvas id="canvas" width="1280" height="720">
+          Your browser dosen't support HTML5 canvas yet. Upgrade
+          your browser or use newer version of Firefox or Chrome instead.
+        </canvas>
+      </div>
     </div>
     <script src="dist/controller/hex.js"></script>
     <script src="dist/model/alphabet.js"></script>
