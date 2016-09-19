@@ -8,9 +8,10 @@ function Circle(_x, _y, _r, _clr) {
   this.anticw  = false;
 }
 
-Circle.prototype.draw = function(_brush) {
+Circle.prototype.draw = function(_brush, _offset) {
   _brush.beginPath();
-  _brush.arc(this.centerX, this.centerY, this.radius, this.startAt, this.endAt, this.anticw);
+  _brush.arc(this.centerX + _offset, this.centerY + _offset,
+             this.radius, this.startAt, this.endAt, this.anticw);
   _brush.fillStyle = this.color;
   _brush.fill();
 }

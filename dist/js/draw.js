@@ -7,15 +7,14 @@ function BubbleName() {
   this.y = 0;
   this.w = canvas.width;
   this.h = canvas.height;
+  this.offset = this.w * 0.2;
   this.gravity = 0.98;
   this.velocity = 0.4;
 }
 
-BubbleName.prototype.draw = function() {
+BubbleName.prototype.draw = function(at) {
   // Fill the canvas with color
   this.setBg(brush)
-  // create geometry letters
-  var at = getHex('A');
   // also need to loop through colors
   // Random select colors
   var max = Object.keys(Color).length;
@@ -38,7 +37,7 @@ BubbleName.prototype.draw = function() {
       index = _idx;
       var circle = new Circle(Letter.getX(at, i), Letter.getY(at, i),
                               Letter.getRadi(at, i), Color.getClr(_idx));
-      circle.draw(brush);
+      circle.draw(brush, this.offset);
     }
 
   }
