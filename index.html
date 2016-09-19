@@ -17,10 +17,10 @@
         height: auto;
         flex: 1 1 auto;
         align-self: auto;
-        order: 1;
+        order: 2;
       }
       .wrapper {
-        order: 2;
+        order: 3;
         flex: 0 1 auto;
         align-self: auto;
         justify-content: flex-end;
@@ -32,6 +32,22 @@
       }
       input {
         width: 50px;
+      }
+      #box {
+        order: 1;
+        flex: 0 1 auto;
+        align-self: flex-start;
+        justify-content: flex-end;
+        width: 56%;
+        height: 200px;
+        margin: 2px;
+      }
+      code.coords {
+        display: block;
+        width: auto;
+        height: inherit;
+        background: #000;
+        color: rgba(120, 200, 172, 1);
       }
     </style>
   </head>
@@ -48,16 +64,25 @@
             </label>
         </div>
         <div>
-          <label for="gap">Gap: <input name="gap" type="number" value="10"></label>
+          <label for="gap">Gap: <input name="gap" type="number" min='2' value="10"></label>
           <label for="quantity">Count:
-            <input type="number" name="quantity">
+            <input type="number" name="quantity" min='6' value='4'>
           </label>
+          <p>slope: <i class="slope"></i></p>
         </div>
         <div>
-          <p> Which direction the slope goes:</p>
+          <p>Line: </p>
             <input checked="checked" type="radio" name="graphDir" value="Raise"><label for="Raise">Raise</label>
             <input type="radio" name="graphDir" value="Drop"><label for="Drop">Drop</label>
         </div>
+        <p>char: <input type="text" name="letter"> at: <span class="ccode"></span></p>
+      </div>
+      <div id='box'>
+        <code class="coords">
+
+        </code>
+        <button id="start">Start</button>
+        <button id="cls">Clear</button>
       </div>
       <div class="wrapper flex">
         <canvas id="canvas" width="1280" height="720">

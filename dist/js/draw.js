@@ -15,7 +15,7 @@ BubbleName.prototype.draw = function() {
   // Fill the canvas with color
   this.setBg(brush)
   // create geometry letters
-  var at = getHex('I');
+  var at = getHex('A');
   // also need to loop through colors
   // Random select colors
   var max = Object.keys(Color).length;
