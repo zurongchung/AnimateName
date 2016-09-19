@@ -28,7 +28,7 @@
         height: auto;
       }
       #canvas {
-        border: 5px solid black;
+
       }
       input {
         width: 50px;
@@ -64,9 +64,9 @@
             </label>
         </div>
         <div>
-          <label for="gap">Gap: <input name="gap" type="number" min='2' value="10"></label>
+          <label for="gap">Gap: <input name="gap" type="number" min='2' value="2"></label>
           <label for="quantity">Count:
-            <input type="number" name="quantity" min='6' value='4'>
+            <input type="number" name="quantity" min='6' value='8'>
           </label>
           <p>slope: <i class="slope"></i></p>
         </div>
@@ -92,10 +92,12 @@
       </div>
     </div>
     <script src='helper/calcuCoords.js'></script>
-    <script src="dist/controller/hex.js"></script>
     <script src="dist/model/alphabet.js"></script>
-    <script src="dist/controller/letCoords.js"></script>
+    <script src='dist/lib/animationSet.js'></script>
     <script src="dist/lib/colors.js"></script>
+    <script src="dist/controller/hex.js"></script>
+    <script src='dist/controller/event.js'></script>
+    <script src="dist/controller/letterCoords.js"></script>
     <script src="dist/js/shape.js"></script>
     <script src="dist/js/draw.js"></script>
     <script src='dist/js/main.js'></script>

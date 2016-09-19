@@ -13,6 +13,8 @@ function BubbleName() {
 }
 
 BubbleName.prototype.draw = function(at) {
+  // Attach mouse event to canvas
+  Mouse.event.movement(canvas);
   // Fill the canvas with color
   this.setBg(brush)
   // also need to loop through colors

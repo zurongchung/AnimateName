@@ -44,39 +44,50 @@ function clear() {
 function clsBoard() {
   board.innerHTML = '';
 }
+function letterWide() {
+  return Math.round((h_ele.value * GoldenRatio) / division.value);
+}
+function hypo() {
+  return Math.round(Math.sqrt(Math.pow(letterWide()/(4/division.value), 2) +
+                              Math.pow(h_ele.value, 2)));
+}
 
 // generating a set of coordinates
 // quantity =  hypotenuse / (radius*2)
 /*
-d = Math.random()*2
-d + d1 + d2...dn = hypotenuse
+
 */
 function newPoint() {
+  var r;
+  var min = 6;
+  var max = 10;
   var i = 0;
   var poo;
   for (;i<quantity; i++) {
-    poo = new Points(h_ele.value, division.value);
-    poo.setX2(poo.x+5*i);
+    r = Math.floor(Math.random()*(max - min) + min);
+    poo = new Points(h_ele.value, division.value, r);
+    poo.setX2(poo.x + (6 * i));
     poo.setY2(poo.getX2());
     board.innerHTML = board.innerHTML + ", " + poo.calCoodrs();
   }
 //  p.preview();
   w_ele.value = poo.getWidth();
   slp.innerHTML = poo.getSlope();
-  console.log(poo.hypotenuse);
+  console.log(hypo());
 }
 
-function Points(_h, _dis) {
+function Points(_h, _dis, _r) {
   this.h = _h || 93;
   this.dis = _dis;
-  this.w = this.letterWide();     // full = 150
+  this.w = letterWide();     // full = 150
+  this.radi = _r;
   // Known coordinates
   this.x = 0;
   this.y = this.h;      // base lower-left corner
   this.x1 = this.w / (4/this.dis);
   this.y1 = 0;
   this.slope = (this.y - this.y1)/(this.x - this.x1);
-  this.hypotenuse = this.hypo();
+  this.hypotenuse = hypo();
   // unkonwn coordinates
   this.x2 = 0;
   this.y2 = 0;
@@ -87,13 +98,13 @@ Points.prototype.setY2 = function(_x2) {
   this.y2 =  Math.round(this.y - (this.x - _x2) * this.slope);
 }
 // how wide this letter is
-Points.prototype.letterWide = function() {
-  return Math.round((this.h * GoldenRatio) / this.dis);
-}
+//Points.prototype.letterWide = function() {
+//  return Math.round((this.h * GoldenRatio) / this.dis);
+//}
 // length of hypotenuse(aka slope)
-Points.prototype.hypo = function() {
-  return Math.round(Math.sqrt(Math.pow(this.x1, 2) + Math.pow(this.h, 2)));
-}
+//Points.prototype.hypo = function() {
+//  return Math.round(Math.sqrt(Math.pow(this.x1, 2) + Math.pow(this.h, 2)));
+//}
 Points.prototype.getY2 = function() {
   // Given a x2 to calculate y2
   // return a coordinate that's on the slope
@@ -119,7 +130,7 @@ Points.prototype.getWidth = function() {
 }
 // get the calculated unkonwn coordinates
 Points.prototype.calCoodrs = function() {
-  return '[' + this.getX2() + ',' + this.getY2() + ']';
+  return '[' + this.getX2() + ',' + this.getY2() + ',' + this.radi + ']';
 }
 Points.prototype.preview = function() {
   var pre = 'this.x: ' + this.x + '\n' +
