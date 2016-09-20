@@ -1,53 +1,62 @@
 var canvas = document.getElementById("canvas");
 var brush  = canvas.getContext('2d');
-
+var rAF_id;
 //  !!!!!   Test if the browser support canvas
-function BubbleName() {
-  this.x = 0;
-  this.y = 0;
-  this.w = canvas.width;
-  this.h = canvas.height;
-  this.offset = this.w * 0.2;
-  this.gravity = 0.98;
-  this.velocity = 0.4;
-}
+var BubbleName = {
+  x: 0,
+  y: 0,
+  w: canvas.width,
+  h: canvas.height,
+  offset: canvas.width * 0.2,
+};
+// Attach mouse event to canvas
+Mouse.event.movement(canvas);
+Mouse.event.over(canvas);
+Mouse.event.out(canvas);
 
-BubbleName.prototype.draw = function(at) {
-  // Attach mouse event to canvas
-  Mouse.event.movement(canvas);
+BubbleName.draw = function(evt) {
+
+  // get geometry letters
+  var at = getHex('A');
+
   // Fill the canvas with color
-  this.setBg(brush)
+  BubbleName.setBg(brush);
   // also need to loop through colors
   // Random select colors
   var max = Object.keys(Color).length;
   var min = 1;
-  var index = 0;
   // get the length of the key of [p]
   // indicates how many shape needs to draw
   var count = Letter.numOfShape(at);
-
   var i = 0;
-  for(;i < count; i++) {
+  for (;i < count; i++) {
     var _idx = Math.floor (Math.random() * (max-min)+min);  // color index used to select color
-    if (_idx === index) {
-      // Restart the loop add one more step to run
+
+    BubbleName.x = Letter.getX(at, i) + BubbleName.offset + Math.random()* 0.5;
+    BubbleName.y = Letter.getY(at, i) + BubbleName.offset + Math.random();
+    if (i % 2 === 0 && _idx % 2 === 0) {
+      var circle = new Circle(BubbleName.x, BubbleName.y,
+                  Letter.getRadi(at, i), Color.getClr(_idx));
+    }else if (i % 2 !== 0 && _idx % 2 !== 0) {
+      var circle = new Circle(BubbleName.x, BubbleName.y,
+                  Letter.getRadi(at, i), Color.getClr(_idx));
+    }else {
       i = i - 1;
       continue;
-    }else {
-      // Store last selected color
-      // if next color is the same as this one then reselect
-      index = _idx;
-      var circle = new Circle(Letter.getX(at, i), Letter.getY(at, i),
-                              Letter.getRadi(at, i), Color.getClr(_idx));
-      circle.draw(brush, this.offset);
     }
-
+    circle.draw(brush);
   }
-}
+  //rAF(BubbleName.draw);
+  if (evt === Mouse.over) {
+    rAF_id  = rAF(BubbleName.draw);
+    console.log(evt);
+  }
+};
 
 // canvas background
-BubbleName.prototype.setBg = function (_brush) {
-  _brush.fillRect(0, 0, this.w, this.h);
-  _brush.fillStyle = 'black';
-  _brush.fill();
-}
+BubbleName.setBg = function (_brush) {
+  brush.clearRect(0, 0, BubbleName.w, BubbleName.h);
+//  _brush.fillRect(0, 0, BubbleName.w, BubbleName.h);
+//  _brush.fillStyle = 'black';
+//  _brush.fill();
+};

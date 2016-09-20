@@ -5,6 +5,7 @@ var Mouse = {
   y: 0,
   move: 'mousemove',
   over: 'mouseover',
+  out : 'mouseout',
   event: {},
 };
 
@@ -15,16 +16,29 @@ Mouse.event.movement = function(cvs) {
     Mouse.getMousePos();
   }, false);
 };
+
+// starting wiggle animation
 Mouse.event.over = function(cvs) {
-  cvs.addEventListener(Mouse.over, function() {
+  cvs.addEventListener(Mouse.over, function(event) {
     // wiggle animation here;
-    Animation.wiggle();
-  }, false)
-}
+    //console.log('----------------');
+    var shake = new Animation();
+    shake.wiggle(event.type);
+  }, false);
+};
+
+// cancel wiggle animation
+Mouse.event.out = function(cvs) {
+  cvs.addEventListener(Mouse.out, function(event) {
+    console.log(event.type);
+    window.cAF(rAF_id);
+  }, false);
+};
+
 Mouse.setMousePos = function(evt) {
   Mouse.x = evt.offsetX;
   Mouse.y = evt.offsetY;
 };
 Mouse.getMousePos = function() {
-  console.log('x: ' + Mouse.x + ' y: ' + Mouse.y);
+  //console.log('x: ' + Mouse.x + ' y: ' + Mouse.y);
 };
