@@ -2,7 +2,7 @@ function Circle(_x, _y, _r, _clr) {
   this.centerX = _x || 0;
   this.centerY = _y || 0;
   this.radius  = _r || 8;
-  this.color   = this.setColor(_clr) || 'red';
+  this.color   = this.setColor(_clr) || 'rgba(255,0,0)';
   this.startAt = 0;
   this.endAt   = Math.PI * 2;
   this.anticw  = false;

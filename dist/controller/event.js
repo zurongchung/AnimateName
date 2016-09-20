@@ -3,6 +3,7 @@
 var Mouse = {
   x: 0,
   y: 0,
+  ir: 60,
   move: 'mousemove',
   over: 'mouseover',
   out : 'mouseout',
@@ -19,18 +20,17 @@ Mouse.event.movement = function(cvs) {
 
 // starting wiggle animation
 Mouse.event.over = function(cvs) {
-  cvs.addEventListener(Mouse.over, function(event) {
-    // wiggle animation here;
-    //console.log('----------------');
-    var shake = new Animation();
-    shake.wiggle(event.type);
-  }, false);
+  cvs.addEventListener(Mouse.over, wiggleCallbk, false);
 };
+function wiggleCallbk() {
+  // wiggle animation here;
+  BubbleName.draw();
+  rAF_id = rAF(wiggleCallbk);
+}
 
 // cancel wiggle animation
 Mouse.event.out = function(cvs) {
   cvs.addEventListener(Mouse.out, function(event) {
-    console.log(event.type);
     window.cAF(rAF_id);
   }, false);
 };
