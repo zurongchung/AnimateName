@@ -29,16 +29,13 @@ function Animation() {
 
 Animation.prototype.wiggle = function(_at) {
   //this.shakeWithColor(_at);
-  this.shake(_at);
-};
-
-// core drawing function
-Animation.prototype.shake = function(_at) {
   // get the length of the key of [p]
   // indicates how many shape needs to draw
   var count = Letter.numOfShape(_at);
   this.draw(count, _at);
 };
+
+// core drawing function
 
 Animation.prototype.draw = function(_quantity, _at) {
   var i = 0;

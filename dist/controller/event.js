@@ -23,7 +23,6 @@ Mouse.event.over = function(cvs) {
   cvs.addEventListener(Mouse.over, wiggleCallbk, false);
 };
 function wiggleCallbk() {
-  // wiggle animation here;
   BubbleName.draw();
   rAF_id = rAF(wiggleCallbk);
 }

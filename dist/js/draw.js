@@ -17,16 +17,15 @@ BubbleName.draw = function() {
   // get geometry letters
   var hex = new LetterToHex('A');
   // Fill the canvas with color
-  BubbleName.setBg(brush);
+  BubbleName.resetCanvas(brush);
 //  Animation.testAni(at);
   var shake = new Animation();
   shake.wiggle(hex.getHex());
 };
 
 // canvas background
-BubbleName.setBg = function (_brush) {
-  _brush.clearRect(0, 0, BubbleName.w, BubbleName.h);
-  //_brush.fillRect(0, 0, BubbleName.w, BubbleName.h);
-  //_brush.fillStyle = 'rgba(0,0,0,0)';
-  //_brush.fill();
+BubbleName.resetCanvas = function (_brush) {
+  _brush.fillStyle = 'black';
+  _brush.fillRect(0, 0, BubbleName.w, BubbleName.h);
+  //_brush.clearRect(0, 0, BubbleName.w, BubbleName.h);
 };
