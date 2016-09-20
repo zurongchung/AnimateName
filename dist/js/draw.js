@@ -19,7 +19,7 @@ BubbleName.draw = function() {
   // Fill the canvas with color
   BubbleName.resetCanvas(brush);
 //  Animation.testAni(at);
-  var shake = new Animation();
+  var shake = new Animation(hex.length);
   shake.wiggle(hex.getHex());
 };
 

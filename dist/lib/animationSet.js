@@ -15,7 +15,7 @@ var cAF = window.cancelAnimationFrame ||
 //  for terminate animation
 var rAF_id;
 
-function Animation() {
+function Animation(_len) {
   this.x = 0;
   this.y = 0;
   this.dx = 0;
@@ -25,6 +25,7 @@ function Animation() {
   this.gravity = 0.98;
   this.velocity = 2.4;
   this.amplitude = 0.94;
+  this.wordsLength = _len;
 }
 
 Animation.prototype.wiggle = function(_at) {
@@ -38,6 +39,7 @@ Animation.prototype.wiggle = function(_at) {
 // core drawing function
 
 Animation.prototype.draw = function(_quantity, _at) {
+  var iclr = 1;     // select new color for next letters
   var i = 0;
   for (;i < _quantity; ++i) {
 
@@ -46,10 +48,12 @@ Animation.prototype.draw = function(_quantity, _at) {
     // color manipulation
     // static
     var circle = new Circle(this.x, this.y,
-                Letter.getRadi(_at, i), Color.getClr(1));
+                Letter.getRadi(_at, i), Color.getClr(iclr));
     // if reached last color then return to first color and loop again
   //  clrIdx === max ? clrIdx = 1 : ++clrIdx;
-
+  if (iclr < this.wordsLength) {
+    ++iclr;
+  }
     circle.draw(brush);
   }
 };
