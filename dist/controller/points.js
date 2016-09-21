@@ -1,6 +1,6 @@
 // Fecth shape coordinates from alphabet.js
 
-var Letter = {
+var Point = {
   x : 0,
   y : 0,
   z : 0,

@@ -3,7 +3,7 @@
 
 function LetterToHex(_phrase) {
   this.words = _phrase;
-  this.length = this.words.length;
+  this.length = _phrase.length;
   this.hex = this.letHex();
 }
 
