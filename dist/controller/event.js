@@ -23,17 +23,15 @@ Mouse.event.movement = function(cvs) {
   // register mouse move event
   cvs.addEventListener(Mouse.move, moveCallbk, false);
 };
-
 function moveCallbk(event) {
   Mouse.setMousePos(event);
-  //Mouse.update(Mouse.ang);
 }
 // starting wiggle animation
 Mouse.event.over = function(cvs) {
   cvs.addEventListener(Mouse.over, wiggleCallbk, false);
 };
 function wiggleCallbk() {
-  //BubbleName.draw();
+  BubbleName.draw();
   Mouse.drawInvisible();
   Mouse.update(Mouse.ang);
   rAF_id = rAF(wiggleCallbk);
@@ -55,14 +53,29 @@ Mouse.setMousePos = function(evt) {
   Mouse.icy = Mouse.y;
 };
 Mouse.drawInvisible = function() {
-    BubbleName.resetCanvas(brush);
+  //  BubbleName.resetCanvas(brush);
+    // small circle around mouse point
     var circle = new Circle(Mouse.icx, Mouse.icy,
-                Letter.getRadi(65, 1), Color.getClr(2));
+                7, Color.getClr(2));
     circle.draw();
-
+    // A big circle from center of mouse point
+    var circle = new Circle(Mouse.x, Mouse.y, Mouse.ir, Color.getClr(4));
+    circle.stroke();
 };
+//var vx = 5;
+//var vy = -25;
+//var g = 1;
 Mouse.update = function(_ang) {
-  Mouse.icx = Math.cos(_ang)*Mouse.ir + Mouse.x;
-  Mouse.icy = Math.sin(_ang)*Mouse.ir + Mouse.y;
+  Mouse.icx = Math.cos(_ang) * Mouse.ir + Mouse.x;
+  Mouse.icy = Math.sin(_ang) * Mouse.ir + Mouse.y;
   Mouse.x > Mouse.preX ? Mouse.ang += Mouse.angle_incre : Mouse.ang -= Mouse.angle_incre;
+  //Mouse.icx += vx;
+  //Mouse.icy += vy;
+
+  //if (Mouse.icy > 500) {
+  //  vy *= -0.5;
+  //  vx *= 0.7;
+  //  Mouse.icy = 500;
+  //}
+  //vy += g;
 };

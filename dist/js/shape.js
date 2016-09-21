@@ -15,6 +15,14 @@ Circle.prototype.draw = function() {
   brush.fillStyle = this.color;
   brush.fill();
 }
+Circle.prototype.stroke = function() {
+  brush.beginPath();
+  brush.arc(this.centerX, this.centerY,
+             this.radius, this.startAt, this.endAt, this.anticw);
+  brush.lineWidth = 2;
+  brush.strokeStyle = this.color;
+  brush.stroke();
+}
 
 // Define color for the geometric shape
 // if we ever want to Change color dynamically
