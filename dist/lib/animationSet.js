@@ -15,11 +15,13 @@ var cAF = window.cancelAnimationFrame ||
 //  for terminate animation
 var rAF_id;
 
-function Animation(_len) {
+function Animation(_ofx, _ofy, _len) {
   this.x = 0;
   this.y = 0;
   this.dx = 0;
   this.dy = 0;
+  this.offsetX = _ofx * 0.2;
+  this.offsetY = _ofy * 0.4;
   this.amtuX = 2;  // left and right
   this.amtuY = Math.random() * 4;  // up and down
   this.gravity = 0.98;
@@ -42,9 +44,8 @@ Animation.prototype.draw = function(_quantity, _at) {
   var iclr = 1;     // select new color for next letters
   var i = 0;
   for (;i < _quantity; ++i) {
-
-    this.x = Letter.getX(_at, i) + BubbleName.offsetX + this.amtuX;
-    this.y = Letter.getY(_at, i) + BubbleName.offsetY + this.amtuY;
+    this.x = Letter.getX(_at, i) + this.offsetX + this.amtuX;
+    this.y = Letter.getY(_at, i) + this.offsetY + this.amtuY;
     // color manipulation
     // static
     var circle = new Circle(this.x, this.y,
@@ -54,8 +55,9 @@ Animation.prototype.draw = function(_quantity, _at) {
   if (iclr < this.wordsLength) {
     ++iclr;
   }
-    circle.draw(brush);
+    circle.draw();
   }
+
 };
 
 Animation.prototype.shakeWithColor = function(_at) {
@@ -81,6 +83,6 @@ Animation.prototype.shakeWithColor = function(_at) {
       i = i - 1;
       continue;
     }
-    circle.draw(brush);
+    circle.draw();
   }
 };

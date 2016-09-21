@@ -5,8 +5,6 @@ var brush  = canvas.getContext('2d');
 var BubbleName = {
   w: canvas.width,
   h: canvas.height,
-  offsetX: canvas.width * 0.2,
-  offsetY: canvas.height * 0.35,
 };
 // Attach mouse event to canvas
 Mouse.event.movement(canvas);
@@ -17,15 +15,14 @@ BubbleName.draw = function() {
   // get geometry letters
   var hex = new LetterToHex('A');
   // Fill the canvas with color
-  BubbleName.resetCanvas(brush);
+  BubbleName.resetCanvas();
 //  Animation.testAni(at);
-  var shake = new Animation(hex.length);
+  var shake = new Animation(BubbleName.w, BubbleName.h, hex.length);
   shake.wiggle(hex.getHex());
 };
 
 // canvas background
-BubbleName.resetCanvas = function (_brush) {
-  _brush.fillStyle = 'black';
-  _brush.fillRect(0, 0, BubbleName.w, BubbleName.h);
-  //_brush.clearRect(0, 0, BubbleName.w, BubbleName.h);
+BubbleName.resetCanvas = function () {
+  brush.fillStyle = 'black';
+  brush.fillRect(0, 0, BubbleName.w, BubbleName.h);
 };
