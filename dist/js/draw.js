@@ -8,10 +8,7 @@ var BubbleName = {
   offsetX: function(){return BubbleName.w * 0.2;},
   offsetY: function(){return BubbleName.h * 0.4;},
 };
-// Attach mouse event to canvas
-Mouse.event.movement(canvas);
-Mouse.event.over(canvas);
-Mouse.event.out(canvas);
+
 
 BubbleName.draw = function() {
   // get geometry letters
@@ -22,6 +19,8 @@ BubbleName.draw = function() {
   BubbleName.resetCanvas();
   var bounce = new Animation(BubbleName.w, BubbleName.h, charAt, count, hex.length);
   bounce.draw();
+  //Animation.setAnimation(BubbleName.w, BubbleName.h, charAt, count, hex.length);
+  //Animation.draw();
 };
 
 // canvas background

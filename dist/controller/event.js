@@ -3,6 +3,9 @@
 var Mouse = {
   ir: 120,
   ang: 0,
+  theta: 30,
+  dx: 0,
+  dy: 0,
   angle_incre : 0.01,
   x: 0,
   y: 0,
@@ -22,6 +25,7 @@ var Mouse = {
 Mouse.event.movement = function(cvs) {
   // register mouse move event
   cvs.addEventListener(Mouse.move, moveCallbk, false);
+
 };
 function moveCallbk(event) {
   Mouse.setMousePos(event);
@@ -32,6 +36,7 @@ Mouse.event.over = function(cvs) {
 };
 function wiggleCallbk() {
   BubbleName.draw();
+  // mouse animation # test_del
   Mouse.drawInvisible();
   Mouse.update(Mouse.ang);
   rAF_id = rAF(wiggleCallbk);
@@ -55,12 +60,11 @@ Mouse.setMousePos = function(evt) {
 Mouse.drawInvisible = function() {
   //  BubbleName.resetCanvas(brush);
     // small circle around mouse point
-    var circle = new Circle(Mouse.icx, Mouse.icy,
-                7, Color.getClr(2));
-    circle.draw();
+    new Shape(Mouse.icx, Mouse.icy, 7, Color.getClr(2)).draw();
+    new Shape().lines(Mouse.icx, Mouse.icy, Mouse.x, Mouse.y);
     // A big circle from center of mouse point
-    var circle = new Circle(Mouse.x, Mouse.y, Mouse.ir, Color.getClr(4));
-    circle.stroke();
+    var bigCircle = new Shape(Mouse.x, Mouse.y, Mouse.ir, Color.getClr(4));
+    bigCircle.stroke();
 };
 //var vx = 5;
 //var vy = -25;
