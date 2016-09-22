@@ -3,7 +3,7 @@
 var Mouse = {
   ir: 120,
   ang: 0,
-  theta: 30,
+  theta: 0,
   dx: 0,
   dy: 0,
   angle_incre : 0.01,
@@ -29,6 +29,7 @@ Mouse.event.movement = function(cvs) {
 };
 function moveCallbk(event) {
   Mouse.setMousePos(event);
+//  console.log(Mouse.theta);
 }
 // starting wiggle animation
 Mouse.event.over = function(cvs) {
@@ -61,6 +62,9 @@ Mouse.drawInvisible = function() {
   //  BubbleName.resetCanvas(brush);
     // small circle around mouse point
     new Shape(Mouse.icx, Mouse.icy, 7, Color.getClr(2)).draw();
+
+    new Shape(Math.sin(Mouse.theta)*Mouse.ir+Mouse.x, Math.cos(Mouse.theta)*Mouse.ir+Mouse.y, 5, Color.getClr(4)).draw();
+
     new Shape().lines(Mouse.icx, Mouse.icy, Mouse.x, Mouse.y);
     // A big circle from center of mouse point
     var bigCircle = new Shape(Mouse.x, Mouse.y, Mouse.ir, Color.getClr(4));

@@ -20,6 +20,7 @@ function Animation(_ofx, _ofy, _hexPos, _count, _len) {
   this.y  = 0;
   this.dx = 0;
   this.dy = 0;
+  this.beta = 0;
   this.vx = -12;
   this.vy = 6;
   this.charAt  = _hexPos;
@@ -45,25 +46,49 @@ Animation.prototype.bounce = function() {
   var iclr = 1;     // select new color for next letters
   var i = 0;
   var theSlope, LenOfSlope;
-  for (;i < this.shapes; ++i) {
+  for (;i < 1; ++i) {
 
     this.x = Point.getX(this.charAt, i) + this.offsetX;
     this.y = Point.getY(this.charAt, i) + this.offsetY;
 
     // this is how one circle moves around the other circle
     // The relationship between the two circles
-    this.dx = Mouse.x - this.x;
-    this.dy = Mouse.y - this.y;
+    this.dx = this.x - Mouse.x;
+    this.dy = this.y - Mouse.y;
+
+    LenOfSlope = this.lengthOfSlope();
+// Denominator can't be zero;
+    if (this.y < Mouse.y) {
+      Mouse.theta = Module.dot2((Math.PI-Math.atan(this.dx/this.dy))*-1);
+      this.beta = Module.dot2(Math.atan(this.dx/this.dy));
+    }else {
+      Mouse.theta = Module.dot2(Math.atan(this.dx/this.dy));
+      this.beta = Module.dot2((Math.PI-Math.atan(this.dx/this.dy))*-1);
+    }
+
+
+    console.log('d: '+Math.round(180/Math.PI*this.beta));
+    console.log('r: '+this.beta);
+    console.log('bd: '+Math.round(180/Math.PI*Mouse.theta));
+    console.log('br: '+Mouse.theta);
+
+
+
 
     theSlope = this.hasSlope();
-    LenOfSlope = this.lengthOfSlope();
 
     // draw lines
     new Shape().lines(Mouse.x, Mouse.y, this.x, this.y);
-    new Shape().lines(Mouse.x, Mouse.y, Mouse.x, this.y);
-    new Shape().lines(Mouse.x, this.y, this.x, this.y);
+    new Shape().lines(this.x, this.y, this.x, Mouse.y);
+    new Shape().lines(this.x, Mouse.y, Mouse.x, Mouse.y);
 
     var circle = new Shape(this.x, this.y, Point.getRadi(this.charAt, i), Color.getClr(iclr));
+
+    new Shape(Math.sin(this.beta)*Point.getRadi(this.charAt, i)+
+      this.x, Math.cos(this.beta)*Point.getRadi(this.charAt, i)+
+      this.y, 4, Color.getClr(2)).draw();
+
+
 
     if (iclr < this.wordsLength) {
       ++iclr;
