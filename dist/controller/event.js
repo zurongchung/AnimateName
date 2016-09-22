@@ -63,8 +63,7 @@ Mouse.drawInvisible = function() {
     // small circle around mouse point
     new Shape(Mouse.icx, Mouse.icy, 7, Color.getClr(2)).draw();
 
-    new Shape(Math.sin(Mouse.theta)*Mouse.ir+Mouse.x, Math.cos(Mouse.theta)*Mouse.ir+Mouse.y, 5, Color.getClr(4)).draw();
-
+    
     new Shape().lines(Mouse.icx, Mouse.icy, Mouse.x, Mouse.y);
     // A big circle from center of mouse point
     var bigCircle = new Shape(Mouse.x, Mouse.y, Mouse.ir, Color.getClr(4));
