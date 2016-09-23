@@ -65,27 +65,34 @@ Animation.prototype.bounce = function() {
     this.dx = Mouse.x - this.x;
     this.dy = Mouse.y - this.y;
 
-    this.longestSlope();
+    this.ls1 = Mouse.ir;
+    this.ls2 = Point.getRadi(this.charAt, i);
+    this.ls3 = Module.getLenOfSlope(this.dx, this.dy);
+
+// here is the problem that it still
+//draws touchPoints and guild lines on the original position
+
     this.touchPoints(i);
-    this.slopeInCircle();
-    this.drawTouchPoints();
+    this.drawTouchPoints();   // Don't need. Delete it at release stage
+
     // start bouncing when the mouse touches those circles
     if (this.hasTouched()) {
       this.update(i);
-      //this.touchPoints(i);
-      //this.drawTouchPoints();
     }
+    // visual center of circles
+    new Shape(this.x, this.y,2, Color.getClr(2)).draw();
+
     //this.vx += this.gravity;
-    var circle = new Shape(this.x, this.y, Point.getRadi(this.charAt, i), Color.getClr(iclr));
+    new Shape(this.x, this.y, Point.getRadi(this.charAt, i), Color.getClr(iclr)).stroke();
 
     if (iclr < this.wordsLength) {
       ++iclr;
     }
-      circle.stroke();
   }
 
 };
 Animation.prototype.update = function(_idx) {
+
   //var radi = Point.getRadi(this.charAt, _idx);
   //if (this.xLess() || this.yLess()) {radi *= -1;}
   //this.x = this.tmx + radi;
@@ -95,8 +102,15 @@ Animation.prototype.update = function(_idx) {
   //this.vy = -120;
   this.x = this.tmx;
   this.y = this.tmy;
-  this.x += this.vx;
-  this.y += this.vy;
+
+};
+
+Animation.prototype.hasTouched = function() {
+
+  // i think here is the problem. that when touched.
+  // the slope still center to the original point
+  var t = this.ls3 - (this.ls2 + this.ls1);
+  return  t <= 0.1 || this.ls3 < (this.ls2 + this.ls1) ? true : false;
 };
 
 Animation.prototype.bouncing = function() {
@@ -108,14 +122,11 @@ Animation.prototype.bouncePath = function() {
   return Module.dot2(this.y - (((this.x + this.vx) - this.x) * this.haslope() + this.y));
 };
 
-Animation.prototype.hasTouched = function() {
-  return this.ls3 - (this.ls2 + this.ls1) <= 0.1 ? true : false;
-};
 
 Animation.prototype.haslope = function() {
   return this.x === Mouse.x || this.y === Mouse.y ? 0 : Module.dot2((this.dy / this.dx));
 };
-
+/* Deprecated
 Animation.prototype.slopeInCircle = function() {
   // the lenght of that slope between the two circle
   // Distance of the circle and the mouse point
@@ -127,11 +138,14 @@ Animation.prototype.slopeInCircle = function() {
   tmdy = Module.distance(Mouse.y, this.tmy);
 
   this.ls2 = Module.getLenOfSlope(tcdx, tcdy);
-  this.ls1 = Module.getLenOfSlope(tmdx, tmdy);
+  //this.ls1 = Module.getLenOfSlope(tmdx, tmdy);
 };
+
+
 Animation.prototype.longestSlope = function() {
   this.ls3 = Module.getLenOfSlope(this.dx, this.dy);
 };
+*/
 
 Animation.prototype.touchPoints = function(_idx){
   // Denominator can't be zero;
@@ -171,8 +185,8 @@ Animation.prototype.drawTouchPoints = function() {
   new Shape().lines(this.x, Mouse.y, Mouse.x, Mouse.y);
 
   // touche points
-  new Shape(this.tcx, this.tcy, 4, Color.getClr(2)).draw();
-  new Shape(this.tmx,this.tmy, 5, Color.getClr(4)).draw();
+  new Shape(this.tcx, this.tcy, 3, Color.getClr(2)).draw();
+  new Shape(this.tmx,this.tmy, 3, Color.getClr(4)).draw();
 };
 Animation.prototype.xLess = function() {
   return this.x < Mouse.x;

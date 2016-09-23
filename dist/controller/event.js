@@ -1,7 +1,7 @@
 // register mouse event
 // get mouse's coordinates
 var Mouse = {
-  ir: 120,
+  ir: 180,
   ang: 0,
   theta: 0,
   dx: 0,
