@@ -72,14 +72,11 @@ Animation.prototype.bounce = function() {
     // start bouncing when the mouse touches those circles
     if (this.hasTouched()) {
       this.update(i);
-      this.touchPoints(i);
+      //this.touchPoints(i);
       //this.drawTouchPoints();
-    }else {
     }
-
+    //this.vx += this.gravity;
     var circle = new Shape(this.x, this.y, Point.getRadi(this.charAt, i), Color.getClr(iclr));
-    this.vx *= -0.5;
-    this.vy *= 0.7;
 
     if (iclr < this.wordsLength) {
       ++iclr;
@@ -89,22 +86,26 @@ Animation.prototype.bounce = function() {
 
 };
 Animation.prototype.update = function(_idx) {
-  var radi = Point.getRadi(this.charAt, _idx);
-  if (this.xLess() || this.yLess()) {radi *= -1;}
-  this.x = this.tmx + radi;
-  this.y = this.tmy + radi;
+  //var radi = Point.getRadi(this.charAt, _idx);
+  //if (this.xLess() || this.yLess()) {radi *= -1;}
+  //this.x = this.tmx + radi;
+  //this.y = this.tmy + radi;
+  this.vx = -120;
+  //this.vy = this.bouncePath();
+  //this.vy = -120;
+  this.x = this.tmx;
+  this.y = this.tmy;
+  this.x += this.vx;
+  this.y += this.vy;
+};
 
+Animation.prototype.bouncing = function() {
+  this.vx *= 1;
+  this.vy *= 1;
 };
 
 Animation.prototype.bouncePath = function() {
-  if (this.haslope() == false) {
-    if (this.y === Mouse.y) {
-      return this.y;
-    }
-  }else {
-
-    return this.y - (this.haslope() * ((this.x - this.vx) - this.x) + this.y);
-  }
+  return Module.dot2(this.y - (((this.x + this.vx) - this.x) * this.haslope() + this.y));
 };
 
 Animation.prototype.hasTouched = function() {
@@ -143,13 +144,25 @@ Animation.prototype.touchPoints = function(_idx){
     Mouse.theta = Module.dot2(Math.atan(this.dx / this.dy));
     this.beta = Module.dot2((Math.PI-Math.atan(this.dx / this.dy)) * -1);
   }
+
   // touche point coordinates
-  // on circles
-  this.tcx = Module.dot2(Math.sin(this.beta) * Point.getRadi(this.charAt, _idx) + this.x);
-  this.tcy = Module.dot2(Math.cos(this.beta) * Point.getRadi(this.charAt, _idx) + this.y);
-  // on mouse
-  this.tmx = Module.dot2(Math.sin(Mouse.theta) * Mouse.ir + Mouse.x);
-  this.tmy = Module.dot2(Math.cos(Mouse.theta) * Mouse.ir + Mouse.y);
+  if (this.y === Mouse.y) {
+    // Fix the buggy when mouse and circles Y coordinates are the same;
+    var mr = Mouse.ir;
+    var cr = -Point.getRadi(this.charAt, _idx);
+    if (this.xLess()) {mr *= -1; cr *= -1;}
+    this.tmx = Mouse.x + mr;
+    this.tmy = Mouse.y;
+    this.tcx = this.x + cr;
+    this.tcy = this.y;
+  }else {
+    // on circles
+    this.tcx = Module.dot2(Math.sin(this.beta) * Point.getRadi(this.charAt, _idx) + this.x);
+    this.tcy = Module.dot2(Math.cos(this.beta) * Point.getRadi(this.charAt, _idx) + this.y);
+    // on mouse
+    this.tmx = Module.dot2(Math.sin(Mouse.theta) * Mouse.ir + Mouse.x);
+    this.tmy = Module.dot2(Math.cos(Mouse.theta) * Mouse.ir + Mouse.y);
+  }
 };
 Animation.prototype.drawTouchPoints = function() {
   // lines helps visualize the relationship between shapes

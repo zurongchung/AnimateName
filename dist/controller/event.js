@@ -63,7 +63,7 @@ Mouse.drawInvisible = function() {
     // small circle around mouse point
     new Shape(Mouse.icx, Mouse.icy, 7, Color.getClr(2)).draw();
 
-    
+
     new Shape().lines(Mouse.icx, Mouse.icy, Mouse.x, Mouse.y);
     // A big circle from center of mouse point
     var bigCircle = new Shape(Mouse.x, Mouse.y, Mouse.ir, Color.getClr(4));
@@ -75,6 +75,8 @@ Mouse.drawInvisible = function() {
 Mouse.update = function(_ang) {
   Mouse.icx = Math.cos(_ang) * Mouse.ir + Mouse.x;
   Mouse.icy = Math.sin(_ang) * Mouse.ir + Mouse.y;
+
+  // rotate cw or ccw
   Mouse.x > Mouse.preX ? Mouse.ang += Mouse.angle_incre : Mouse.ang -= Mouse.angle_incre;
   //Mouse.icx += vx;
   //Mouse.icy += vy;
