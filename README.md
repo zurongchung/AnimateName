@@ -1,2 +1,2 @@
 # AnimateName
-Take a series letters and turn them into geometry shape like characters, and animating those geometry shapes
+Transform a series of letters into geometric shape looking characters, and start animating while Mouse interact with them.
