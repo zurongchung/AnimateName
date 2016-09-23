@@ -21,8 +21,18 @@ function Animation(_ofx, _ofy, _hexPos, _count, _len) {
   this.dx = 0;
   this.dy = 0;
   this.beta = 0;
-  this.vx = -12;
-  this.vy = 6;
+  // touch point
+  this.tcx = 0;
+  this.tcy = 0;
+  this.tmx = 0;
+  this.tmy = 0;
+  // length of hypotenuse on each circle
+  this.ls1 = 0;
+  this.ls2 = 0;
+  this.ls3 = 0;
+
+  this.vx = 0;
+  this.vy = 0;
   this.charAt  = _hexPos;
   this.shapes  = _count;
   this.offsetX = _ofx * 0.2;
@@ -45,7 +55,6 @@ Animation.prototype.draw = function() {
 Animation.prototype.bounce = function() {
   var iclr = 1;     // select new color for next letters
   var i = 0;
-  var theSlope, LenOfSlope;
   for (;i < this.shapes; ++i) {
 
     this.x = Point.getX(this.charAt, i) + this.offsetX;
@@ -53,17 +62,24 @@ Animation.prototype.bounce = function() {
 
     // this is how one circle moves around the other circle
     // The distance relationship of the two circles
-    this.dx = this.x - Mouse.x;
-    this.dy = this.y - Mouse.y;
+    this.dx = Mouse.x - this.x;
+    this.dy = Mouse.y - this.y;
 
-
-    this.hasTouched(i);
-
-    theSlope = this.haslope();
-    LenOfSlope = this.lengthOfSlope();
+    this.longestSlope();
+    this.touchPoints(i);
+    this.slopeInCircle();
+    this.drawTouchPoints();
+    // start bouncing when the mouse touches those circles
+    if (this.hasTouched()) {
+      this.update(i);
+      this.touchPoints(i);
+      //this.drawTouchPoints();
+    }else {
+    }
 
     var circle = new Shape(this.x, this.y, Point.getRadi(this.charAt, i), Color.getClr(iclr));
-
+    this.vx *= -0.5;
+    this.vy *= 0.7;
 
     if (iclr < this.wordsLength) {
       ++iclr;
@@ -72,40 +88,82 @@ Animation.prototype.bounce = function() {
   }
 
 };
-Animation.prototype.update = function() {
+Animation.prototype.update = function(_idx) {
+  var radi = Point.getRadi(this.charAt, _idx);
+  if (this.xLess() || this.yLess()) {radi *= -1;}
+  this.x = this.tmx + radi;
+  this.y = this.tmy + radi;
 
 };
-Animation.prototype.haslope = function() {
-  return this.x == Mouse.x || this.y == Mouse.y ? false : Module.dot2((this.dy / this.dx));
+
+Animation.prototype.bouncePath = function() {
+  if (this.haslope() == false) {
+    if (this.y === Mouse.y) {
+      return this.y;
+    }
+  }else {
+
+    return this.y - (this.haslope() * ((this.x - this.vx) - this.x) + this.y);
+  }
 };
-Animation.prototype.lengthOfSlope = function() {
+
+Animation.prototype.hasTouched = function() {
+  return this.ls3 - (this.ls2 + this.ls1) <= 0.1 ? true : false;
+};
+
+Animation.prototype.haslope = function() {
+  return this.x === Mouse.x || this.y === Mouse.y ? 0 : Module.dot2((this.dy / this.dx));
+};
+
+Animation.prototype.slopeInCircle = function() {
   // the lenght of that slope between the two circle
   // Distance of the circle and the mouse point
-  return Module.dot2(Math.sqrt(Math.pow(this.dx, 2) + Math.pow(this.dy, 2)));
+  var tmdx, tmdy, tcdx, tcdy;
+
+  tcdx = Module.distance(this.x, this.tcx);
+  tcdy = Module.distance(this.y, this.tcy);
+  tmdx = Module.distance(Mouse.x, this.tmx);
+  tmdy = Module.distance(Mouse.y, this.tmy);
+
+  this.ls2 = Module.getLenOfSlope(tcdx, tcdy);
+  this.ls1 = Module.getLenOfSlope(tmdx, tmdy);
 };
-Animation.prototype.hasTouched = function(_idx) {
+Animation.prototype.longestSlope = function() {
+  this.ls3 = Module.getLenOfSlope(this.dx, this.dy);
+};
+
+Animation.prototype.touchPoints = function(_idx){
   // Denominator can't be zero;
-  if (this.y < Mouse.y) {
-    Mouse.theta = Module.dot2((Math.PI-Math.atan(this.dx/this.dy))*-1);
-    this.beta = Module.dot2(Math.atan(this.dx/this.dy));
+  // the angle used to calculate touch points
+  // on the shape and on the invisible circle of the mouse
+  if (this.yLess()) {
+    Mouse.theta = Module.dot2((Math.PI - Math.atan(this.dx / this.dy)) * -1);
+    this.beta = Module.dot2(Math.atan(this.dx / this.dy));
   }else {
-    Mouse.theta = Module.dot2(Math.atan(this.dx/this.dy));
-    this.beta = Module.dot2((Math.PI-Math.atan(this.dx/this.dy))*-1);
+    Mouse.theta = Module.dot2(Math.atan(this.dx / this.dy));
+    this.beta = Module.dot2((Math.PI-Math.atan(this.dx / this.dy)) * -1);
   }
-
-  // draw lines
-  new Shape().lines(Mouse.x, Mouse.y, this.x, this.y);
-  new Shape().lines(Mouse.x, Mouse.y, Mouse.x, this.y);
-  new Shape().lines(Mouse.x, this.y, this.x, this.y);
-
-  // touche point
+  // touche point coordinates
   // on circles
-  var cx = Math.sin(this.beta) * Point.getRadi(this.charAt, _idx) + this.x;
-  var cy = Math.cos(this.beta) * Point.getRadi(this.charAt, _idx) + this.y;
-  new Shape(cx, cy, 4, Color.getClr(2)).draw();
-
+  this.tcx = Module.dot2(Math.sin(this.beta) * Point.getRadi(this.charAt, _idx) + this.x);
+  this.tcy = Module.dot2(Math.cos(this.beta) * Point.getRadi(this.charAt, _idx) + this.y);
   // on mouse
-  var mx = Math.sin(Mouse.theta) * Mouse.ir + Mouse.x;
-  var my = Math.cos(Mouse.theta) * Mouse.ir + Mouse.y;
-  new Shape(mx,my, 5, Color.getClr(4)).draw();
+  this.tmx = Module.dot2(Math.sin(Mouse.theta) * Mouse.ir + Mouse.x);
+  this.tmy = Module.dot2(Math.cos(Mouse.theta) * Mouse.ir + Mouse.y);
+};
+Animation.prototype.drawTouchPoints = function() {
+  // lines helps visualize the relationship between shapes
+  new Shape().lines(Mouse.x, Mouse.y, this.x, this.y);
+  new Shape().lines(this.x, this.y, this.x, Mouse.y);
+  new Shape().lines(this.x, Mouse.y, Mouse.x, Mouse.y);
+
+  // touche points
+  new Shape(this.tcx, this.tcy, 4, Color.getClr(2)).draw();
+  new Shape(this.tmx,this.tmy, 5, Color.getClr(4)).draw();
+};
+Animation.prototype.xLess = function() {
+  return this.x < Mouse.x;
+};
+Animation.prototype.yLess = function() {
+  return this.y < Mouse.y;
 };
