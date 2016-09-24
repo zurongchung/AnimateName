@@ -22,6 +22,15 @@ var Mouse = {
   },
 };
 
+Mouse.event.forMaker = function () {
+  // for alphabet maker
+  canvas.addEventListener('mousedown', makerBack, false);
+};
+
+function makerBack() {
+  console.log('draw');
+}
+
 Mouse.event.movement = function(cvs) {
   // register mouse move event
   cvs.addEventListener(Mouse.move, moveCallbk, false);
@@ -29,18 +38,23 @@ Mouse.event.movement = function(cvs) {
 };
 function moveCallbk(event) {
   Mouse.setMousePos(event);
-//  console.log(Mouse.theta);
+  BubbleName.resetCanvas();
+  var bounce = new Animation(BubbleName.w, BubbleName.h, BubbleName.charAt(),
+  BubbleName.count(), BubbleName.hex().length);
+  bounce.draw();
+  // mouse animation # test_del
+  Mouse.drawInvisible();
+  Mouse.update(Mouse.ang);
+  rAF_id = rAF(wiggleCallbk);
 }
 // starting wiggle animation
 Mouse.event.over = function(cvs) {
   cvs.addEventListener(Mouse.over, wiggleCallbk, false);
 };
 function wiggleCallbk() {
-  BubbleName.draw();
-  // mouse animation # test_del
-  Mouse.drawInvisible();
-  Mouse.update(Mouse.ang);
-  rAF_id = rAF(wiggleCallbk);
+  //BubbleName.draw();
+
+
 }
 
 // cancel wiggle animation

@@ -25,11 +25,12 @@ Shape.prototype.stroke = function() {
   brush.stroke();
 };
 
-Shape.prototype.lines = function(_mx, _my, _cx, _cy) {
+Shape.prototype.lines = function(_mx, _my, _cx, _cy, _clr = this.color) {
   brush.beginPath();
   brush.moveTo(_mx, _my);
   brush.lineTo(_cx, _cy);
-  brush.strokeStyle = this.color;
+  brush.lineWidth = 0.5;
+  brush.strokeStyle = _clr;
   brush.stroke();
 };
 
@@ -38,7 +39,7 @@ Shape.prototype.lines = function(_mx, _my, _cx, _cy) {
 // we can do it in this function
 Shape.prototype.setColor = function(_clr) {
   if (_clr === undefined) {
-    return 'purple';
+    return 'cyan';
   }else {
     var color = 'rgb('
     var i = 0;
