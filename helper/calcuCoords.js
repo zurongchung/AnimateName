@@ -32,7 +32,7 @@ start.addEventListener('click', newPoint, false);
 cls.addEventListener('click', clsBoard, false);
 
 function atoCode() {
-  // alphabet to char code
+  // alphabet-to-char code
   var code = letter.value.charCodeAt("0");
   at.innerHTML = code;
 
@@ -43,6 +43,9 @@ function clear() {
 }
 function clsBoard() {
   board.innerHTML = '';
+  slp.innerHTML = '';
+  // clear canvas
+  BubbleName.draw();
 }
 function letterWide() {
   return Math.round((h_ele.value * GoldenRatio) / division.value);
@@ -68,7 +71,7 @@ function newPoint() {
     poo = new Points(h_ele.value, division.value, r);
     poo.setX2(poo.x + (6 * i));
     poo.setY2(poo.getX2());
-    board.innerHTML = board.innerHTML + ", " + poo.calCoodrs();
+    board.innerHTML = board.innerHTML + poo.calCoodrs() + ", " ;
   }
 //  p.preview();
   w_ele.value = poo.getWidth();
@@ -86,7 +89,7 @@ function Points(_h, _dis, _r) {
   this.y = this.h;      // base lower-left corner
   this.x1 = this.w / (4/this.dis);
   this.y1 = 0;
-  this.slope = (this.y - this.y1)/(this.x - this.x1);
+  this.slope = Module.dot2((this.y - this.y1)/(this.x - this.x1));
   this.hypotenuse = hypo();
   // unkonwn coordinates
   this.x2 = 0;

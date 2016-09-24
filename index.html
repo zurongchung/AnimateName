@@ -39,8 +39,9 @@
         align-self: flex-start;
         justify-content: flex-end;
         width: 56%;
-        height: 200px;
+        height: 600px;
         margin: 2px;
+
       }
       code.coords {
         display: block;
@@ -48,6 +49,7 @@
         height: inherit;
         background: #000;
         color: rgba(120, 200, 172, 1);
+        overflow-y: scroll;;
       }
     </style>
   </head>
@@ -78,11 +80,12 @@
         <p>char: <input type="text" name="letter"> at: <span class="ccode"></span></p>
       </div>
       <div id='box'>
-        <code class="coords">
+        <code class="coords" id="points">
 
         </code>
         <button id="start">Start</button>
         <button id="cls">Clear</button>
+        <button data-clipboard-target="#points" id="clip">copy</button>
       </div>
       <div class="wrapper flex">
         <canvas id="canvas" width="1280" height="720">
@@ -91,6 +94,9 @@
         </canvas>
       </div>
     </div>
+    <!-- Third party library -->
+    <script src='helper/clipboard.js'></script>
+
     <script src='dist\lib\module.js'></script>
     <script src="dist/model/alphabet.js"></script>
     <script src="dist/lib/colors.js"></script>

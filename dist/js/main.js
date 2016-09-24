@@ -7,7 +7,10 @@ function start() {
   //Mouse.event.out(canvas);
 
   // make alphabet
-  Mouse.event.forMaker();
+  //BubbleName.resetCanvas();
+  Mouse.event.down();
+  Mouse.event.up();
+  Maker.copy();
 
 }
 window.onload = start();

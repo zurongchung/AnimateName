@@ -23,7 +23,7 @@ BubbleName.draw = function() {
   BubbleName.resetCanvas();
   Maker.frame();
   Maker.grid();
-  BubbleName.init();
+  //BubbleName.init();
 };
 
 // canvas background

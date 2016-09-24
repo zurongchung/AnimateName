@@ -16,19 +16,39 @@ var Mouse = {
   move: 'mousemove',
   over: 'mouseover',
   out : 'mouseout',
+  up  : 'mouseup',
+  down: 'mousedown',
   event: {},
   area: function() {
     return Math.floor(Math.PI * Math.pow(Mouse.ir, 2));
   },
 };
 
-Mouse.event.forMaker = function () {
+Mouse.event.down = function () {
   // for alphabet maker
-  canvas.addEventListener('mousedown', makerBack, false);
+  canvas.addEventListener(Mouse.down, makerStart, false);
+};
+Mouse.event.up = function () {
+  canvas.addEventListener(Mouse.up, function(){
+    canvas.removeEventListener(Mouse.move, makerDraw, false);
+  }, false);
+
 };
 
-function makerBack() {
-  console.log('draw');
+// detect mouse is ready to draw
+// mouse click event
+function makerStart(event) {
+  // after mouse is down.
+  // Start drawing
+  Mouse.setMousePos(event);   // avoid Mouse.x and y is at 0 when first movement
+  Maker.draw(); // draw a circle when mouse down
+  canvas.addEventListener(Mouse.move, makerDraw, false)
+
+}
+// for drawing `mousemove` event
+function makerDraw(event) {
+  Mouse.setMousePos(event);
+  Maker.draw();
 }
 
 Mouse.event.movement = function(cvs) {
@@ -51,9 +71,9 @@ function moveCallbk(event) {
 Mouse.event.over = function(cvs) {
   cvs.addEventListener(Mouse.over, wiggleCallbk, false);
 };
-function wiggleCallbk() {
+function wiggleCallbk(event) {
   //BubbleName.draw();
-
+  Mouse.setMousePos(event);   // avoid Mouse.x and y is at 0 when first movement
 
 }
 
