@@ -42,6 +42,8 @@ Mouse.event.drawOutOfCanvas = function () {
 };
 function stopDrawEvent() {
   canvas.removeEventListener(Mouse.move, makerDraw, false);
+  canvas.removeEventListener(Mouse.move, makerErase, false);
+
 }
 
 // detect mouse is ready to draw
