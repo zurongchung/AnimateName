@@ -13,6 +13,9 @@ var Mouse = {
   preY: 0,
   icx: 0,
   icy: 0,
+  // mouse button
+  lm: 0,
+  rm: 2,
   move: 'mousemove',
   over: 'mouseover',
   out : 'mouseout',
@@ -23,26 +26,40 @@ var Mouse = {
     return Math.floor(Math.PI * Math.pow(Mouse.ir, 2));
   },
 };
-
+/*------------------
+      Drawing
+--------------------*/
 Mouse.event.down = function () {
   // for alphabet maker
   canvas.addEventListener(Mouse.down, makerStart, false);
 };
 Mouse.event.up = function () {
-  canvas.addEventListener(Mouse.up, function(){
-    canvas.removeEventListener(Mouse.move, makerDraw, false);
-  }, false);
+  canvas.addEventListener(Mouse.up, stopDrawEvent, false);
 
 };
+Mouse.event.drawOutOfCanvas = function () {
+  canvas.addEventListener(Mouse.out, stopDrawEvent, false);
+};
+function stopDrawEvent() {
+  canvas.removeEventListener(Mouse.move, makerDraw, false);
+}
 
 // detect mouse is ready to draw
 // mouse click event
 function makerStart(event) {
-  // after mouse is down.
-  // Start drawing
-  Mouse.setMousePos(event);   // avoid Mouse.x and y is at 0 when first movement
-  Maker.draw(); // draw a circle when mouse down
-  canvas.addEventListener(Mouse.move, makerDraw, false)
+  if (event.button === 0) {
+    // after mouse left button is clicked.
+    // Start drawing
+    Mouse.setMousePos(event);   // avoid Mouse.x and y is at 0 when first movement
+    Maker.draw(); // draw a circle when mouse down
+    canvas.addEventListener(Mouse.move, makerDraw, false);
+  }else if (event.button === 2) {
+    Mouse.setMousePos(event)
+    // remove that coordinate from list
+    Maker.redraw();
+    canvas.addEventListener(Mouse.move, makerErase, false);
+  }
+
 
 }
 // for drawing `mousemove` event
@@ -50,6 +67,14 @@ function makerDraw(event) {
   Mouse.setMousePos(event);
   Maker.draw();
 }
+function makerErase(event) {
+  Mouse.setMousePos(event);
+  Maker.redraw();
+}
+
+/*------------------
+      Animations
+--------------------*/
 
 Mouse.event.movement = function(cvs) {
   // register mouse move event
@@ -74,7 +99,6 @@ Mouse.event.over = function(cvs) {
 function wiggleCallbk(event) {
   //BubbleName.draw();
   Mouse.setMousePos(event);   // avoid Mouse.x and y is at 0 when first movement
-
 }
 
 // cancel wiggle animation

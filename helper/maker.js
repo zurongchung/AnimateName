@@ -9,18 +9,23 @@ var Maker = {
   circleColor: [237, 205, 107],
   primary: 'rgb(93, 178, 221)',
   secondary: 'rgb(175, 162, 93)',
+  pointCollector: [],
+  radi: 7,
 };
+
 
 Maker.draw = function () {
   // Mouse x and y will be the center of circle
   // output the coordinates
   // only those circle appeared on the screen
   if (Maker.nextOne()) {
-    var radi = 7;
-    new Shape(Mouse.x, Mouse.y, radi, Maker.circleColor).draw();
+    new Shape(Mouse.x, Mouse.y, Maker.radi, Maker.circleColor).draw();
+
+    // collect points
+    Maker.pointCollector.push([Mouse.x, Mouse.y, Maker.radi]);
     // output coordinates from here
-    Maker.viewPoints(Mouse.x, Mouse.y, radi);
-    }
+  //  Maker.viewPoints();
+  }
 };
 Maker.grid = function () {
   var gx = BubbleName.offsetX();
@@ -59,19 +64,8 @@ Maker.frame = function () {
 };
 
 // outputs coordinates
-Maker.viewPoints = function (_x, _y, _r) {
-  board.innerHTML = board.innerHTML + '[' + _x + ',' + _y + ',' + _r + ']' + ", ";
-};
-
-// copy points into clipboard
-Maker.copy = function () {
-  var clipboard = new Clipboard('#clip');
-  clipboard.on('success', function(e) {
-      console.log(e);
-  });
-  clipboard.on('error', function(e) {
-      console.log(e);
-  });
+Maker.viewPoints = function () {
+  board.innerHTML = board.innerHTML + Maker.pointCollector + ', ';
 };
 
 Maker.nextOne = function () {
@@ -83,6 +77,89 @@ Maker.nextOne = function () {
   var vrt = Mouse.y - Mouse.preY;
   var len = Math.round(Math.sqrt(Math.pow(hrz, 2) + Math.pow(vrt, 2)));
   return len - circleRadius >= -1 ? true : false;
+};
+
+Maker.remove = function () {
+  // remove the coordinate by right click
+  // find the closest circle of the coordinate
+  // set by right click
+  // Length of slope less than smallest radius
+  // means that coordinate on the circle
+  var trigSide, trigSide2, trigHypo;
+  var closestCandidate = [];
+  var i = 0, len = Maker.pointCollector.length;
+
+  for (; i < len; ++i) {
+    trigSide = Maker.pointCollector[i][0] - Mouse.x;
+    trigSide2 = Maker.pointCollector[i][1] - Mouse.y;
+    trigHypo = Module.getLenOfSlope(trigSide, trigSide2);
+    // Length of slope less than smallest radius
+    // means that coordinate on the circle
+    // then get that circle into final compare list
+    if (trigHypo < Maker.radi) {
+      closestCandidate.push([i, trigHypo]);
+    }
+  }
+
+  // find the closest circle
+  var candidateLength = closestCandidate.length;
+  if (candidateLength != 0) {
+    var closest = closestCandidate[0][1], closestId = closestCandidate[0][0];
+  }
+
+  (function() {
+    if (candidateLength > 1) {
+
+      var j = 0;
+      for (; j < candidateLength; ++j) {
+        // if the first slope in the array is closest
+        // following if statement will never trigger
+        if (closestCandidate[j][1] - closest < 0) {
+          closest = closestCandidate[j][1];
+          closestId = closestCandidate[j][0];
+        }
+      }
+
+    }
+  })();
+
+  // remove from pointCollector array
+  // and redraw the circles
+  if (candidateLength != 0) {
+    Maker.pointCollector.splice(closestId, 1);
+  }
+
+
+};
+
+Maker.redraw = function () {
+  Maker.remove();
+  BubbleName.draw();
+  var i = 0;
+  var len = Maker.pointCollector.length;
+  try {
+    for (;i < len; ++i) {
+
+      var x = Maker.pointCollector[i][0];
+      var y = Maker.pointCollector[i][1];
+      var r = Maker.pointCollector[i][2];
+
+      new Shape(x, y, r, Maker.circleColor).draw();
+    }
+  } catch (e) {
+    console.error(" Maker-func-redraw ", e.message);
+  }
+};
+
+// copy points into clipboard
+Maker.copy = function () {
+  var clipboard = new Clipboard('#clip');
+  clipboard.on('success', function(e) {
+      console.log(e);
+  });
+  clipboard.on('error', function(e) {
+      console.log(e);
+  });
 };
 
 Maker.shrinkBy = function (_div) {

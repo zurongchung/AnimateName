@@ -7,10 +7,12 @@ function start() {
   //Mouse.event.out(canvas);
 
   // make alphabet
-  //BubbleName.resetCanvas();
   Mouse.event.down();
   Mouse.event.up();
+  Mouse.event.drawOutOfCanvas();
   Maker.copy();
-
+  document.oncontextmenu = function () { // Use document as opposed to window for IE8 compatibility
+   return false;
+};
 }
 window.onload = start();

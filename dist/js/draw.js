@@ -47,6 +47,6 @@ BubbleName.init = function () {
       }
     }
   } catch (e) {
-    console.error(" Ani-func-bounce ", e.message);
+    console.error(" BubbleName-func-init ", e.message);
   }
 };
