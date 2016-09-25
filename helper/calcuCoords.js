@@ -17,6 +17,7 @@ var slp = document.querySelector('i.slope');
 var board = document.querySelector('code.coords');
 var start   = document.querySelector('#start');
 var cls   = document.querySelector('#cls');
+var get   = document.querySelector('#getPoints');
 
 // alphabet to charcode
 var at = document.querySelector('.ccode');
@@ -30,6 +31,12 @@ letter.addEventListener('keyup', atoCode, false);
 letter.addEventListener('click', clear, false);
 start.addEventListener('click', newPoint, false);
 cls.addEventListener('click', clsBoard, false);
+get.addEventListener('click', generatePoints, false);
+
+function generatePoints() {
+  board.innerHTML = '';
+  Maker.output();
+}
 
 function atoCode() {
   // alphabet-to-char code
@@ -44,6 +51,8 @@ function clear() {
 function clsBoard() {
   board.innerHTML = '';
   slp.innerHTML = '';
+  // clear shifted points
+  Maker.clearCollectPoint();
   // clear canvas
   BubbleName.draw();
 }

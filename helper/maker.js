@@ -3,14 +3,15 @@
 
 var Maker = {
   gdr: 1.618,
-  defaultWidth: 194,
-  defaultHeight: 120,
-  gridDivision: 1,
-  circleColor: [237, 205, 107],
-  primary: 'rgb(93, 178, 221)',
-  secondary: 'rgb(175, 162, 93)',
+  defaultWidth  : 194,
+  defaultHeight : 120,
+  gridDivision  : 1,
+  circleColor   : [237, 205, 107],
+  primary       : 'rgb(93, 178, 221)',
+  secondary     : 'rgb(175, 162, 93)',
   pointCollector: [],
   radi: 7,
+  shiftedPoints : [],
 };
 
 
@@ -23,8 +24,6 @@ Maker.draw = function () {
 
     // collect points
     Maker.pointCollector.push([Mouse.x, Mouse.y, Maker.radi]);
-    // output coordinates from here
-  //  Maker.viewPoints();
   }
 };
 Maker.grid = function () {
@@ -64,8 +63,70 @@ Maker.frame = function () {
 };
 
 // outputs coordinates
-Maker.viewPoints = function () {
-  board.innerHTML = board.innerHTML + Maker.pointCollector + ', ';
+Maker.output = function () {
+  Maker.getShiftedPoints();
+  for (var p of Maker.shiftedPoints) {
+    board.innerHTML = board.innerHTML + '[' + p + ']' + ',';
+  }
+  // clear before run getShiftedPoints again
+  // avoid previous asigned value did not clear
+  Maker.shiftedPoints = [];
+};
+Maker.clearCollectPoint = function () {
+  // prevent points still exsit
+  // even after canvas has been cleaned up
+  Maker.pointCollector = [];
+};
+
+Maker.getShiftedPoints = function () {
+  /* low left circle shift to the edge of canvas
+  # which is x = 0
+  # and de top most circle move up to the edge of canvas
+  # which is y = 0
+  # and the rest of circle will shift same amount of value */
+  var leftmost = Maker.pointCollector[0][0], topmost = Maker.pointCollector[0][1];
+  // search the leftmost and topmost circle in an alphabet
+  for (var val of Maker.pointCollector) {
+    if (val[0] - leftmost < 0) {
+      leftmost = val[0];
+    }
+    if (val[1] - topmost < 0) {
+      topmost = val[1];
+    }
+  }
+  // get index of leftmost and topmost coordinate in pointCollector
+  var leftmostIndex, topmostIndex; // used to find that coordinate in pointCollector
+
+  var i = 0, len = Maker.pointCollector.length;
+  for (; i < len; ++i) {
+    if (Maker.pointCollector[i].includes(leftmost)) {
+      leftmostIndex = i;
+    }
+    if (Maker.pointCollector[i].includes(topmost)) {
+      topmostIndex = i;
+    }
+  }
+  //console.log(Maker.pointCollector[leftmostIndex][0]);
+  //console.log(Maker.pointCollector[topmostIndex][1]);
+
+  // align all points to left and top
+  // shift by leftmost pixels and topmost pixels
+  var shiftX = Maker.pointCollector[leftmostIndex][0] - Maker.pointCollector[leftmostIndex][2];
+  var shiftY = Maker.pointCollector[topmostIndex][1] - Maker.pointCollector[topmostIndex][2];
+
+
+  for (var arr of Maker.pointCollector) {
+    var moved = arr.map(function (val, idx){
+      if (idx === 0) {
+        return val - shiftX;
+      }
+      if (idx === 1) {
+        return val - shiftY;
+      }
+      return val;
+    });
+    Maker.shiftedPoints.push(moved);
+  }
 };
 
 Maker.nextOne = function () {
