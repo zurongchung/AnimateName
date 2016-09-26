@@ -14,7 +14,6 @@ var cAF = window.cancelAnimationFrame ||
 //  id of window.requestAnimationFrame
 //  for terminate animation
 var rAF_id;
-
 function Animation(_ofx, _ofy, _hexPos, _count, _len) {
   this.x  = 0;
   this.y  = 0;
@@ -61,13 +60,13 @@ Animation.prototype.bounce = function() {
       this.y = Point.getY(this.charAt, i) + this.offsetY;
 
 
-      this.ls1 = Mouse.ir;
+      this.ls1 = Event.Mouse.ir;
       this.ls2 = Point.getRadi(this.charAt, i);
 
       // this is how one circle moves around the other circle
       // The distance relationship of the two circles
-      this.dx = Mouse.x - this.x;
-      this.dy = Mouse.y - this.y;
+      this.dx = Event.Mouse.x - this.x;
+      this.dy = Event.Mouse.y - this.y;
       this.ls3 = Module.getLenOfSlope(this.dx, this.dy);
 
 
@@ -100,21 +99,21 @@ Animation.prototype.touchPoints = function(_idx){
   // the angle used to calculate touch points
   // on the shape and on the invisible circle of the mouse
   if (this.yLess()) {
-    Mouse.theta = Module.dot2((Math.PI - Math.atan(this.dx / this.dy)) * -1);
+    Event.Mouse.theta = Module.dot2((Math.PI - Math.atan(this.dx / this.dy)) * -1);
     this.beta = Module.dot2(Math.atan(this.dx / this.dy));
   }else {
-    Mouse.theta = Module.dot2(Math.atan(this.dx / this.dy));
+    Event.Mouse.theta = Module.dot2(Math.atan(this.dx / this.dy));
     this.beta = Module.dot2((Math.PI-Math.atan(this.dx / this.dy)) * -1);
   }
 
   // touche point coordinates
-  if (this.y === Mouse.y) {
+  if (this.y === Event.Mouse.y) {
     // Fix the buggy when mouse and circles Y coordinates are the same;
-    var mr = Mouse.ir;
+    var mr = Event.Mouse.ir;
     var cr = -Point.getRadi(this.charAt, _idx);
     if (this.xLess()) {mr *= -1; cr *= -1;}
-    this.tmx = Mouse.x + mr;
-    this.tmy = Mouse.y;
+    this.tmx = Event.Mouse.x + mr;
+    this.tmy = Event.Mouse.y;
     this.tcx = this.x + cr;
     this.tcy = this.y;
   }else {
@@ -122,8 +121,8 @@ Animation.prototype.touchPoints = function(_idx){
     this.tcx = Module.dot2(Math.sin(this.beta) * Point.getRadi(this.charAt, _idx) + this.x);
     this.tcy = Module.dot2(Math.cos(this.beta) * Point.getRadi(this.charAt, _idx) + this.y);
     // on mouse
-    this.tmx = Module.dot2(Math.sin(Mouse.theta) * Mouse.ir + Mouse.x);
-    this.tmy = Module.dot2(Math.cos(Mouse.theta) * Mouse.ir + Mouse.y);
+    this.tmx = Module.dot2(Math.sin(Event.Mouse.theta) * Event.Mouse.ir + Event.Mouse.x);
+    this.tmy = Module.dot2(Math.cos(Event.Mouse.theta) * Event.Mouse.ir + Event.Mouse.y);
   }
 };
 
@@ -158,7 +157,7 @@ Animation.prototype.bouncePath = function() {
 
 
 Animation.prototype.haslope = function() {
-  return this.x === Mouse.x || this.y === Mouse.y ? 0 : Module.dot2((this.dy / this.dx));
+  return this.x === Event.Mouse.x || this.y === Event.Mouse.y ? 0 : Module.dot2((this.dy / this.dx));
 };
 /* Deprecated
 Animation.prototype.slopeInCircle = function() {
@@ -168,8 +167,8 @@ Animation.prototype.slopeInCircle = function() {
 
   tcdx = Module.distance(this.x, this.tcx);
   tcdy = Module.distance(this.y, this.tcy);
-  tmdx = Module.distance(Mouse.x, this.tmx);
-  tmdy = Module.distance(Mouse.y, this.tmy);
+  tmdx = Module.distance(Event.Mouse.x, this.tmx);
+  tmdy = Module.distance(Event.Mouse.y, this.tmy);
 
   this.ls2 = Module.getLenOfSlope(tcdx, tcdy);
   //this.ls1 = Module.getLenOfSlope(tmdx, tmdy);
@@ -183,17 +182,17 @@ Animation.prototype.longestSlope = function() {
 
 Animation.prototype.drawTouchPoints = function() {
   // lines helps visualize the relationship between shapes
-  new Shape().lines(Mouse.x, Mouse.y, this.x, this.y);
-  new Shape().lines(this.x, this.y, this.x, Mouse.y);
-  new Shape().lines(this.x, Mouse.y, Mouse.x, Mouse.y);
+  new Shape().lines(Event.Mouse.x, Event.Mouse.y, this.x, this.y);
+  new Shape().lines(this.x, this.y, this.x, Event.Mouse.y);
+  new Shape().lines(this.x, Event.Mouse.y, Event.Mouse.x, Event.Mouse.y);
 
   // touche points
   new Shape(this.tcx, this.tcy, 3, Color.getClr(2)).draw();
   new Shape(this.tmx,this.tmy, 3, Color.getClr(4)).draw();
 };
 Animation.prototype.xLess = function() {
-  return this.x < Mouse.x;
+  return this.x < Event.Mouse.x;
 };
 Animation.prototype.yLess = function() {
-  return this.y < Mouse.y;
+  return this.y < Event.Mouse.y;
 };

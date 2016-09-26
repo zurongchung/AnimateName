@@ -15,11 +15,13 @@ var Maker = {
 };
 Maker.changeRadius = function (ev) {
   switch (ev.key) {
-    case Mouse.incre:
+    case Event.Keyboard.key.incre:
       Maker.radi += 1;
       break;
-    case Mouse.decre:
-      Maker.radi -= 1;
+    case Event.Keyboard.key.decre:
+    if (Maker.radi >= 2) {
+        Maker.radi -= 1;
+    }
       break;
   }
 
@@ -30,10 +32,10 @@ Maker.draw = function () {
   // output the coordinates
   // only those circle appeared on the screen
   if (Maker.nextOne()) {
-    new Shape(Mouse.x, Mouse.y, Maker.radi, Maker.circleColor).draw();
+    new Shape(Event.Mouse.x, Event.Mouse.y, Maker.radi, Maker.circleColor).draw();
 
     // collect points
-    Maker.pointCollector.push([Mouse.x, Mouse.y, Maker.radi]);
+    Maker.pointCollector.push([Event.Mouse.x, Event.Mouse.y, Maker.radi]);
   }else {
     console.log('flase');
   }
@@ -145,8 +147,8 @@ Maker.nextOne = function () {
   // if the length of slope between previous and next circle
   // is great than the radius of previous circle's radius
   // then draw
-  var hrz = Mouse.x - Mouse.preX;
-  var vrt = Mouse.y - Mouse.preY;
+  var hrz = Event.Mouse.x - Event.Mouse.preX;
+  var vrt = Event.Mouse.y - Event.Mouse.preY;
   var len = Math.round(Math.sqrt(Math.pow(hrz, 2) + Math.pow(vrt, 2)));
   return (len - Maker.radi) >= 0 ? true : false;
 };
@@ -162,8 +164,8 @@ Maker.remove = function () {
   var i = 0, len = Maker.pointCollector.length;
 
   for (; i < len; ++i) {
-    trigSide = Maker.pointCollector[i][0] - Mouse.x;
-    trigSide2 = Maker.pointCollector[i][1] - Mouse.y;
+    trigSide = Maker.pointCollector[i][0] - Event.Mouse.x;
+    trigSide2 = Maker.pointCollector[i][1] - Event.Mouse.y;
     trigHypo = Module.getLenOfSlope(trigSide, trigSide2);
     // Length of slope less than smallest radius
     // means that coordinate on the circle
@@ -206,7 +208,7 @@ Maker.remove = function () {
 
 Maker.redraw = function () {
   Maker.remove();
-  BubbleName.draw();
+  BubbleName.draw(1);
   var i = 0;
   var len = Maker.pointCollector.length;
   try {
@@ -236,10 +238,10 @@ Maker.copy = function () {
 
 Maker.designMode = function () {
   // make alphabet
-  Mouse.event.keydown();
-  Mouse.event.down();
-  Mouse.event.up();
-  Mouse.event.drawOutOfCanvas();
+  Event.Keyboard.event.keydown();
+  Event.Mouse.event.down();
+  Event.Mouse.event.up();
+  Event.Mouse.event.drawOutOfCanvas();
   Maker.copy();
   document.oncontextmenu = function () { // Use document as opposed to window for IE8 compatibility
    return false;

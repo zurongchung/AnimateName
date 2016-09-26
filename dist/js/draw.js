@@ -17,6 +17,17 @@ var BubbleName = {
 };
 
 
+/*-----------------------------------------------------
+
+  Design and production view has different
+  background use:
+
+  @param  _inDesign
+
+  inorder to render different background
+
+-----------------------------------------------------*/
+
 BubbleName.draw = function(_inDesign) {
 
   // Fill the canvas with color
@@ -30,7 +41,6 @@ BubbleName.draw = function(_inDesign) {
     BubbleName.init();
   }
 };
-
 // canvas background
 BubbleName.resetCanvas = function () {
   brush.fillStyle = 'black';

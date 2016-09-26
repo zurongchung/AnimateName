@@ -1,25 +1,26 @@
 
 var designMode = document.querySelector("input[type='checkbox']");
 designMode.addEventListener('click', changeMode, false);
+
+// remove all designMode listener before enter
+// production view
+var hasDesignEventListener = 0; // false
+
 window.onload = changeMode();
 function start() {
-  Mouse.event.movement(canvas);
-  Mouse.event.over(canvas);
-  Mouse.event.out(canvas);
+  Event.Mouse.event.movement(canvas);
+  Event.Mouse.event.over(canvas);
+  Event.Mouse.event.out(canvas);
 }
 
-function changeMode(_inDesign = 0) {
-  // remove all designMode listener before enter
-  // production view
-  var hasDesignEventListener = 0; // false
+function changeMode() {
   if (designMode.checked) {
-    Mouse.cancleProductionMode();
-    _inDesign = 1;
-    hasDesignEventListener = 0;
-    BubbleName.draw(_inDesign);
+    Event.cancleProductionMode();
+    hasDesignEventListener = 1; // true
+    BubbleName.draw(1);
     Maker.designMode();
  }else {
-   if (hasDesignEventListener) {Mouse.cancleDesignMode();}
+   if (hasDesignEventListener) {Event.cancleDesignMode();}
 
    BubbleName.draw();
    start();
