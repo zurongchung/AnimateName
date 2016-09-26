@@ -243,9 +243,7 @@ Maker.designMode = function () {
   Event.Mouse.event.up();
   Event.Mouse.event.drawOutOfCanvas();
   Maker.copy();
-  document.oncontextmenu = function () { // Use document as opposed to window for IE8 compatibility
-   return false;
-  };
+  canvas.oncontextmenu = function () { return false; };
 };
 
 Maker.shrinkBy = function (_div) {

@@ -166,14 +166,16 @@ Event.Mouse.update = function(_ang) {
   //vy += g;
 };
 
-Event.cancleDesignMode = function () {
+Event.exitDesignMode = function () {
   // remove all event listener for design section
   window.removeEventListener(Event.Keyboard.event.type.keydown, Maker.changeRadius,false);
   canvas.removeEventListener(Event.Mouse.event.type.down, makerStart,false);
   canvas.removeEventListener(Event.Mouse.event.type.up, stopDrawEvent,false);
   canvas.removeEventListener(Event.Mouse.event.type.out, stopDrawEvent,false);
+  canvas.oncontextmenu = function () { return true; };
+
 };
-Event.cancleProductionMode = function () {
+Event.exitProductionMode = function () {
   // remove all event listener for production view
   //canvas.removeEventListener(Event.Mouse.over, wiggleCallbk, false);
   canvas.removeEventListener(Event.Mouse.event.type.move, moveCallbk, false);

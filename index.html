@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8">
     <title>Animate name</title>
-    <link rel="stylesheet" href="stylus/css/prev.css" media="screen" title="no title">
+    <link rel="stylesheet" href="stylus/css/prev.css" media="screen">
+    <link rel="stylesheet" href="stylus/css/main.css" media="screen">
   </head>
   <body>
     <div id="container">
@@ -30,9 +31,10 @@
             <input type="radio" name="graphDir" value="Drop"><label for="Drop">Drop</label>
         </div>
         <p>char: <input type="text" name="letter"> at: <span class="ccode"></span></p>
+        <!--The switch to enter Design mode -->
         <div id="switch" class="design fonts">
-          <input type="checkbox"  name="name" autocomplete="off">
-          <label for="">design</label>
+          <input id="Design_toggle" class="cmn-toggle cmn-toggle-round" type="checkbox" autocomplete="off">
+          <label class="label_psudo" for="Design_toggle" ></label>
         </div>
 
       </div>

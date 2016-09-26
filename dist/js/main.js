@@ -6,7 +6,7 @@ designMode.addEventListener('click', changeMode, false);
 // production view
 var hasDesignEventListener = 0; // false
 
-window.onload = changeMode();
+window.onload = changeMode;
 function start() {
   Event.Mouse.event.movement(canvas);
   Event.Mouse.event.over(canvas);
@@ -15,13 +15,12 @@ function start() {
 
 function changeMode() {
   if (designMode.checked) {
-    Event.cancleProductionMode();
+    Event.exitProductionMode();
     hasDesignEventListener = 1; // true
     BubbleName.draw(1);
     Maker.designMode();
  }else {
-   if (hasDesignEventListener) {Event.cancleDesignMode();}
-
+   if (hasDesignEventListener) {Event.exitDesignMode();}
    BubbleName.draw();
    start();
  }
