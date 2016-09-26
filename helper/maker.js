@@ -9,11 +9,21 @@ var Maker = {
   circleColor   : [237, 205, 107],
   primary       : 'rgb(93, 178, 221)',
   secondary     : 'rgb(175, 162, 93)',
-  pointCollector: [],
   radi: 7,
+  pointCollector: [],
   shiftedPoints : [],
 };
+Maker.changeRadius = function (ev) {
+  switch (ev.key) {
+    case Mouse.incre:
+      Maker.radi += 1;
+      break;
+    case Mouse.decre:
+      Maker.radi -= 1;
+      break;
+  }
 
+};
 
 Maker.draw = function () {
   // Mouse x and y will be the center of circle
@@ -24,6 +34,8 @@ Maker.draw = function () {
 
     // collect points
     Maker.pointCollector.push([Mouse.x, Mouse.y, Maker.radi]);
+  }else {
+    console.log('flase');
   }
 };
 Maker.grid = function () {
@@ -133,11 +145,10 @@ Maker.nextOne = function () {
   // if the length of slope between previous and next circle
   // is great than the radius of previous circle's radius
   // then draw
-  var circleRadius = 7;
   var hrz = Mouse.x - Mouse.preX;
   var vrt = Mouse.y - Mouse.preY;
   var len = Math.round(Math.sqrt(Math.pow(hrz, 2) + Math.pow(vrt, 2)));
-  return len - circleRadius >= -1 ? true : false;
+  return (len - Maker.radi) >= 0 ? true : false;
 };
 
 Maker.remove = function () {
@@ -221,6 +232,18 @@ Maker.copy = function () {
   clipboard.on('error', function(e) {
       console.log(e);
   });
+};
+
+Maker.designMode = function () {
+  // make alphabet
+  Mouse.event.keydown();
+  Mouse.event.down();
+  Mouse.event.up();
+  Mouse.event.drawOutOfCanvas();
+  Maker.copy();
+  document.oncontextmenu = function () { // Use document as opposed to window for IE8 compatibility
+   return false;
+  };
 };
 
 Maker.shrinkBy = function (_div) {

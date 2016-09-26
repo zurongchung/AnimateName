@@ -17,13 +17,18 @@ var BubbleName = {
 };
 
 
-BubbleName.draw = function() {
+BubbleName.draw = function(_inDesign) {
 
   // Fill the canvas with color
   BubbleName.resetCanvas();
-  Maker.frame();
-  Maker.grid();
-  //BubbleName.init();
+  if (_inDesign) {
+    // in design mode
+    Maker.frame();
+    Maker.grid();
+  }else {
+    // production mode
+    BubbleName.init();
+  }
 };
 
 // canvas background

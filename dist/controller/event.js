@@ -21,6 +21,9 @@ var Mouse = {
   out : 'mouseout',
   up  : 'mouseup',
   down: 'mousedown',
+  keydown: 'keydown',
+  incre: '[',
+  decre: ']',
   event: {},
   area: function() {
     return Math.floor(Math.PI * Math.pow(Mouse.ir, 2));
@@ -29,6 +32,10 @@ var Mouse = {
 /*------------------
       Drawing
 --------------------*/
+Mouse.event.keydown = function () {
+  window.addEventListener(Mouse.keydown, Maker.changeRadius, false);
+};
+
 Mouse.event.down = function () {
   // for alphabet maker
   canvas.addEventListener(Mouse.down, makerStart, false);
@@ -44,8 +51,7 @@ function stopDrawEvent() {
   canvas.removeEventListener(Mouse.move, makerDraw, false);
   canvas.removeEventListener(Mouse.move, makerErase, false);
 
-}
-
+};
 // detect mouse is ready to draw
 // mouse click event
 function makerStart(event) {
@@ -103,12 +109,13 @@ function wiggleCallbk(event) {
   Mouse.setMousePos(event);   // avoid Mouse.x and y is at 0 when first movement
 }
 
-// cancel wiggle animation
+// cancel bounce animation
 Mouse.event.out = function(cvs) {
-  cvs.addEventListener(Mouse.out, function(event) {
-    window.cAF(rAF_id);
-  }, false);
+  cvs.addEventListener(Mouse.out, stopAnimation, false);
 };
+function stopAnimation() {
+  window.cAF(rAF_id);
+}
 
 Mouse.setMousePos = function(evt) {
   Mouse.preX = Mouse.x;
@@ -129,9 +136,7 @@ Mouse.drawInvisible = function() {
     var bigCircle = new Shape(Mouse.x, Mouse.y, Mouse.ir, Color.getClr(4));
     bigCircle.stroke();
 };
-//var vx = 5;
-//var vy = -25;
-//var g = 1;
+
 Mouse.update = function(_ang) {
   Mouse.icx = Math.cos(_ang) * Mouse.ir + Mouse.x;
   Mouse.icy = Math.sin(_ang) * Mouse.ir + Mouse.y;
@@ -147,4 +152,19 @@ Mouse.update = function(_ang) {
   //  Mouse.icy = 500;
   //}
   //vy += g;
+};
+
+Mouse.cancleDesignMode = function () {
+  // remove all event listener for design section
+  canvas.removeEventListener(Mouse.keydown, Maker.changeRadius,false);
+  canvas.removeEventListener(Mouse.down, makerStart,false);
+  canvas.removeEventListener(Mouse.up, stopDrawEvent,false);
+  canvas.removeEventListener(Mouse.out, stopDrawEvent,false);
+};
+Mouse.cancleProductionMode = function () {
+  // remove all event listener for production view
+  //canvas.removeEventListener(Mouse.over, wiggleCallbk, false);
+  canvas.removeEventListener(Mouse.move, moveCallbk, false);
+  canvas.removeEventListener(Mouse.out, stopAnimation, false);
+
 };

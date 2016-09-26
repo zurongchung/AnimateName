@@ -3,55 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>Animate name</title>
-    <style media="screen">
-      html, body {
-        margin: 0;
-        padding: 0;
-      }
-      div#container {
-        display: flex;
-        flex-flow: row;
-      }
-      .math {
-        width: auto;
-        height: auto;
-        flex: 1 1 auto;
-        align-self: auto;
-        order: 2;
-      }
-      .wrapper {
-        order: 3;
-        flex: 0 1 auto;
-        align-self: auto;
-        justify-content: flex-end;
-        width: auto;
-        height: auto;
-      }
-      #canvas {
-
-      }
-      input {
-        width: 50px;
-      }
-      #box {
-        order: 1;
-        flex: 0 1 auto;
-        align-self: flex-start;
-        justify-content: flex-end;
-        width: 56%;
-        height: 600px;
-        margin: 2px;
-
-      }
-      code.coords {
-        display: block;
-        width: auto;
-        height: inherit;
-        background: #000;
-        color: rgba(120, 200, 172, 1);
-        overflow-y: scroll;
-      }
-    </style>
+    <link rel="stylesheet" href="stylus/css/prev.css" media="screen" title="no title">
   </head>
   <body>
     <div id="container">
@@ -78,6 +30,11 @@
             <input type="radio" name="graphDir" value="Drop"><label for="Drop">Drop</label>
         </div>
         <p>char: <input type="text" name="letter"> at: <span class="ccode"></span></p>
+        <div id="switch" class="design fonts">
+          <input type="checkbox"  name="name" autocomplete="off">
+          <label for="">design</label>
+        </div>
+
       </div>
       <div id='box'>
         <code class="coords" id="points">

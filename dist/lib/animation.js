@@ -73,7 +73,7 @@ Animation.prototype.bounce = function() {
 
       this.touchPoints(i);
       this.drawTouchPoints();   // Don't need. Delete it at release stage
-      
+
       // start bouncing when the mouse touches those circles
       if (this.hasTouched()) {
         this.update(i);
@@ -117,7 +117,6 @@ Animation.prototype.touchPoints = function(_idx){
     this.tmy = Mouse.y;
     this.tcx = this.x + cr;
     this.tcy = this.y;
-    console.log('oopa');
   }else {
     // on circles
     this.tcx = Module.dot2(Math.sin(this.beta) * Point.getRadi(this.charAt, _idx) + this.x);

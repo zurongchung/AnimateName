@@ -1,18 +1,27 @@
 
+var designMode = document.querySelector("input[type='checkbox']");
+designMode.addEventListener('click', changeMode, false);
+window.onload = changeMode();
 function start() {
-  BubbleName.draw();
-  // Attach mouse event to canvas
-  //Mouse.event.movement(canvas);
-  //Mouse.event.over(canvas);
-  //Mouse.event.out(canvas);
-
-  // make alphabet
-  Mouse.event.down();
-  Mouse.event.up();
-  Mouse.event.drawOutOfCanvas();
-  Maker.copy();
-  document.oncontextmenu = function () { // Use document as opposed to window for IE8 compatibility
-   return false;
-};
+  Mouse.event.movement(canvas);
+  Mouse.event.over(canvas);
+  Mouse.event.out(canvas);
 }
-window.onload = start();
+
+function changeMode(_inDesign = 0) {
+  // remove all designMode listener before enter
+  // production view
+  var hasDesignEventListener = 0; // false
+  if (designMode.checked) {
+    Mouse.cancleProductionMode();
+    _inDesign = 1;
+    hasDesignEventListener = 0;
+    BubbleName.draw(_inDesign);
+    Maker.designMode();
+ }else {
+   if (hasDesignEventListener) {Mouse.cancleDesignMode();}
+
+   BubbleName.draw();
+   start();
+ }
+}
