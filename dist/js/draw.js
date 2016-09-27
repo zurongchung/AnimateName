@@ -10,11 +10,11 @@ var BubbleName = {
   spacing: 20,    // space between letters
   // get geometry letters
   hex: function(){return new LetterToHex('AB');},
-  charAt: function() {return BubbleName.hex().getHex();}, // Is an array
-  numOfLetters: function() {return BubbleName.hex().getLength();},
+  charAt: function() {return this.hex().getHex();}, // Is an array
+  numOfLetters: function() {return this.hex().getLength();},
 
-  offsetX: function(){return BubbleName.w * 0.2;},
-  offsetY: function(){return BubbleName.h * 0.4;},
+  offsetX: function(){return this.w * 0.2;},
+  offsetY: function(){return this.h * 0.4;},
 };
 
 

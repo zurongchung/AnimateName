@@ -38,7 +38,7 @@ var Event = {
     },
   },
   area: function() {
-    return Math.floor(Math.PI * Math.pow(Event.Mouse.ir, 2));
+    return Math.floor(Math.PI * Math.pow(this.Mouse.ir, 2));
   },
 };
 /*------------------

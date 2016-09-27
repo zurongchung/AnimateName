@@ -8,9 +8,9 @@ var Color = {
   C5: [106, 12, 209],    // ghostwriter, primary
   C6: [24, 208, 175],    // mintasia
   getClr: function(_idx) {
-    return Color['C' + _idx];
+    return this['C' + _idx];
   },
   length: function() {
-    return Object.keys(Color).length - 2;
+    return Object.keys(this).length - 2;
   },
 }
