@@ -8,16 +8,20 @@ function Shape(_x, _y, _r, _clr) {
   this.anticw  = false;
 }
 
-Shape.prototype.draw = function() {
+Shape.prototype.draw = function(_type) {
   brush.beginPath();
-  brush.arc(this.centerX, this.centerY,
-             this.radius, this.startAt, this.endAt, this.anticw);
-  brush.fillStyle = this.color;
-  brush.fill();
+  if (_type === 'stroke'){
+    this.stroke();
+  }else{
+    brush.arc(this.centerX, this.centerY,
+               this.radius, this.startAt, this.endAt, this.anticw);
+    brush.fillStyle = this.color;
+    brush.fill();
+  }
 };
 
 Shape.prototype.stroke = function() {
-  brush.beginPath();
+  //brush.beginPath();
   brush.arc(this.centerX, this.centerY,
              this.radius, this.startAt, this.endAt, this.anticw);
   brush.lineWidth = 2;
@@ -53,15 +57,3 @@ Shape.prototype.setColor = function(_clr) {
     return color;
   }
 };
-
-
-
-
-// Calculate points on the circle
-// this will be the touch point between those two circles
-function touchPoint(_theta, _radius, _cx, _cy) {
-  return {
-    x: Math.cos(_theta) * _radius + _cx,
-    y: Math.sin(_theta) * _radius + _cy,
-  };
-}

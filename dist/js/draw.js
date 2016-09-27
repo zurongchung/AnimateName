@@ -7,6 +7,7 @@ var BubbleName = {
   y: 0,
   w: canvas.width,
   h: canvas.height,
+  spacing: 20,    // space between letters
   // get geometry letters
   hex: function(){return new LetterToHex('AB');},
   charAt: function() {return BubbleName.hex().getHex();}, // Is an array
@@ -47,23 +48,27 @@ BubbleName.resetCanvas = function () {
   brush.fillRect(0, 0, BubbleName.w, BubbleName.h);
 };
 BubbleName.init = function () {
-  var iclr = 1;     // select new color for next letters
-  var i = 0;
+
   var hexcode = 0;
   var letterWidth = 0;
+  var spacing = 0;
   try {
     for (; hexcode < BubbleName.numOfLetters(); ++hexcode) {
+      var color = hexcode + 1;
+      var i = 0;
       for (;i < Point.numOfShape(BubbleName.charAt()[hexcode]); ++i) {
-        BubbleName.x = Point.getX(BubbleName.charAt()[hexcode], i) + BubbleName.offsetX() + letterWidth;
-        BubbleName.y = Point.getY(BubbleName.charAt()[hexcode], i) + BubbleName.offsetY();
+        BubbleName.x = Point.getX(BubbleName.charAt()[hexcode], i) +
+        BubbleName.offsetX() + letterWidth + spacing;
+        BubbleName.y = Point.getY(BubbleName.charAt()[hexcode], i) +
+        BubbleName.offsetY();
 
-        new Shape(BubbleName.x, BubbleName.y, Point.getRadi(BubbleName.charAt()[hexcode], i), Color.getClr(iclr)).stroke();
+        new Shape(BubbleName.x, BubbleName.y,
+          Point.getRadi(BubbleName.charAt()[hexcode], i),
+         Color.getClr(color)).draw('stroke');
 
-        if (iclr < BubbleName.hex().length) {
-          ++iclr;
-        }
       }
-      letterWidth = BubbleName.charAt()[hexcode];
+      letterWidth = letterWidth = Point.width(BubbleName.charAt()[hexcode]);
+      spacing = BubbleName.spacing;
     }
 
   } catch (e) {

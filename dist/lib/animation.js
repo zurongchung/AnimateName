@@ -14,7 +14,7 @@ var cAF = window.cancelAnimationFrame ||
 //  id of window.requestAnimationFrame
 //  for terminate animation
 var rAF_id;
-function Animation(_ofx, _ofy, _hexPos,_letters) {
+function Animation(_ofx, _ofy, _hexPos,_letters, _spacing) {
   this.x  = 0;
   this.y  = 0;
   this.dx = 0;
@@ -36,27 +36,27 @@ function Animation(_ofx, _ofy, _hexPos,_letters) {
   this.numOfLetters = _letters;
   this.offsetX = _ofx * 0.2;
   this.offsetY = _ofy * 0.4;
+  this.spacing = _spacing;
   this.gravity = 0.98;
 }
 
 Animation.prototype.draw = function() {
-  //this.shakeWithColor(this.charAt);
   // get the length of the key of [p]
   // indicates how many shape needs to draw
-  //var count = Point.numOfShape(this.charAt);
   this.bounce();
 };
 
 // core drawing function
 
 Animation.prototype.bounce = function() {
-  var iclr = 1;     // select new color for next letters
-  var i = 0;
-  var hexcode = 0, letterWidth = 0;
+  var hexcode = 0, letterWidth = 0, spacing = 0;
   try {
     for (; hexcode < this.numOfLetters; ++hexcode) {
+      var color = hexcode + 1;
+      var i = 0;
       for (;i < Point.numOfShape(this.charAt[hexcode]); ++i) {
-        this.x = Point.getX(this.charAt[hexcode], i) + this.offsetX + letterWidth;
+        this.x = Point.getX(this.charAt[hexcode], i) + this.offsetX +
+          letterWidth + spacing;
         this.y = Point.getY(this.charAt[hexcode], i) + this.offsetY;
         this.ls1 = Event.Mouse.ir;
         this.ls2 = Point.getRadi(this.charAt[hexcode], i);
@@ -76,13 +76,12 @@ Animation.prototype.bounce = function() {
         // visual center of circles
         new Shape(this.x, this.y,2, Color.getClr(2)).draw();
         //this.vx += this.gravity;
-        new Shape(this.x, this.y, Point.getRadi(this.charAt[hexcode], i), Color.getClr(iclr)).stroke();
+        new Shape(this.x, this.y, Point.getRadi(this.charAt[hexcode], i),
+         Color.getClr(color)).draw('stroke');
 
-        if (iclr < this.numOfLetters) {
-          ++iclr;
-        }
       }
-      letterWidth = this.charAt[hexcode];
+      letterWidth = Point.width(this.charAt[hexcode]);
+      spacing = this.spacing;
     }
 
   } catch (e) {
