@@ -67,7 +67,7 @@ Animation.prototype.bounce = function() {
         this.dy = Event.Mouse.y - this.y;
         this.ls3 = Module.getLenOfSlope(this.dx, this.dy);
         this.touchPoints(hexcode, i);
-        this.drawTouchPoints();   // Don't need. Delete it at release stage
+        //this.drawTouchPoints();   // Don't need. Delete it at release stage
 
         // start bouncing when the mouse touches those circles
         if (this.hasTouched()) {
@@ -77,11 +77,11 @@ Animation.prototype.bounce = function() {
         new Shape(this.x, this.y,2, Color.getClr(2)).draw();
         //this.vx += this.gravity;
         new Shape(this.x, this.y, Point.getRadi(this.charAt[hexcode], i),
-         Color.getClr(color)).draw('stroke');
+         Color.getClr(color)).draw();
 
       }
-      letterWidth = Point.width(this.charAt[hexcode]);
-      spacing = this.spacing;
+      letterWidth += Point.width(this.charAt[hexcode]);
+      spacing += this.spacing;
     }
 
   } catch (e) {

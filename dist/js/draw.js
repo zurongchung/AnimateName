@@ -9,7 +9,9 @@ var BubbleName = {
   h: canvas.height,
   spacing: 20,    // space between letters
   // get geometry letters
-  hex: function(){return new LetterToHex('AB');},
+  //hex: function(){return new LetterToHex('ABCDGH');},
+  hex: function(){return new LetterToHex('IJK');},
+
   charAt: function() {return this.hex().getHex();}, // Is an array
   numOfLetters: function() {return this.hex().getLength();},
 
@@ -64,11 +66,11 @@ BubbleName.init = function () {
 
         new Shape(BubbleName.x, BubbleName.y,
           Point.getRadi(BubbleName.charAt()[hexcode], i),
-         Color.getClr(color)).draw('stroke');
+         Color.getClr(color)).draw();
 
       }
-      letterWidth = letterWidth = Point.width(BubbleName.charAt()[hexcode]);
-      spacing = BubbleName.spacing;
+      letterWidth += letterWidth = Point.width(BubbleName.charAt()[hexcode]);
+      spacing += BubbleName.spacing;
     }
 
   } catch (e) {
