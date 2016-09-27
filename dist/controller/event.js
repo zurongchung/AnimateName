@@ -105,7 +105,7 @@ function moveCallbk(event) {
   Event.Mouse.setMousePos(event);
   BubbleName.resetCanvas();
   var bounce = new Animation(BubbleName.w, BubbleName.h, BubbleName.charAt(),
-  BubbleName.count(), BubbleName.hex().length);
+  BubbleName.numOfLetters());
   bounce.draw();
   // mouse animation # test_del
   Event.Mouse.drawInvisible();

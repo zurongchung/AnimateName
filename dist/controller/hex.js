@@ -9,15 +9,18 @@ function LetterToHex(_phrase) {
 
 
 LetterToHex.prototype.letHex  = function() {
-  var hex_str = '';
+  var hex_arr = [];
   for( var i = 0; i < this.length; i++) {
-    hex_str += this.words.charCodeAt(i);
+    hex_arr.push(this.words.charCodeAt(i));
   }
-  return hex_str;
+  return hex_arr;
 };
 
 // Return Hex code that represente that phrase
 // To the requestor
 LetterToHex.prototype.getHex = function() {
-   return this.hex;
+   return this.hex;   // return an array
 }
+LetterToHex.prototype.getLength = function () {
+  return this.length;
+};

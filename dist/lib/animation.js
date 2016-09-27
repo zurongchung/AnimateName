@@ -14,7 +14,7 @@ var cAF = window.cancelAnimationFrame ||
 //  id of window.requestAnimationFrame
 //  for terminate animation
 var rAF_id;
-function Animation(_ofx, _ofy, _hexPos, _count, _len) {
+function Animation(_ofx, _ofy, _hexPos,_letters) {
   this.x  = 0;
   this.y  = 0;
   this.dx = 0;
@@ -32,19 +32,18 @@ function Animation(_ofx, _ofy, _hexPos, _count, _len) {
 
   this.vx = 0;
   this.vy = 0;
-  this.charAt  = _hexPos;
-  this.shapes  = _count;
+  this.charAt  = _hexPos;         // an array
+  this.numOfLetters = _letters;
   this.offsetX = _ofx * 0.2;
   this.offsetY = _ofy * 0.4;
   this.gravity = 0.98;
-  this.wordsLength = _len;
 }
 
 Animation.prototype.draw = function() {
   //this.shakeWithColor(this.charAt);
   // get the length of the key of [p]
   // indicates how many shape needs to draw
-  var count = Point.numOfShape(this.charAt);
+  //var count = Point.numOfShape(this.charAt);
   this.bounce();
 };
 
@@ -53,48 +52,45 @@ Animation.prototype.draw = function() {
 Animation.prototype.bounce = function() {
   var iclr = 1;     // select new color for next letters
   var i = 0;
+  var hexcode = 0, letterWidth = 0;
   try {
-    for (;i < this.shapes; ++i) {
+    for (; hexcode < this.numOfLetters; ++hexcode) {
+      for (;i < Point.numOfShape(this.charAt[hexcode]); ++i) {
+        this.x = Point.getX(this.charAt[hexcode], i) + this.offsetX + letterWidth;
+        this.y = Point.getY(this.charAt[hexcode], i) + this.offsetY;
+        this.ls1 = Event.Mouse.ir;
+        this.ls2 = Point.getRadi(this.charAt[hexcode], i);
 
-      this.x = Point.getX(this.charAt, i) + this.offsetX;
-      this.y = Point.getY(this.charAt, i) + this.offsetY;
+        // this is how one circle moves around the other circle
+        // The distance relationship of the two circles
+        this.dx = Event.Mouse.x - this.x;
+        this.dy = Event.Mouse.y - this.y;
+        this.ls3 = Module.getLenOfSlope(this.dx, this.dy);
+        this.touchPoints(hexcode, i);
+        this.drawTouchPoints();   // Don't need. Delete it at release stage
 
+        // start bouncing when the mouse touches those circles
+        if (this.hasTouched()) {
+          this.update(i);
+        }
+        // visual center of circles
+        new Shape(this.x, this.y,2, Color.getClr(2)).draw();
+        //this.vx += this.gravity;
+        new Shape(this.x, this.y, Point.getRadi(this.charAt[hexcode], i), Color.getClr(iclr)).stroke();
 
-      this.ls1 = Event.Mouse.ir;
-      this.ls2 = Point.getRadi(this.charAt, i);
-
-      // this is how one circle moves around the other circle
-      // The distance relationship of the two circles
-      this.dx = Event.Mouse.x - this.x;
-      this.dy = Event.Mouse.y - this.y;
-      this.ls3 = Module.getLenOfSlope(this.dx, this.dy);
-
-
-      this.touchPoints(i);
-      this.drawTouchPoints();   // Don't need. Delete it at release stage
-
-      // start bouncing when the mouse touches those circles
-      if (this.hasTouched()) {
-        this.update(i);
+        if (iclr < this.numOfLetters) {
+          ++iclr;
+        }
       }
-
-
-      // visual center of circles
-      new Shape(this.x, this.y,2, Color.getClr(2)).draw();
-
-      //this.vx += this.gravity;
-      new Shape(this.x, this.y, Point.getRadi(this.charAt, i), Color.getClr(iclr)).stroke();
-
-      if (iclr < this.wordsLength) {
-        ++iclr;
-      }
+      letterWidth = this.charAt[hexcode];
     }
+
   } catch (e) {
     console.error(" Ani-func-bounce ", e.message);
   }
 };
 
-Animation.prototype.touchPoints = function(_idx){
+Animation.prototype.touchPoints = function(_hexcode,_idx){
   // Denominator can't be zero;
   // the angle used to calculate touch points
   // on the shape and on the invisible circle of the mouse
@@ -110,7 +106,7 @@ Animation.prototype.touchPoints = function(_idx){
   if (this.y === Event.Mouse.y) {
     // Fix the buggy when mouse and circles Y coordinates are the same;
     var mr = Event.Mouse.ir;
-    var cr = -Point.getRadi(this.charAt, _idx);
+    var cr = -Point.getRadi(this.charAt[_hexcode], _idx);
     if (this.xLess()) {mr *= -1; cr *= -1;}
     this.tmx = Event.Mouse.x + mr;
     this.tmy = Event.Mouse.y;
@@ -118,8 +114,8 @@ Animation.prototype.touchPoints = function(_idx){
     this.tcy = this.y;
   }else {
     // on circles
-    this.tcx = Module.dot2(Math.sin(this.beta) * Point.getRadi(this.charAt, _idx) + this.x);
-    this.tcy = Module.dot2(Math.cos(this.beta) * Point.getRadi(this.charAt, _idx) + this.y);
+    this.tcx = Module.dot2(Math.sin(this.beta) * Point.getRadi(this.charAt[_hexcode], _idx) + this.x);
+    this.tcy = Module.dot2(Math.cos(this.beta) * Point.getRadi(this.charAt[_hexcode], _idx) + this.y);
     // on mouse
     this.tmx = Module.dot2(Math.sin(Event.Mouse.theta) * Event.Mouse.ir + Event.Mouse.x);
     this.tmy = Module.dot2(Math.cos(Event.Mouse.theta) * Event.Mouse.ir + Event.Mouse.y);
