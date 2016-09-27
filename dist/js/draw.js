@@ -10,7 +10,7 @@ var BubbleName = {
   spacing: 20,    // space between letters
   // get geometry letters
   //hex: function(){return new LetterToHex('ABCDGH');},
-  hex: function(){return new LetterToHex('IJK');},
+  hex: function(){return new LetterToHex('UVWXYZ');},
 
   charAt: function() {return this.hex().getHex();}, // Is an array
   numOfLetters: function() {return this.hex().getLength();},
