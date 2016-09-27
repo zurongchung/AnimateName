@@ -26,7 +26,15 @@ Maker.changeRadius = function (ev) {
   }
 
 };
-
+Maker.letterWide = function () {
+  if (height_element.value === '') {
+    alert('Please specify a Height value. that is not 0 or lower than 20');
+  }else {
+    var w = Math.round((height_element.value * Maker.gdr) / division.value);
+    width_element.value = w;
+    return w;
+  }
+};
 Maker.draw = function () {
   // Mouse x and y will be the center of circle
   // output the coordinates
@@ -79,9 +87,12 @@ Maker.frame = function () {
 // outputs coordinates
 Maker.output = function () {
   Maker.getShiftedPoints();
+  board.innerHTML = 'A' + letter.value.charCodeAt("0") +
+    ': {\nw: ' + Maker.letterWide() + ',\np: [';
   for (var p of Maker.shiftedPoints) {
     board.innerHTML = board.innerHTML + '[' + p + ']' + ',';
   }
+  board.innerHTML = board.innerHTML + '],\n},';
   // clear before run getShiftedPoints again
   // avoid previous asigned value did not clear
   Maker.shiftedPoints = [];

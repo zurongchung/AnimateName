@@ -19,6 +19,8 @@ function changeMode() {
     hasDesignEventListener = 1; // true
     BubbleName.draw(1);
     Maker.designMode();
+    get.disabled = false;
+    get.addEventListener('click', generatePoints, false);
  }else {
    if (hasDesignEventListener) {Event.exitDesignMode();}
    BubbleName.draw();
