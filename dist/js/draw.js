@@ -10,7 +10,7 @@ var BubbleName = {
   spacing: 20,    // space between letters
   // get geometry letters
   //hex: function(){return new LetterToHex('ABCDGH');},
-  hex: function(){return new LetterToHex('UVWXYZ');},
+  hex: function(){return new LetterToHex(username.value);},
 
   charAt: function() {return this.hex().getHex();}, // Is an array
   numOfLetters: function() {return this.hex().getLength();},
@@ -51,12 +51,10 @@ BubbleName.resetCanvas = function () {
 };
 BubbleName.init = function () {
 
-  var hexcode = 0;
-  var letterWidth = 0;
-  var spacing = 0;
+  var hexcode = 0, letterWidth = 0, spacing = 0,  color = 1;
   try {
     for (; hexcode < BubbleName.numOfLetters(); ++hexcode) {
-      var color = hexcode + 1;
+
       var i = 0;
       for (;i < Point.numOfShape(BubbleName.charAt()[hexcode]); ++i) {
         BubbleName.x = Point.getX(BubbleName.charAt()[hexcode], i) +
@@ -71,6 +69,12 @@ BubbleName.init = function () {
       }
       letterWidth += letterWidth = Point.width(BubbleName.charAt()[hexcode]);
       spacing += BubbleName.spacing;
+      if(color > Color.length()) {
+        console.log(color);
+        color = 1;
+      }
+      console.log(color);
+      ++color;
     }
 
   } catch (e) {

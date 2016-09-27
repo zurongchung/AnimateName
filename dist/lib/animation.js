@@ -49,10 +49,9 @@ Animation.prototype.draw = function() {
 // core drawing function
 
 Animation.prototype.bounce = function() {
-  var hexcode = 0, letterWidth = 0, spacing = 0;
+  var hexcode = 0, letterWidth = 0, spacing = 0, color = 1;
   try {
     for (; hexcode < this.numOfLetters; ++hexcode) {
-      var color = hexcode + 1;
       var i = 0;
       for (;i < Point.numOfShape(this.charAt[hexcode]); ++i) {
         this.x = Point.getX(this.charAt[hexcode], i) + this.offsetX +
@@ -74,14 +73,18 @@ Animation.prototype.bounce = function() {
           this.update(i);
         }
         // visual center of circles
-        new Shape(this.x, this.y,2, Color.getClr(2)).draw();
-        //this.vx += this.gravity;
+        //new Shape(this.x, this.y,2, Color.getClr(2)).draw();
         new Shape(this.x, this.y, Point.getRadi(this.charAt[hexcode], i),
          Color.getClr(color)).draw();
 
       }
       letterWidth += Point.width(this.charAt[hexcode]);
       spacing += this.spacing;
+      if(color > Color.length()) {
+        console.log(color);
+        color = 1;
+      }
+      ++color;
     }
 
   } catch (e) {

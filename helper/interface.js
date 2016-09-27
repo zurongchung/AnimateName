@@ -9,6 +9,7 @@ we can calculate the unkonwn and get a new point that's on the slope
 var width_element = document.querySelector('input[name="width"]');
 var height_element = document.querySelector('input[name="height"]');
 var division = document.querySelector('input[name="division"]');
+var username = document.querySelector('input[name="username"]');
 
 // display calculated coordinates
 var board = document.querySelector('code.coords');
@@ -24,6 +25,7 @@ var letter = document.querySelector('input[name="letter"]');
 letter.addEventListener('keyup', atoCode, false);
 letter.addEventListener('click', clear, false);
 cls.addEventListener('click', clsBoard, false);
+username.addEventListener('keyup', BubbleName.init, false);
 
 function generatePoints() {
   board.innerHTML = '';
