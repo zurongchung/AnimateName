@@ -6,9 +6,12 @@ var Point = {
     // indicates how many shape needs to draw
     return Alphabet['A' + _at]['p'].length;
   },
-  width: function (_at) {
+  getWidth: function (_at) {
     // How wide the letter is
     return Alphabet['A' + _at]['w'];
+  },
+  getPoint: function(_at, _idx) {
+    return Alphabet['A' + _at]['p'][_idx];
   },
   getX: function (_at, _idx) {
     return Alphabet['A' + _at]['p'][_idx][0];

@@ -103,22 +103,27 @@ Event.Mouse.event.movement = function(cvs) {
 };
 function moveCallbk(event) {
   Event.Mouse.setMousePos(event);
-  BubbleName.resetCanvas();
-  var bounce = new Animation(BubbleName.w, BubbleName.h, BubbleName.charAt(),
-  BubbleName.numOfLetters(), BubbleName.spacing);
-  bounce.draw();
-  // mouse animation # test_del
-  Event.Mouse.drawInvisible();
-  Event.Mouse.update(Event.Mouse.ang);
-  rAF_id = rAF(wiggleCallbk);
+
 }
 // starting wiggle animation
 Event.Mouse.event.over = function(cvs) {
   cvs.addEventListener(Event.Mouse.event.type.over, wiggleCallbk, false);
 };
 function wiggleCallbk(event) {
-  //BubbleName.draw();
-  Event.Mouse.setMousePos(event);   // avoid Mouse.x and y is at 0 when first movement
+//  Event.Mouse.setMousePos(event);   // avoid Mouse.x and y is at 0 when first movement
+
+  BubbleName.resetCanvas();
+  //var bounce = new Animation(BubbleName.w, BubbleName.h, BubbleName.charAt(),
+  //BubbleName.numOfLetters(), BubbleName.spacing);
+  //bounce.draw();
+
+  Animation.draw();
+
+
+  Event.Mouse.update(Event.Mouse.ang);
+  // mouse animation # test_del
+  Event.Mouse.drawInvisible();
+  rAF_id = rAF(wiggleCallbk);
 }
 
 // cancel bounce animation
@@ -146,24 +151,24 @@ Event.Mouse.drawInvisible = function() {
     new Shape().lines(Event.Mouse.icx, Event.Mouse.icy, Event.Mouse.x, Event.Mouse.y);
     // A big circle from center of mouse point
     var bigCircle = new Shape(Event.Mouse.x, Event.Mouse.y, Event.Mouse.ir, Color.getClr(4));
-    bigCircle.stroke();
+    bigCircle.draw('stroke');
 };
-
+  var vx = 0.2, vy = 2, g = 0.98;
 Event.Mouse.update = function(_ang) {
-  Event.Mouse.icx = Math.cos(_ang) * Event.Mouse.ir + Event.Mouse.x;
-  Event.Mouse.icy = Math.sin(_ang) * Event.Mouse.ir + Event.Mouse.y;
+  //Event.Mouse.icx = Math.cos(_ang) * Event.Mouse.ir + Event.Mouse.x;
+  //Event.Mouse.icy = Math.sin(_ang) * Event.Mouse.ir + Event.Mouse.y;
+    // rotate cw or ccw
+  //Event.Mouse.x > Event.Mouse.preX ? Event.Mouse.ang += Event.Mouse.angle_incre : Event.Mouse.ang -= Event.Mouse.angle_incre;
 
-  // rotate cw or ccw
-  Event.Mouse.x > Event.Mouse.preX ? Event.Mouse.ang += Event.Mouse.angle_incre : Event.Mouse.ang -= Event.Mouse.angle_incre;
-  //Event.Mouse.icx += vx;
-  //Event.Mouse.icy += vy;
+  Event.Mouse.icx += vx;
+  Event.Mouse.icy += vy;
 
-  //if (Event.Mouse.icy > 500) {
-  //  vy *= -0.5;
-  //  vx *= 0.7;
-  //  Event.Mouse.icy = 500;
-  //}
-  //vy += g;
+  if (Event.Mouse.icy > 500) {
+    vy *= -1;
+    vx *= 0.5;
+    Event.Mouse.icy = 500;
+  }
+  vy += g;
 };
 
 Event.exitDesignMode = function () {

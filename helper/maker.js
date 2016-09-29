@@ -19,13 +19,20 @@ Maker.changeRadius = function (ev) {
       Maker.radi += 1;
       break;
     case Event.Keyboard.key.decre:
-    if (Maker.radi >= 2) {
-        Maker.radi -= 1;
-    }
+      if (Maker.radi >= 2) {
+          Maker.radi -= 1;
+      }
       break;
+    default:
   }
 
 };
+Maker.restoreHistory = function (ev) {
+
+
+
+};
+
 Maker.letterWide = function () {
   if (height_element.value === '') {
     alert('Please specify a Height value. that is not 0 or lower than 20');
@@ -44,6 +51,9 @@ Maker.draw = function () {
 
     // collect points
     Maker.pointCollector.push([Event.Mouse.x, Event.Mouse.y, Maker.radi]);
+    // save current number of circles to History
+    History.saveState(Maker.pointCollector);
+    console.log(History.pointCollector);
   }else {
     console.log('flase');
   }
@@ -131,8 +141,6 @@ Maker.getShiftedPoints = function () {
       topmostIndex = i;
     }
   }
-  //console.log(Maker.pointCollector[leftmostIndex][0]);
-  //console.log(Maker.pointCollector[topmostIndex][1]);
 
   // align all points to left and top
   // shift by leftmost pixels and topmost pixels
@@ -212,6 +220,9 @@ Maker.remove = function () {
   // and redraw the circles
   if (candidateLength != 0) {
     Maker.pointCollector.splice(closestId, 1);
+    // save rest points with remvoed points
+    History.saveStateWithoutRemoved(Maker.pointCollector);
+    console.log(History.pointCollectorWithoutRemoved);
   }
 
 

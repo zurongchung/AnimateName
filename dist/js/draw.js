@@ -41,6 +41,7 @@ BubbleName.draw = function(_inDesign) {
     Maker.grid();
   }else {
     // production mode
+    Animation.collectPoints();
     BubbleName.init();
   }
 };
@@ -67,13 +68,11 @@ BubbleName.init = function () {
          Color.getClr(color)).draw();
 
       }
-      letterWidth += letterWidth = Point.width(BubbleName.charAt()[hexcode]);
+      letterWidth += letterWidth = Point.getWidth(BubbleName.charAt()[hexcode]);
       spacing += BubbleName.spacing;
       if(color > Color.length()) {
-        console.log(color);
         color = 1;
       }
-      console.log(color);
       ++color;
     }
 
