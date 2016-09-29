@@ -96,6 +96,7 @@ Animation.bounce = function() {
           Animation.bouncing();
         }
 
+
         // visual center of circles
         new Shape(Animation.x, Animation.y,2, Color.getClr(2)).draw();
 
@@ -114,6 +115,7 @@ Animation.bounce = function() {
 };
 
 Animation.update = function(_letter, _idx) {
+  if (Animation.xLess()) {Animation.vx *= -1;}
   Animation.points[_letter][_idx][0] += Animation.vx;
   Animation.points[_letter][_idx][1] += Animation.haslope(Animation.points[_letter][_idx][0]);
 };
