@@ -46,7 +46,7 @@ Maker.draw = function () {
   // Mouse x and y will be the center of circle
   // output the coordinates
   // only those circle appeared on the screen
-  if (Maker.nextOne()) {
+  if (Maker.next()) {
     new Shape(Event.Mouse.x, Event.Mouse.y, Maker.radi, Maker.circleColor).draw();
 
     // collect points
@@ -162,7 +162,7 @@ Maker.getShiftedPoints = function () {
   }
 };
 
-Maker.nextOne = function () {
+Maker.next = function () {
   // if the length of slope between previous and next circle
   // is great than the radius of previous circle's radius
   // then draw

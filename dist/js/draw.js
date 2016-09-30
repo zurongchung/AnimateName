@@ -9,7 +9,6 @@ var BubbleName = {
   h: canvas.height,
   spacing: 20,    // space between letters
   // get geometry letters
-  //hex: function(){return new LetterToHex('ABCDGH');},
   hex: function(){return new LetterToHex(username.value);},
 
   charAt: function() {return this.hex().getHex();}, // Is an array
@@ -41,7 +40,6 @@ BubbleName.draw = function(_inDesign) {
     Maker.grid();
   }else {
     // production mode
-    Animation.collectPoints();
     BubbleName.init();
   }
 };
@@ -51,7 +49,7 @@ BubbleName.resetCanvas = function () {
   brush.fillRect(0, 0, BubbleName.w, BubbleName.h);
 };
 BubbleName.init = function () {
-
+  Animation.collectPoints();
   var hexcode = 0, letterWidth = 0, spacing = 0,  color = 1;
   try {
     for (; hexcode < BubbleName.numOfLetters(); ++hexcode) {
@@ -68,7 +66,7 @@ BubbleName.init = function () {
          Color.getClr(color)).draw();
 
       }
-      letterWidth += letterWidth = Point.getWidth(BubbleName.charAt()[hexcode]);
+      letterWidth += Point.getWidth(BubbleName.charAt()[hexcode]);
       spacing += BubbleName.spacing;
       if(color > Color.length()) {
         color = 1;
@@ -79,4 +77,8 @@ BubbleName.init = function () {
   } catch (e) {
     console.error(" BubbleName-func-init ", e.message);
   }
+};
+BubbleName.redraw = function() {
+  BubbleName.resetCanvas();
+  BubbleName.init();
 };

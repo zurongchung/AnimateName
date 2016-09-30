@@ -112,7 +112,7 @@ Event.Mouse.event.over = function(cvs) {
 function wiggleCallbk(event) {
 //  Event.Mouse.setMousePos(event);   // avoid Mouse.x and y is at 0 when first movement
 
-  BubbleName.resetCanvas();
+
   //var bounce = new Animation(BubbleName.w, BubbleName.h, BubbleName.charAt(),
   //BubbleName.numOfLetters(), BubbleName.spacing);
   //bounce.draw();

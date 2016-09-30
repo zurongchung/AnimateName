@@ -25,7 +25,7 @@ var letter = document.querySelector('input[name="letter"]');
 letter.addEventListener('keyup', atoCode, false);
 letter.addEventListener('click', clear, false);
 cls.addEventListener('click', clsBoard, false);
-username.addEventListener('keyup', BubbleName.init, false);
+username.addEventListener('keyup', BubbleName.redraw, false);
 
 function generatePoints() {
   board.innerHTML = '';

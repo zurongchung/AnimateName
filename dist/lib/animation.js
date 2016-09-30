@@ -32,52 +32,62 @@ var Animation = {
   ls3 : 0,
 
   vx : 1,
-  vy : 1,
-  gravity : 0.98,
+  vy : 0,
+  gravity : 0.02,
   points: [], // 3  dimensional array
+  animatable: [], // 0: the letter that point belongs to. 1: the point index on that array
 };
 
 // fetch points from alphabet database when app started.
 // Never call it from animation
 Animation.collectPoints = function() {
+  // clear previous collected points when user changes the inputs
+  Animation.points = [];
+  var letterWidth = 0, spacing = 0;
   var letter = 0;
   for(; letter < BubbleName.numOfLetters(); ++letter) {
     var index = 0;
     var tmp = [];
     var at = BubbleName.charAt()[letter];
-    tmp.push(Point.getWidth(at));
+    //tmp.push(Point.getWidth(at));
     for(; index < Point.numOfShape(at); ++index) {
-        tmp.push(Point.getPoint(at, index));
+      var xyr = [];
+      xyr.push(Point.getX(at, index) + BubbleName.offsetX() + letterWidth + spacing);
+      xyr.push(Point.getY(at, index) + BubbleName.offsetY());
+      xyr.push(Point.getRadi(at, index));
+      tmp.push(xyr);
     }
+    letterWidth += Point.getWidth(at);
+    spacing += BubbleName.spacing;
     Animation.points.push(tmp);
   }
-  console.log(Animation.points[0][1][2]);
 };
 
 Animation.draw = function() {
-  // get the length of the key of [p]
-  // indicates how many shape needs to draw
+  BubbleName.resetCanvas();
+  if ( Animation.animatable.length != 0 ) {
+    Animation.update();
+  }
   Animation.bounce();
 };
 // core drawing function
 Animation.bounce = function() {
-  // here use the collected points from database
+  // use the collected points from database
   // to draw shapes
 
   try {
-    var letterWidth = 0, spacing = 0, color = 1;
+    var color = 1;
     // length of Animation.points is depends on how many letters
     var letter = 0;
     for(; letter < Animation.points.length; ++letter) {
-      var i = 1; // skip member at index 0 ==> width of the letter
-      for (; i <= Animation.points[letter].length - 1; ++i) {
-
+      var i = 0;
+      for (; i < Animation.points[letter].length; ++i) {
+        //Animation.points[letter].length
         // Animation.x and Animation.y is a copy of the point coordinate
         // In order to animating shapes, we need to change the actual coordinates
         // inside the original array
-        Animation.x = Animation.points[letter][i][0] + BubbleName.offsetX() + letterWidth +
-        spacing;
-        Animation.y = Animation.points[letter][i][1] + BubbleName.offsetY();
+        Animation.x = Animation.points[letter][i][0];
+        Animation.y = Animation.points[letter][i][1];
         Animation.radi = Animation.points[letter][i][2];
 
         Animation.ls1 = Event.Mouse.ir;
@@ -91,10 +101,15 @@ Animation.bounce = function() {
         Animation.touchPoints();
         Animation.drawTouchPoints();   // Don't need. Delete it at release stage
 
+
         if (Animation.hasTouched()) {
-          Animation.update(letter, i);
-          Animation.bouncing();
+          //Animation.update();
+          //Animation.bouncing();
+          Animation.addAnimatable(letter, i);
+
+
         }
+        Animation.vx += Animation.gravity;
 
 
         // visual center of circles
@@ -102,8 +117,6 @@ Animation.bounce = function() {
 
         new Shape(Animation.x,Animation.y,Animation.radi,Color.getClr(color)).draw('stroke');
       }
-      letterWidth += Animation.points[letter][0];
-      spacing += BubbleName.spacing;
       if(color > Color.length()) {
         color = 1;
       }
@@ -113,15 +126,53 @@ Animation.bounce = function() {
     console.error(" Ani-func-bounce ", e.message);
   }
 };
+Animation.addAnimatable = function(_letter, index) {
+  var tmp = [];
+  tmp.push(_letter, index);
+  // the point already in the animatable list?
+  if( !Animation.animationPointExist(tmp) ) {
+    Animation.animatable.push(tmp);
+    console.log(Animation.animatable);
+  }
+};
 
-Animation.update = function(_letter, _idx) {
-  if (Animation.xLess()) {Animation.vx *= -1;}
-  Animation.points[_letter][_idx][0] += Animation.vx;
-  Animation.points[_letter][_idx][1] += Animation.haslope(Animation.points[_letter][_idx][0]);
+Animation.removeFromAnimatable = function() {
+
+};
+
+Animation.animationPointExist = function(_arr) {
+  // the point already in the animatable list?
+  var a = 0;
+  for(; a < Animation.animatable.length; ++a) {
+    if ( Animation.animatable[a].includes(_arr[0],0) &&
+    Animation.animatable[a].includes(_arr[1],1) ) {
+      // if matched
+      return true;
+    }
+  }
+  // if no match
+  return false;
+};
+
+Animation.update = function() {
+  if (Animation.tcx < Event.Mouse.x) {Animation.vx *= -1;}
+  //Animation.points[letter][i][0] = Animation.tmx - Animation.radi;
+  //Animation.points[letter][i][1] = Animation.tmy - Animation.radi;
+  // updating coordinates in points array
+  var i = 0;
+  for (; i < Animation.animatable.length; ++i) {
+    var atLetter = Animation.animatable[i][0];
+    var atPoint = Animation.animatable[i][1];
+    Animation.points[atLetter][atPoint][0] += Animation.vx;
+    if(Animation.vx != 0){
+      var y2 = Module.dot2(Animation.bouncePath(Animation.points[atLetter][atPoint][0]));
+      Animation.points[atLetter][atPoint][1] = y2;
+    }
+  }
+
 };
 Animation.bouncing = function() {
-  Animation.vx *= 1;
-  Animation.vy *= 1;
+
 };
 
 Animation.bouncePath = function(_x2) {
@@ -171,16 +222,17 @@ Animation.touchPoints = function(){
   }
 };
 Animation.hasTouched = function() {
-
-  // i think here is the problem. that when touched.
-  // the slope still center to the original point
-  var t = Math.abs(Animation.ls3 - (Animation.ls2 + Animation.ls1));
-  return  t <= 0.1 || Animation.ls3 < (Animation.ls2 + Animation.ls1) && Animation.ls3 != 0 ? true : false;
+  var inCircle = Animation.ls2 + Animation.ls1;
+  var t = Math.floor(Animation.ls3 - inCircle);
+  //if (t >= 0 && t < 1) {
+  //  console.log(t);
+  //}
+  return t >= 0 && t < 1;
 };
 
 Animation.drawTouchPoints = function() {
   // lines helps visualize the relationship between shapes
-  new Shape().lines(Event.Mouse.x, Event.Mouse.y, Animation.x, Animation.y);
+  new Shape().lines(Event.Mouse.x, Event.Mouse.y, Animation.tcx, Animation.tcy);
   //new Shape().lines(Animation.x, Animation.y, Animation.x, Event.Mouse.y);
   //new Shape().lines(Animation.x, Event.Mouse.y, Event.Mouse.x, Event.Mouse.y);
 
