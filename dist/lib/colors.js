@@ -7,7 +7,7 @@ var Color = {
   C4: [198, 12, 209],    // Oxygen Tank Green
   C5: [106, 12, 209],    // ghostwriter, primary
   C6: [24, 208, 175],    // mintasia
-  getClr: function(_idx) {
+  getColor: function(_idx) {
     return this['C' + _idx];
   },
   length: function() {

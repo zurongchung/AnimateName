@@ -5,8 +5,11 @@ var brush  = canvas.getContext('2d');
 var BubbleName = {
   x: 0,
   y: 0,
+  radi: 0,
   w: canvas.width,
   h: canvas.height,
+  original: [],
+  shapes: [],
   spacing: 20,    // space between letters
   // get geometry letters
   hex: function(){return new LetterToHex(username.value);},
@@ -43,35 +46,57 @@ BubbleName.draw = function(_inDesign) {
     BubbleName.init();
   }
 };
+// Until i found out a way to do deep array copys
+// I need to do collect points multiple times at lease two times
+// fetch points from alphabet database when app started.
+// Never call it from animation
+BubbleName.collectPoints = function() {
+  // clear previous collected points when user changes the inputs
+  BubbleName.original = [];
+  var letterWidth = 0, spacing = 0;
+  var letter = 0;
+  for(; letter < BubbleName.numOfLetters(); ++letter) {
+    var index = 0;
+    var tmp = [];
+    var at = BubbleName.charAt()[letter];
+    for(; index < Point.numOfShape(at); ++index) {
+      var xyr = [];
+      xyr.push(Point.getX(at, index) + BubbleName.offsetX() + letterWidth + spacing);
+      xyr.push(Point.getY(at, index) + BubbleName.offsetY());
+      xyr.push(Point.getRadi(at, index));
+      tmp.push(xyr);
+    }
+    letterWidth += Point.getWidth(at);
+    spacing += BubbleName.spacing;
+     // initial position when first time create letters
+    BubbleName.original.push(tmp);
+  }
+};
+
 // canvas background
 BubbleName.resetCanvas = function () {
   brush.fillStyle = 'black';
   brush.fillRect(0, 0, BubbleName.w, BubbleName.h);
 };
 BubbleName.init = function () {
-  Animation.collectPoints();
-  var hexcode = 0, letterWidth = 0, spacing = 0,  color = 1;
+  BubbleName.collectPoints();
   try {
-    for (; hexcode < BubbleName.numOfLetters(); ++hexcode) {
-
+    var letter = 0;
+    for(; letter < BubbleName.original.length; ++letter) {
+      var color = letter > Color.length ? 1 : letter + 1;
       var i = 0;
-      for (;i < Point.numOfShape(BubbleName.charAt()[hexcode]); ++i) {
-        BubbleName.x = Point.getX(BubbleName.charAt()[hexcode], i) +
-        BubbleName.offsetX() + letterWidth + spacing;
-        BubbleName.y = Point.getY(BubbleName.charAt()[hexcode], i) +
-        BubbleName.offsetY();
+      for (; i < BubbleName.original[letter].length; ++i) {
+        BubbleName.x = BubbleName.original[letter][i][0];
+        BubbleName.y = BubbleName.original[letter][i][1];
+        BubbleName.radi = BubbleName.original[letter][i][2];
 
-        new Shape(BubbleName.x, BubbleName.y,
-          Point.getRadi(BubbleName.charAt()[hexcode], i),
-         Color.getClr(color)).draw();
+        var velocity = new Vector(0.0,0.0).get();
+        var circle = new Shape(BubbleName.x, BubbleName.y,BubbleName.radi,
+          velocity.x, velocity.y, Color.getColor(color));
+          circle.draw();
 
+         BubbleName.shapes.push(circle);
       }
-      letterWidth += Point.getWidth(BubbleName.charAt()[hexcode]);
-      spacing += BubbleName.spacing;
-      if(color > Color.length()) {
-        color = 1;
-      }
-      ++color;
     }
 
   } catch (e) {

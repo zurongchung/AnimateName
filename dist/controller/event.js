@@ -111,19 +111,12 @@ Event.Mouse.event.over = function(cvs) {
 };
 function wiggleCallbk(event) {
 //  Event.Mouse.setMousePos(event);   // avoid Mouse.x and y is at 0 when first movement
-
-
-  //var bounce = new Animation(BubbleName.w, BubbleName.h, BubbleName.charAt(),
-  //BubbleName.numOfLetters(), BubbleName.spacing);
-  //bounce.draw();
-
-  Animation.draw();
-
-
+  run = true;
+  new Animation().init();
   Event.Mouse.update(Event.Mouse.ang);
   // mouse animation # test_del
   Event.Mouse.drawInvisible();
-  rAF_id = rAF(wiggleCallbk);
+
 }
 
 // cancel bounce animation
@@ -131,7 +124,7 @@ Event.Mouse.event.out = function(cvs) {
   cvs.addEventListener(Event.Mouse.event.type.out, stopAnimation, false);
 };
 function stopAnimation() {
-  window.cAF(rAF_id);
+  run = false;
 }
 
 Event.Mouse.setMousePos = function(evt) {
@@ -143,17 +136,21 @@ Event.Mouse.setMousePos = function(evt) {
   Event.Mouse.icy = Event.Mouse.y;
 };
 Event.Mouse.drawInvisible = function() {
-  //  BubbleName.resetCanvas(brush);
+    //BubbleName.resetCanvas();
     // small circle around mouse point
-    new Shape(Event.Mouse.icx, Event.Mouse.icy, 7, Color.getClr(2)).draw();
-
+    new Shape(Event.Mouse.icx, Event.Mouse.icy, 7, Color.getColor(2)).draw();
+    var velocity = new Vector(0.0,0.0).get();
 
     new Shape().lines(Event.Mouse.icx, Event.Mouse.icy, Event.Mouse.x, Event.Mouse.y);
     // A big circle from center of mouse point
-    var bigCircle = new Shape(Event.Mouse.x, Event.Mouse.y, Event.Mouse.ir, Color.getClr(4));
+    var bigCircle = new Shape(Event.Mouse.x, Event.Mouse.y, Event.Mouse.ir,
+      velocity.x, velocity.y,Color.getColor(4));
     bigCircle.draw('stroke');
+    if (run) {
+      requestAnimationFrame(Event.Mouse.drawInvisible);
+    }
 };
-  var vx = 0.2, vy = 2, g = 0.98;
+var vx = 0.2, vy = 2, g = 0.98;
 Event.Mouse.update = function(_ang) {
   //Event.Mouse.icx = Math.cos(_ang) * Event.Mouse.ir + Event.Mouse.x;
   //Event.Mouse.icy = Math.sin(_ang) * Event.Mouse.ir + Event.Mouse.y;
@@ -169,6 +166,9 @@ Event.Mouse.update = function(_ang) {
     Event.Mouse.icy = 500;
   }
   vy += g;
+  if (run) {
+    requestAnimationFrame(Event.Mouse.update);
+  }
 };
 
 Event.exitDesignMode = function () {

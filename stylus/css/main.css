@@ -20,46 +20,24 @@ input.cmn-toggle + label {
   display: block;
   position: relative;
   cursor: pointer;
-  outline: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none; }
+  outline: none; }
 
 input.cmn-toggle-round + label {
   padding: 2px;
   width: 42px;
   height: 21px;
-  -moz-border-radius: 21px;
-  -webkit-border-radius: 21px;
-  -ms-border-radius: 21px;
   border-radius: 21px;
   background: #dddddd; }
   input.cmn-toggle-round + label:before {
     right: 1px;
     background-color: #f1f1f1;
-    -moz-border-radius: 21px;
-    -webkit-border-radius: 21px;
-    -ms-border-radius: 21px;
     border-radius: 21px;
-    -moz-transition: background 0.4s;
-    -webkit-transition: background 0.4s;
-    -ms-transition: background 0.4s;
     transition: background 0.4s; }
   input.cmn-toggle-round + label:after {
     width: 21px;
     background-color: #fff;
-    -moz-border-radius: 100%;
-    -webkit-border-radius: 100%;
-    -ms-border-radius: 100%;
     border-radius: 100%;
-    -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    -ms-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    -moz-transition: margin 0.4s;
-    -webkit-transition: margin 0.4s;
-    -ms-transition: margin 0.4s;
     transition: margin 0.4s; }
 
 /*# sourceMappingURL=main.css.map */

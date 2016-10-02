@@ -38,18 +38,19 @@ var Animation = {
   animatable: [], // 0: the letter that point belongs to. 1: the point index on that array
 };
 
+// Until i found out a way to do deep array copys
+// I need to do collect points multiple times at lease two times
 // fetch points from alphabet database when app started.
 // Never call it from animation
 Animation.collectPoints = function() {
   // clear previous collected points when user changes the inputs
-  Animation.points = [];
+  BubbleName.points = [];
   var letterWidth = 0, spacing = 0;
   var letter = 0;
   for(; letter < BubbleName.numOfLetters(); ++letter) {
     var index = 0;
     var tmp = [];
     var at = BubbleName.charAt()[letter];
-    //tmp.push(Point.getWidth(at));
     for(; index < Point.numOfShape(at); ++index) {
       var xyr = [];
       xyr.push(Point.getX(at, index) + BubbleName.offsetX() + letterWidth + spacing);
@@ -59,80 +60,86 @@ Animation.collectPoints = function() {
     }
     letterWidth += Point.getWidth(at);
     spacing += BubbleName.spacing;
-    Animation.points.push(tmp);
+    Animation.points.push(tmp);   // initial position when first time create letters
   }
 };
 
 Animation.draw = function() {
   BubbleName.resetCanvas();
-  if ( Animation.animatable.length != 0 ) {
-    Animation.update();
-  }
-  Animation.bounce();
+
+  Animation.init();
 };
 // core drawing function
-Animation.bounce = function() {
+Animation.init = function() {
   // use the collected points from database
   // to draw shapes
 
-  try {
-    var color = 1;
-    // length of Animation.points is depends on how many letters
-    var letter = 0;
-    for(; letter < Animation.points.length; ++letter) {
-      var i = 0;
-      for (; i < Animation.points[letter].length; ++i) {
-        //Animation.points[letter].length
-        // Animation.x and Animation.y is a copy of the point coordinate
-        // In order to animating shapes, we need to change the actual coordinates
-        // inside the original array
-        Animation.x = Animation.points[letter][i][0];
-        Animation.y = Animation.points[letter][i][1];
-        Animation.radi = Animation.points[letter][i][2];
-
-        Animation.ls1 = Event.Mouse.ir;
-        Animation.ls2 = Animation.radi;
-
-        // this is how one circle moves around the other circle
-        // The distance relationship between two circles
-        Animation.dx = Event.Mouse.x - Animation.x;
-        Animation.dy = Event.Mouse.y - Animation.y;
-        Animation.ls3 = Module.getLenOfSlope(Animation.dx, Animation.dy);
-        Animation.touchPoints();
-        Animation.drawTouchPoints();   // Don't need. Delete it at release stage
+  // length of Animation.points is depends on how many letters
+  var letter = 0;
+  for(; letter < BubbleName.numOfLetters(); ++letter) {
+    var color = letter > Color.length ? 1 : letter + 1;
+    var i = 0;
+    for (; i < Animation.points[letter].length; ++i) {
+      //Animation.points[letter].length
+      // Animation.x and Animation.y is a copy of the point coordinate
+      // In order to animating shapes, we need to change the actual coordinates
+      // inside the original array
+      Animation.x = Animation.points[letter][i][0];
+      Animation.y = Animation.points[letter][i][1];
+      Animation.radi = Animation.points[letter][i][2];
+      new Shape(Animation.x,Animation.y,Animation.radi,
+        Color.getColor(color)).draw('stroke');
 
 
-        if (Animation.hasTouched()) {
-          //Animation.update();
-          //Animation.bouncing();
-          Animation.addAnimatable(letter, i);
+      // this is how the circle on the mouse moves around the circle that forms
+      // the alphabets
+      // The distance relationship between two circles
+      Animation.dx = Event.Mouse.x - Animation.x;
+      Animation.dy = Event.Mouse.y - Animation.y;
+      Animation.ls3 = Module.getLenOfSlope(Animation.dx, Animation.dy);
 
 
-        }
-        Animation.vx += Animation.gravity;
-
-
-        // visual center of circles
-        new Shape(Animation.x, Animation.y,2, Color.getClr(2)).draw();
-
-        new Shape(Animation.x,Animation.y,Animation.radi,Color.getClr(color)).draw('stroke');
+      if (Animation.ls3 < 180) {
+        //Animation.addAnimatable(letter, i);
       }
-      if(color > Color.length()) {
-        color = 1;
-      }
-      ++color;
+
     }
-  } catch (e) {
-    console.error(" Ani-func-bounce ", e.message);
   }
 };
+
+/*
+Animation.update = function() {
+
+  //Animation.points[letter][i][0] = Animation.tmx - Animation.radi;
+  //Animation.points[letter][i][1] = Animation.tmy - Animation.radi;
+  // updating coordinates in points array
+  var i = 0;
+  for (; i < Animation.animatable.length; ++i) {
+    var atLetter = Animation.animatable[i][0];
+    var atPoint = Animation.animatable[i][1];
+    var ox = BubbleName.original[atLetter][atPoint][0];
+    var oy = BubbleName.original[atLetter][atPoint][1];
+    //if (Animation.points[atLetter][atPoint][0] < Animation.tmx) {Animation.vx *= -1;}
+
+    Animation.points[atLetter][atPoint][0] += Animation.vx;
+
+    var y2 = Module.dot2(Animation.bouncePath(
+      Animation.points[atLetter][atPoint][0], ox, oy));
+
+    Animation.points[atLetter][atPoint][1] = y2;
+
+    //new Shape().lines(ox, oy, Animation.points[atLetter][atPoint][0],
+    //Animation.points[atLetter][atPoint][1], Color.getColor(3));
+  }
+
+};
+
 Animation.addAnimatable = function(_letter, index) {
   var tmp = [];
   tmp.push(_letter, index);
   // the point already in the animatable list?
   if( !Animation.animationPointExist(tmp) ) {
     Animation.animatable.push(tmp);
-    console.log(Animation.animatable);
   }
 };
 
@@ -154,36 +161,16 @@ Animation.animationPointExist = function(_arr) {
   return false;
 };
 
-Animation.update = function() {
-  if (Animation.tcx < Event.Mouse.x) {Animation.vx *= -1;}
-  //Animation.points[letter][i][0] = Animation.tmx - Animation.radi;
-  //Animation.points[letter][i][1] = Animation.tmy - Animation.radi;
-  // updating coordinates in points array
-  var i = 0;
-  for (; i < Animation.animatable.length; ++i) {
-    var atLetter = Animation.animatable[i][0];
-    var atPoint = Animation.animatable[i][1];
-    Animation.points[atLetter][atPoint][0] += Animation.vx;
-    if(Animation.vx != 0){
-      var y2 = Module.dot2(Animation.bouncePath(Animation.points[atLetter][atPoint][0]));
-      Animation.points[atLetter][atPoint][1] = y2;
-    }
-  }
 
-};
-Animation.bouncing = function() {
-
-};
-
-Animation.bouncePath = function(_x2) {
+Animation.bouncePath = function(_x2, _ox, _oy) {
   // y2 = (x2 - x1) * slope + y1
-  return Module.dot2((_x2 - Animation.x) * Animation.haslope() + Animation.y);
+  return Module.dot2((_x2 - _ox) * Animation.haslope() + _oy);
 };
 
 Animation.haslope = function() {
   return Animation.x === Event.Mouse.x || Animation.y === Event.Mouse.y ? 0 : Module.dot2((Animation.dy / Animation.dx));
 };
-
+*//*
 Animation.touchPoints = function(){
   // Denominator can't be zero;
   // the angle used to calculate touch points
@@ -221,6 +208,7 @@ Animation.touchPoints = function(){
      Event.Mouse.y);
   }
 };
+
 Animation.hasTouched = function() {
   var inCircle = Animation.ls2 + Animation.ls1;
   var t = Math.floor(Animation.ls3 - inCircle);
@@ -229,7 +217,7 @@ Animation.hasTouched = function() {
   //}
   return t >= 0 && t < 1;
 };
-
+*//*
 Animation.drawTouchPoints = function() {
   // lines helps visualize the relationship between shapes
   new Shape().lines(Event.Mouse.x, Event.Mouse.y, Animation.tcx, Animation.tcy);
@@ -237,9 +225,9 @@ Animation.drawTouchPoints = function() {
   //new Shape().lines(Animation.x, Event.Mouse.y, Event.Mouse.x, Event.Mouse.y);
 
   // touche points
-  new Shape(Animation.tcx, Animation.tcy, 3, Color.getClr(2)).draw();
-  new Shape(Animation.tmx,Animation.tmy, 3, Color.getClr(4)).draw();
-};
+  new Shape(Animation.tcx, Animation.tcy, 3, Color.getColor(2)).draw();
+  new Shape(Animation.tmx,Animation.tmy, 3, Color.getColor(4)).draw();
+};*/
 Animation.xLess = function() {
   return Animation.x < Event.Mouse.x;
 };
