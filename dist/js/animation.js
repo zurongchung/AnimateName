@@ -32,7 +32,7 @@ function Animation() {
   };
   this.update = function() {
     var n = 0;
-    for (; n < 1; ++n) {
+    for (; n < this.points.length; ++n) {
       this.points[n].x += this.points[n].vx;
       this.points[n].y += this.points[n].vy;
 
