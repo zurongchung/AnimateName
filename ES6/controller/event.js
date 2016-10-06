@@ -1,0 +1,6 @@
+class Event {
+  constructor() {
+
+  }
+}
+ 

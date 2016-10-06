@@ -90,14 +90,13 @@ BubbleName.init = function () {
         BubbleName.y = BubbleName.original[letter][i][1];
         BubbleName.radi = BubbleName.original[letter][i][2];
 
-        var velocity = new Vector(0.0,0.0).get();
         var circle = new Shape(BubbleName.x, BubbleName.y,BubbleName.radi,
-          velocity.x, velocity.y, Color.getColor(color));
+          Color.getColor(color));
           circle.draw();
-
          BubbleName.shapes.push(circle);
       }
     }
+    console.log(BubbleName.shapes);
 
   } catch (e) {
     console.error(" BubbleName-func-init ", e.message);

@@ -1,15 +1,17 @@
-function Shape(_x, _y, _r, _vx, _vy, _clr) {
-  this.x = _x;
-  this.y = _y;
-  this.radius  = _r;
-  this.vx = _vx;
-  this.vy = _vy;
-  this.origX = _x;
-  this.origY = _y;
-  this.color   = this.setColor(_clr);
+function Shape(x, y, r, clr) {
+  this.x = x;
+  this.y = y;
+  this.radius  = r;
+  this.velocity = new Vector(0.0,0.0);
+  this.origX = x;
+  this.origY = y;
+  this.color   = this.setColor(clr);
   this.startAt = 0;
   this.endAt   = Math.PI * 2;
   this.anticw  = false;
+  // physics
+  this.friction = 0.02;
+  this.force = 0.8;
 }
 
 Shape.prototype.draw = function(_type) {

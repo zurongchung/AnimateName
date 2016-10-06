@@ -1,5 +1,6 @@
 // register mouse event
 // get mouse's coordinates
+var mouseRun = true;
 var Event = {
   Mouse: {
     ir: 180,
@@ -12,6 +13,7 @@ var Event = {
     preY: 0,
     icx: 0,
     icy: 0,
+    points: [],
     // mouse button
     lm: 0,
     rm: 2,
@@ -113,9 +115,9 @@ function wiggleCallbk(event) {
 //  Event.Mouse.setMousePos(event);   // avoid Mouse.x and y is at 0 when first movement
   run = true;
   new Animation().init();
-  Event.Mouse.update(Event.Mouse.ang);
   // mouse animation # test_del
   Event.Mouse.drawInvisible();
+  Event.Mouse.update(Event.Mouse.ang);
 
 }
 
@@ -124,7 +126,11 @@ Event.Mouse.event.out = function(cvs) {
   cvs.addEventListener(Event.Mouse.event.type.out, stopAnimation, false);
 };
 function stopAnimation() {
-  run = false;
+  //mouseRun = false;
+  Event.Mouse.x = 9999;
+  Event.Mouse.y = 9999;
+  Event.Mouse.icx = Event.Mouse.x;
+  Event.Mouse.icy = Event.Mouse.y;
 }
 
 Event.Mouse.setMousePos = function(evt) {
@@ -137,16 +143,17 @@ Event.Mouse.setMousePos = function(evt) {
 };
 Event.Mouse.drawInvisible = function() {
     //BubbleName.resetCanvas();
+    mouseRun = true;
     // small circle around mouse point
-    new Shape(Event.Mouse.icx, Event.Mouse.icy, 7, Color.getColor(2)).draw();
-    var velocity = new Vector(0.0,0.0).get();
-
+    var circle = new Shape(Event.Mouse.icx, Event.Mouse.icy, 7, Color.getColor(2));
+    circle.draw();
+    Event.Mouse.points.push(circle);
     new Shape().lines(Event.Mouse.icx, Event.Mouse.icy, Event.Mouse.x, Event.Mouse.y);
     // A big circle from center of mouse point
     var bigCircle = new Shape(Event.Mouse.x, Event.Mouse.y, Event.Mouse.ir,
-      velocity.x, velocity.y,Color.getColor(4));
+      Color.getColor(4));
     bigCircle.draw('stroke');
-    if (run) {
+    if (mouseRun) {
       requestAnimationFrame(Event.Mouse.drawInvisible);
     }
 };
@@ -154,19 +161,20 @@ var vx = 0.2, vy = 2, g = 0.98;
 Event.Mouse.update = function(_ang) {
   //Event.Mouse.icx = Math.cos(_ang) * Event.Mouse.ir + Event.Mouse.x;
   //Event.Mouse.icy = Math.sin(_ang) * Event.Mouse.ir + Event.Mouse.y;
-    // rotate cw or ccw
+  // rotate cw or ccw
   //Event.Mouse.x > Event.Mouse.preX ? Event.Mouse.ang += Event.Mouse.angle_incre : Event.Mouse.ang -= Event.Mouse.angle_incre;
-
-  Event.Mouse.icx += vx;
-  Event.Mouse.icy += vy;
+  var circle = Event.Mouse.points[0];
+  Event.Mouse.icx += circle.velocity.x;
+  Event.Mouse.icy += circle.velocity.y;
 
   if (Event.Mouse.icy > 500) {
-    vy *= -1;
-    vx *= 0.5;
+    circle.velocity.y *= -1;
+    circle.velocity.x *= 0.5;
     Event.Mouse.icy = 500;
   }
-  vy += g;
-  if (run) {
+  circle.velocity.y += g;
+
+  if (mouseRun) {
     requestAnimationFrame(Event.Mouse.update);
   }
 };
