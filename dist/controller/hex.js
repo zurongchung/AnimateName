@@ -1,26 +1,46 @@
-// Turn characters into UTF-16/hex code representing each letter
-// Return a series number representing that phrase in String format
+"use strict";
 
-function LetterToHex(_phrase) {
-  this.words = _phrase;
-  this.length = _phrase.length;
-  this.hex = this.letHex();
-}
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-LetterToHex.prototype.letHex  = function() {
-  var hex_arr = [];
-  for( var i = 0; i < this.length; i++) {
-    hex_arr.push(this.words.charCodeAt(i));
+/*
+ * Turn characters into UTF-16/hex code representing each letter
+ * Return a series number representing that phrase in String format
+ */
+
+var Hex = function () {
+  function Hex(phrase) {
+    _classCallCheck(this, Hex);
+
+    this.phrase = phrase;
   }
-  return hex_arr;
-};
 
-// Return Hex code that represente that phrase
-// To the requestor
-LetterToHex.prototype.getHex = function() {
-   return this.hex;   // return an array
-}
-LetterToHex.prototype.getLength = function () {
-  return this.length;
-};
+  _createClass(Hex, [{
+    key: "convertToUTF16",
+    value: function convertToUTF16() {
+      // => Array
+      var hexcodes = new Array();
+      for (var i = 0; i < this.length; i++) {
+        hexcodes.push(this.phrase.charCodeAt(i));
+      }
+      return hexcodes;
+    }
+  }, {
+    key: "length",
+    get: function get() {
+      return this.phrase.length;
+    }
+  }, {
+    key: "hex",
+    get: function get() {
+      /*
+       *  return hex codes array represent the phrase
+       *  to the requestor
+       */
+      return this.convertToUTF16();
+    }
+  }]);
+
+  return Hex;
+}();

@@ -7,19 +7,19 @@ var gutil = require('gulp-util');
 gulp.task('transform', function() {
   var controller = gulp.src("ES6/controller/*.js")
     .pipe(babel())
-    .pipe(gulp.dest("js/controller"));
+    .pipe(gulp.dest("dist/controller"));
 
   var main = gulp.src("ES6/js/*.js")
     .pipe(babel())
-    .pipe(gulp.dest("js/js"));
+    .pipe(gulp.dest("dist/js"));
 
   var lib = gulp.src("ES6/lib/*.js")
     .pipe(babel())
-    .pipe(gulp.dest("js/lib"));
+    .pipe(gulp.dest("dist/lib"));
 
   var model = gulp.src("ES6/model/*.js")
     .pipe(babel())
-    .pipe(gulp.dest("js/model"));
+    .pipe(gulp.dest("dist/model"));
 
   return [controller, main, lib, model];
 

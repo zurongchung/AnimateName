@@ -4,40 +4,9 @@
     <meta charset="utf-8">
     <title>Animate name</title>
     <link rel="stylesheet" href="stylus/css/prev.css" media="screen">
-    <link rel="stylesheet" href="stylus/css/sass/main.css" media="screen">
   </head>
   <body>
     <div id="container">
-      <div class="math">
-        <div>
-          <label for="width">w:
-            <input type="text" name="width" placeholder="0px"></label>
-          <label for="height">h:
-            <input type="text" name="height" placeholder="0px"></label>
-            <label for="division">division:
-              <input type="number" name="division" value="2" min="1" max="4">
-            </label>
-        </div>
-        <p>char: <input type="text" autocomplete="off" name="letter"> at: <span class="ccode"></span></p>
-        <!--The switch to enter Design mode -->
-        <div id="switch" class="design fonts">
-          <input id="Design_toggle" class="cmn-toggle cmn-toggle-round" type="checkbox" autocomplete="off">
-          <label class="label_psudo" for="Design_toggle" ></label>
-        </div>
-        <div class="username">
-          <span>Enter your name: </span>
-          <input type="text" name="username" value="ZURONG">
-        </div>
-
-      </div>
-      <div id='box'>
-        <code class="coords" id="points">
-
-        </code>
-        <button disabled='true' autocomplete="off" id="getPoints">Fetch</button>
-        <button id="cls">Clear</button>
-        <button data-clipboard-target="#points" id="clip">copy</button>
-      </div>
       <div class="wrapper flex">
         <canvas id="canvas" width="1280" height="600">
           Your browser dosen't support HTML5 canvas yet. Upgrade
@@ -65,6 +34,9 @@
     <script src='dist/js/main.js'></script>
     -->
     <!-- Third party library -->
+    <script src="dist/model/alphabet.js"></script>
     <script src="dist/controller/hex.js"></script>
+    <script src="dist/controller/points.js"></script>
+    <script src="dist/js/main.js"></script>
   </body>
 </html>

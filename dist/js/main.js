@@ -1,29 +1,16 @@
+'use strict';
 
-var designMode = document.querySelector("input[type='checkbox']");
-designMode.addEventListener('click', changeMode, false);
-
-// remove all designMode listener before enter
-// production view
-var hasDesignEventListener = 0; // false
-
-window.onload = changeMode;
-function start() {
-  Event.Mouse.event.movement(canvas);
-  Event.Mouse.event.over(canvas);
-  Event.Mouse.event.out(canvas);
-}
-
-function changeMode() {
-  if (designMode.checked) {
-    Event.exitProductionMode();
-    hasDesignEventListener = 1; // true
-    BubbleName.draw(1);
-    Maker.designMode();
-    get.disabled = false;
-    get.addEventListener('click', generatePoints, false);
- }else {
-   if (hasDesignEventListener) {Event.exitDesignMode();}
-   BubbleName.draw();
-   start();
- }
-}
+document.addEventListener('DOMContentLoaded', function () {
+  console.log('DOM fully loaded...');
+  var hex = new Hex('AB');
+  console.log(hex.hex);
+  console.log(hex.length);
+  var point = new Point(hex.hex[0]);
+  console.log(point.manyPoints);
+  console.log(point.width);
+  console.log(point.point(0));
+  console.log(point.x(0));
+  console.log(point.y(0));
+  console.log(point.radius(0));
+  console.log(point.tone(0));
+});
