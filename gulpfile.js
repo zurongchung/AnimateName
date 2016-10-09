@@ -25,16 +25,22 @@ gulp.task('transform', function() {
 
 });
 
+var sassOpts = {
+  errLogToConsole: true,
+  outputStyle: 'expanded'
+};
+var sassIn = 'stylus/sass/**/*.sass';
+var sassOut = 'assets/css/';
 gulp.task('sass', function() {
-  return gulp.src('stylus/sass/**/*.sass')
+  return gulp.src(sassIn)
              .pipe(somaps.init())
-             .pipe(sass().on('error', sass.logError))
-             .pipe(somaps.write('../maps', {sourceRoot: '../stylus'}))
-             .pipe(gulp.dest('stylus/css'))
+             .pipe(sass(sassOpts).on('error', sass.logError))
+             .pipe(somaps.write('./maps'))
+             .pipe(gulp.dest(sassOut))
 });
 
 gulp.task('sass:watch', function(){
-  gulp.watch('stylus/sass/*.sass', ['sass'], function(event) {
+  gulp.watch(sassIn, ['sass'], function(event) {
     gutil.log(gutil.colors.cyan('Sass file was transformed into css.'))
   })
 });

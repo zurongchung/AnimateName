@@ -3,14 +3,11 @@ html, body {
   padding: 0;
 }
 div#container {
-  display: flex;
-  flex-flow: row;
+  display: relative;
+}
+div#switch {
 }
 .wrapper {
-  order: 3;
-  flex: 0 1 auto;
-  align-self: auto;
-  justify-content: flex-end;
   width: auto;
   height: auto;
 }

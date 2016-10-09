@@ -1,7 +1,7 @@
 class Viewport {
   constructor() {
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
+    this.canvas.width = document.documentElement.clientWidth;
+    this.canvas.height = document.documentElement.clientHeight;
   }
   get canvas() {
     return document.getElementById('canvas');
@@ -22,8 +22,8 @@ class Viewport {
     this.canvas.height = val;
   }
   resize() {
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
+    this.width = document.documentElement.clientWidth;
+    this.height = document.documentElement.clientHeight;
   }
 
 }
@@ -44,6 +44,11 @@ class Render extends Viewport {
     this.init();
     this.draw();
   }
+  draw() {
+    for (const o of this.shapes) {
+      o.draw(this.ctx);
+    }
+  }
   init() {
     const theme = new Theme();
     const chars = new Hex('AD');
@@ -60,11 +65,6 @@ class Render extends Viewport {
       }
       space += (pointGetter.width + this.hgap);
       colorIndex >= theme.length ? colorIndex = 0 : colorIndex++;
-    }
-  }
-  draw() {
-    for (const o of this.shapes) {
-      o.draw(this.ctx);
     }
   }
 

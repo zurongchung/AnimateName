@@ -3,18 +3,33 @@
   <head>
     <meta charset="utf-8">
     <title>Animate name</title>
-    <link rel="stylesheet" href="stylus/css/prev.css" media="screen">
+    <link rel="stylesheet" href="./assets/css/prev.css" media="screen">
+    <link rel="stylesheet" href="./assets/css/main.css" media="screen" title="no title">
   </head>
   <body>
-    <div id="container">
+    <main id="container">
+      <!--The switch to enter Design mode -->
+      <div id="switch" class="design fonts">
+        <input id="Design_toggle" class="cmn-toggle cmn-toggle-round" type="checkbox" autocomplete="off">
+        <label class="label_psudo" for="Design_toggle" ></label>
+      </div>
+      <section class="design hidden-box hide">
+          <input type='text' class="points dsiplay">
+          <div class="control panel">
+
+          </div>
+      </section>
+
       <div class="wrapper flex">
         <canvas id="canvas">
           Your browser dosen't support HTML5 canvas yet. Upgrade
           your browser or use newer version of Firefox or Chrome instead.
         </canvas>
       </div>
-    </div>
-    <!-- Third party library -->
+    </main>
+    <!-- Design -->
+    <script src='dist/js/interface.js'></script>
+    <!-- Animation -->
     <script src="dist/model/alphabet.js"></script>
     <script src="dist/controller/hex.js"></script>
     <script src="dist/controller/point.js"></script>

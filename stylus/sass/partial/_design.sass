@@ -1,0 +1,33 @@
+$maxHeight: 100px
+$maxWidth: 800px
+
+.show
+  top: 0px !important
+.hide
+  top: -120px !important
+
+section.hidden-box
+  transition: top .5s ease-out 0s
+  position: absolute
+  z-index: 911
+  top: -120px
+  left: 0
+  width: $maxWidth
+  height: $maxHeight
+  padding: 4px
+  border: 2px solid rgb(196, 228, 38)
+  background-color: rgba(255,255,255,1)
+
+  input
+    width: $maxWidth
+    height: $maxHeight * (2/3)
+/*---------------
+ *    COMMON
+ *---------------*/
+input[type=text]
+  //background-color: rgb(73, 64, 88)
+  border-top: none
+  border-left: none
+  border-right: none
+  border-bottom: 2px solid rgb(172, 40, 154)
+  vertical-align: bottom
