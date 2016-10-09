@@ -11,44 +11,55 @@ var Point = function () {
   function Point(pos) {
     _classCallCheck(this, Point);
 
-    this.pos = pos;
-    this.letter = Alphabet["A" + this.pos];
+    this.pos = "A" + pos;
+    var _Alphabet = Alphabet;
+    var _Alphabet$pos = _Alphabet[this.pos];
+    var w = _Alphabet$pos.w;
+    var p = _Alphabet$pos.p;
+
+    this.w = w;
+    this.setOfPoint = p;
   }
 
   _createClass(Point, [{
-    key: "point",
-    value: function point(index) {
-      return this.letter.p[index];
-    }
-  }, {
     key: "x",
     value: function x(index) {
-      return this.letter.p[index][0];
+      return this.point[index][0];
     }
   }, {
     key: "y",
     value: function y(index) {
-      return this.letter.p[index][1];
+      return this.point[index][1];
     }
   }, {
     key: "radius",
     value: function radius(index) {
-      return this.letter.p[index][2];
+      return this.point[index][2];
     }
   }, {
     key: "tone",
     value: function tone(index) {
-      return this.letter.p[index][3];
+      return this.point[index][3];
     }
   }, {
     key: "manyPoints",
     get: function get() {
-      return this.letter.p.length;
+      return this.points.length;
     }
   }, {
     key: "width",
     get: function get() {
-      return this.letter.w;
+      return this.w;
+    }
+  }, {
+    key: "height",
+    get: function get() {
+      return Math.floor(this.w / 1.618);
+    }
+  }, {
+    key: "points",
+    get: function get() {
+      return this.setOfPoint;
     }
   }]);
 

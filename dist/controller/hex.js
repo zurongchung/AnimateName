@@ -32,13 +32,49 @@ var Hex = function () {
       return this.phrase.length;
     }
   }, {
-    key: "hex",
+    key: "codes",
     get: function get() {
       /*
        *  return hex codes array represent the phrase
        *  to the requestor
        */
       return this.convertToUTF16();
+    }
+  }, {
+    key: "wide",
+    get: function get() {
+      var total = 0;
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = this.codes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var c = _step.value;
+
+          total += new Point(c).width;
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      return total;
+    }
+  }, {
+    key: "tall",
+    get: function get() {
+      return new Point(this.codes[0]).height;
     }
   }]);
 

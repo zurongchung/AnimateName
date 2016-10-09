@@ -10,12 +10,22 @@ class Hex {
   get length() {
     return this.phrase.length;
   }
-  get hex() {
+  get codes() {
     /*
      *  return hex codes array represent the phrase
      *  to the requestor
      */
     return this.convertToUTF16();
+  }
+  get wide() {
+    var total = 0;
+    for (const c of this.codes) {
+       total += new Point(c).width;
+    }
+    return total;
+  }
+  get tall() {
+    return new Point(this.codes[0]).height;
   }
   convertToUTF16() {  // => Array
     let hexcodes = new Array();

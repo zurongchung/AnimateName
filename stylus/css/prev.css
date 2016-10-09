@@ -15,5 +15,7 @@ div#container {
   height: auto;
 }
 #canvas {
-
+  position: absolute;
+  min-width: 453px;
+  min-height: 280px;
 }
