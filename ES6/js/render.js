@@ -1,7 +1,9 @@
+const docEt = document.documentElement;
+const RAF   = window.requestAnimationFrame;
 class Viewport {
   constructor() {
-    this.canvas.width = document.documentElement.clientWidth;
-    this.canvas.height = document.documentElement.clientHeight;
+    this.canvas.width = docEt.clientWidth;
+    this.canvas.height = docEt.clientHeight;
   }
   get canvas() {
     return document.getElementById('canvas');
@@ -22,8 +24,8 @@ class Viewport {
     this.canvas.height = val;
   }
   resize() {
-    this.width = document.documentElement.clientWidth;
-    this.height = document.documentElement.clientHeight;
+    this.width = docEt.clientWidth;
+    this.height = docEt.clientHeight;
   }
 
 }
@@ -34,6 +36,9 @@ class Render extends Viewport {
     this.hgap  = 10;
     this.vgap  = 0;
     this.shapes = [];
+
+    // Initialize mouse
+    this.mouse = new Movement();
   }
   refresh() {
     this.resize();
@@ -41,15 +46,33 @@ class Render extends Viewport {
   }
   render() {
     this.reset();
-    this.init();
     this.draw();
+    RAF(()=>this.render());
   }
   draw() {
-    for (const o of this.shapes) {
+    const shape = this.shapes.entries();
+    for (const [n, o] of shape) {
+      this.activate(n, o);
       o.draw(this.ctx);
     }
   }
+
+  activate(index, obj) {
+    let [dx, dy] = [this.mouse.x - obj.x, this.mouse.y - obj.y];
+    let s = Math.floor(Math.sqrt(dx * dx + dy * dy));
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.mouse.x, this.mouse.y);
+    this.ctx.lineTo(obj.x, obj.y);
+    this.ctx.strokeStyle = '#FFF';
+    this.ctx.stroke();
+    if(s < 200) {
+      //return true;
+      console.log(index);
+    }
+  }
+
   init() {
+    this.mouse.listen();
     const theme = new Theme();
     const chars = new Hex('AD');
     const arrayOfCodes = chars.codes;

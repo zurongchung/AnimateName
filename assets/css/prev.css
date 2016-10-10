@@ -5,8 +5,6 @@ html, body {
 div#container {
   display: relative;
 }
-div#switch {
-}
 .wrapper {
   width: auto;
   height: auto;

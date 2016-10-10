@@ -10,19 +10,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var docEt = document.documentElement;
+var RAF = window.requestAnimationFrame;
+
 var Viewport = function () {
   function Viewport() {
     _classCallCheck(this, Viewport);
 
-    this.canvas.width = document.documentElement.clientWidth;
-    this.canvas.height = document.documentElement.clientHeight;
+    this.canvas.width = docEt.clientWidth;
+    this.canvas.height = docEt.clientHeight;
   }
 
   _createClass(Viewport, [{
     key: 'resize',
     value: function resize() {
-      this.width = document.documentElement.clientWidth;
-      this.height = document.documentElement.clientHeight;
+      this.width = docEt.clientWidth;
+      this.height = docEt.clientHeight;
     }
   }, {
     key: 'canvas',
@@ -69,6 +72,9 @@ var Render = function (_Viewport) {
     _this.hgap = 10;
     _this.vgap = 0;
     _this.shapes = [];
+
+    // Initialize mouse
+    _this.mouse = new Movement();
     return _this;
   }
 
@@ -81,21 +87,30 @@ var Render = function (_Viewport) {
   }, {
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
       this.reset();
-      this.init();
       this.draw();
+      RAF(function () {
+        return _this2.render();
+      });
     }
   }, {
     key: 'draw',
     value: function draw() {
+      var shape = this.shapes.entries();
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
       var _iteratorError = undefined;
 
       try {
-        for (var _iterator = this.shapes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var o = _step.value;
+        for (var _iterator = shape[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var _step$value = _slicedToArray(_step.value, 2);
 
+          var n = _step$value[0];
+          var o = _step$value[1];
+
+          this.activate(n, o);
           o.draw(this.ctx);
         }
       } catch (err) {
@@ -114,8 +129,26 @@ var Render = function (_Viewport) {
       }
     }
   }, {
+    key: 'activate',
+    value: function activate(index, obj) {
+      var dx = this.mouse.x - obj.x;
+      var dy = this.mouse.y - obj.y;
+
+      var s = Math.floor(Math.sqrt(dx * dx + dy * dy));
+      this.ctx.beginPath();
+      this.ctx.moveTo(this.mouse.x, this.mouse.y);
+      this.ctx.lineTo(obj.x, obj.y);
+      this.ctx.strokeStyle = '#FFF';
+      this.ctx.stroke();
+      if (s < 200) {
+        //return true;
+        console.log(index);
+      }
+    }
+  }, {
     key: 'init',
     value: function init() {
+      this.mouse.listen();
       var theme = new Theme();
       var chars = new Hex('AD');
       var arrayOfCodes = chars.codes;
