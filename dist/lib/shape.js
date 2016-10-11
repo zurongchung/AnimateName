@@ -16,7 +16,7 @@ var Shape = function Shape(x, y, c) {
   this.color = c;
   this.origx = x;
   this.origy = y;
-  this.velocity = new Vector(0.0, 0.0);
+  this.v = new Vector(0.0, 0.0);
 };
 
 var Circle = function (_Shape) {
@@ -37,10 +37,18 @@ var Circle = function (_Shape) {
   _createClass(Circle, [{
     key: "draw",
     value: function draw(ctx) {
+      var s = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.r, this.start, this.end, this.acw);
-      ctx.fillStyle = this.color;
-      ctx.fill();
+      if (s != 0) {
+        ctx.strokeStyle = this.color;
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+
       ctx.closePath();
     }
   }]);

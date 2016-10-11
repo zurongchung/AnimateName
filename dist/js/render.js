@@ -72,6 +72,8 @@ var Render = function (_Viewport) {
     _this.hgap = 10;
     _this.vgap = 0;
     _this.shapes = [];
+    _this.dx = 0;
+    _this.dy = 0;
 
     // Initialize mouse
     _this.mouse = new Vector(9999, 9999);
@@ -91,6 +93,7 @@ var Render = function (_Viewport) {
 
       this.reset();
       this.draw();
+      new Circle(this.mouse.x, this.mouse.y, new Theme().rgb(5), 200).draw(this.ctx, 1);
       RAF(function () {
         return _this2.render();
       });
@@ -107,19 +110,15 @@ var Render = function (_Viewport) {
   }, {
     key: 'draw',
     value: function draw() {
-      var shape = this.shapes.entries();
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
       var _iteratorError = undefined;
 
       try {
-        for (var _iterator = shape[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var _step$value = _slicedToArray(_step.value, 2);
+        for (var _iterator = this.shapes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var o = _step.value;
 
-          var n = _step$value[0];
-          var o = _step$value[1];
-
-          this.activate(n, o);
+          this.update(o);
           o.draw(this.ctx);
         }
       } catch (err) {
@@ -138,12 +137,20 @@ var Render = function (_Viewport) {
       }
     }
   }, {
-    key: 'activate',
-    value: function activate(index, obj) {
-      var dx = this.mouse.x - obj.x;
-      var dy = this.mouse.y - obj.y;
+    key: 'update',
+    value: function update(curObj) {
+      if (this._activate(curObj)) curObj.v.x = 0.5;
+      curObj.x += curObj.v.x;
+    }
+  }, {
+    key: '_activate',
+    value: function _activate(obj) {
+      var _ref = [this.mouse.x - obj.x, this.mouse.y - obj.y];
+      this.dx = _ref[0];
+      this.dy = _ref[1];
 
-      var s = Math.floor(Math.sqrt(dx * dx + dy * dy));
+      var s = Math.floor(Math.sqrt(this.dx * this.dx + this.dy * this.dy));
+
       this.ctx.beginPath();
       this.ctx.moveTo(this.mouse.x, this.mouse.y);
       this.ctx.lineTo(obj.x, obj.y);

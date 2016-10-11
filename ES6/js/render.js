@@ -36,6 +36,8 @@ class Render extends Viewport {
     this.hgap  = 10;
     this.vgap  = 0;
     this.shapes = [];
+    this.dx = 0;
+    this.dy = 0;
 
     // Initialize mouse
     this.mouse = new Vector(9999, 9999);
@@ -47,6 +49,7 @@ class Render extends Viewport {
   render() {
     this.reset();
     this.draw();
+  new Circle(this.mouse.x, this.mouse.y, new Theme().rgb(5), 200).draw(this.ctx, 1);
     RAF(()=>this.render());
   }
   listen() {
@@ -55,16 +58,21 @@ class Render extends Viewport {
     }, false);
   }
   draw() {
-    const shape = this.shapes.entries();
-    for (const [n, o] of shape) {
-      this.activate(n, o);
+    for (const o of this.shapes) {
+      this.update(o);
       o.draw(this.ctx);
     }
+
+  }
+  update(curObj) {
+    if (this._activate(curObj)) curObj.v.x = 0.5;
+    curObj.x += curObj.v.x;
   }
 
-  activate(index, obj) {
-    let [dx, dy] = [this.mouse.x - obj.x, this.mouse.y - obj.y];
-    let s = Math.floor(Math.sqrt(dx * dx + dy * dy));
+  _activate(obj) {
+    [this.dx, this.dy] = [this.mouse.x - obj.x, this.mouse.y - obj.y];
+    let s = Math.floor(Math.sqrt(this.dx * this.dx + this.dy * this.dy));
+
     this.ctx.beginPath();
     this.ctx.moveTo(this.mouse.x, this.mouse.y);
     this.ctx.lineTo(obj.x, obj.y);

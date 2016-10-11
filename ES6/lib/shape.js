@@ -5,7 +5,7 @@ class Shape {
     this.color = c;
     this.origx = x;
     this.origy = y;
-    this.velocity = new Vector(0.0, 0.0);
+    this.v = new Vector(0.0, 0.0);
   }
 }
 class Circle extends Shape {
@@ -16,12 +16,18 @@ class Circle extends Shape {
     this.end = Math.PI * 2;
     this.acw = false;
   }
-  draw(ctx) {
+  draw(ctx,s=0) {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.r, this.start,
       this.end, this.acw);
-    ctx.fillStyle = this.color;
-    ctx.fill();
+    if (s != 0) {
+        ctx.strokeStyle = this.color;
+        ctx.stroke();
+    }else {
+      ctx.fillStyle = this.color;
+      ctx.fill();
+    }
+
     ctx.closePath();
   }
 }
