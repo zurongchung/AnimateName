@@ -38,7 +38,7 @@ class Render extends Viewport {
     this.shapes = [];
 
     // Initialize mouse
-    this.mouse = new Movement();
+    this.mouse = new Vector(9999, 9999);
   }
   refresh() {
     this.resize();
@@ -48,6 +48,11 @@ class Render extends Viewport {
     this.reset();
     this.draw();
     RAF(()=>this.render());
+  }
+  listen() {
+    $('#canvas').addEventListener('mousemove', evt => {
+      this.mouse.setPos(evt.clientX, evt.clientY);
+    }, false);
   }
   draw() {
     const shape = this.shapes.entries();
@@ -66,13 +71,12 @@ class Render extends Viewport {
     this.ctx.strokeStyle = '#FFF';
     this.ctx.stroke();
     if(s < 200) {
-      //return true;
-      console.log(index);
+      return true;
     }
   }
 
   init() {
-    this.mouse.listen();
+    this.listen();
     const theme = new Theme();
     const chars = new Hex('AD');
     const arrayOfCodes = chars.codes;

@@ -1,7 +1,7 @@
 class Movement {
-  constructor() {
-    this.mx = 9999;
-    this.my = 9999;
+  constructor(x,y) {
+    this.mx = x;
+    this.my = y;
   }
   get x() {
     return this.mx;
@@ -14,12 +14,5 @@ class Movement {
   }
   set y(value) {
     this.my = value;
-  }
-  setMousePos(evt) {
-    this.x = evt.clientX;
-    this.y = evt.clientY;
-  }
-  listen() {
-    $('#canvas').addEventListener('mousemove', this.setMousePos, false);
   }
 }

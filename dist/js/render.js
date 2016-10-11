@@ -74,7 +74,7 @@ var Render = function (_Viewport) {
     _this.shapes = [];
 
     // Initialize mouse
-    _this.mouse = new Movement();
+    _this.mouse = new Vector(9999, 9999);
     return _this;
   }
 
@@ -94,6 +94,15 @@ var Render = function (_Viewport) {
       RAF(function () {
         return _this2.render();
       });
+    }
+  }, {
+    key: 'listen',
+    value: function listen() {
+      var _this3 = this;
+
+      $('#canvas').addEventListener('mousemove', function (evt) {
+        _this3.mouse.setPos(evt.clientX, evt.clientY);
+      }, false);
     }
   }, {
     key: 'draw',
@@ -141,14 +150,13 @@ var Render = function (_Viewport) {
       this.ctx.strokeStyle = '#FFF';
       this.ctx.stroke();
       if (s < 200) {
-        //return true;
-        console.log(index);
+        return true;
       }
     }
   }, {
     key: 'init',
     value: function init() {
-      this.mouse.listen();
+      this.listen();
       var theme = new Theme();
       var chars = new Hex('AD');
       var arrayOfCodes = chars.codes;
