@@ -5,7 +5,8 @@ class Shape {
     this.color = c;
     this.origx = x;
     this.origy = y;
-    this.v = new Vector(0.0, 0.0);
+    this.direction = null;
+    this.velocity = new Vector(0.0, 0.0);
   }
 }
 class Circle extends Shape {

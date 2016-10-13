@@ -72,8 +72,10 @@ var Render = function (_Viewport) {
     _this.hgap = 10;
     _this.vgap = 0;
     _this.shapes = [];
-    _this.dx = 0;
-    _this.dy = 0;
+
+    _this.speed = 5; // the magnitude of the distance or for
+    // Physics
+    _this.friction = 0.5;
 
     // Initialize mouse
     _this.mouse = new Vector(9999, 9999);
@@ -93,19 +95,10 @@ var Render = function (_Viewport) {
 
       this.reset();
       this.draw();
-      new Circle(this.mouse.x, this.mouse.y, new Theme().rgb(5), 200).draw(this.ctx, 1);
+      new Circle(this.mouse.x, this.mouse.y, new Theme().rgb(5), 120).draw(this.ctx, 1);
       RAF(function () {
         return _this2.render();
       });
-    }
-  }, {
-    key: 'listen',
-    value: function listen() {
-      var _this3 = this;
-
-      $('#canvas').addEventListener('mousemove', function (evt) {
-        _this3.mouse.setPos(evt.clientX, evt.clientY);
-      }, false);
     }
   }, {
     key: 'draw',
@@ -139,26 +132,33 @@ var Render = function (_Viewport) {
   }, {
     key: 'update',
     value: function update(curObj) {
-      if (this._activate(curObj)) curObj.v.x = 0.5;
-      curObj.x += curObj.v.x;
+
+      this._activate(curObj);
+      if (curObj.direction != null) {
+        curObj.velocity.x = Math.cos(curObj.direction) * this.speed;
+        curObj.velocity.y = Math.sin(curObj.direction) * this.speed;
+      }
+
+      curObj.x += curObj.velocity.x;
+      curObj.y += curObj.velocity.y;
     }
   }, {
     key: '_activate',
-    value: function _activate(obj) {
-      var _ref = [this.mouse.x - obj.x, this.mouse.y - obj.y];
-      this.dx = _ref[0];
-      this.dy = _ref[1];
+    value: function _activate(curObj) {
+      var dx = this.mouse.x - curObj.x;
+      var dy = this.mouse.y - curObj.y;
 
-      var s = Math.floor(Math.sqrt(this.dx * this.dx + this.dy * this.dy));
+      var s = Math.floor(Math.sqrt(dx * dx + dy * dy));
 
-      this.ctx.beginPath();
-      this.ctx.moveTo(this.mouse.x, this.mouse.y);
-      this.ctx.lineTo(obj.x, obj.y);
-      this.ctx.strokeStyle = '#FFF';
-      this.ctx.stroke();
-      if (s < 200) {
-        return true;
+      if (s < 120) {
+        var tangent = dy / dx;
+        this.goto(curObj, tangent);
       }
+    }
+  }, {
+    key: 'goto',
+    value: function goto(curObj, tangent) {
+      this.mouse.x < curObj.x ? curObj.direction = Math.atan(tangent) : curObj.direction = Math.PI - Math.atan(tangent) * -1;
     }
   }, {
     key: 'init',
@@ -247,6 +247,15 @@ var Render = function (_Viewport) {
         //  this.circle(circle);
         this.shapes.push(circle);
       }
+    }
+  }, {
+    key: 'listen',
+    value: function listen() {
+      var _this3 = this;
+
+      $('#canvas').addEventListener('mousemove', function (evt) {
+        _this3.mouse.setPos(evt.clientX, evt.clientY);
+      }, false);
     }
   }, {
     key: 'alignCenter',

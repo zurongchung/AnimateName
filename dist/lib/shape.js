@@ -16,7 +16,8 @@ var Shape = function Shape(x, y, c) {
   this.color = c;
   this.origx = x;
   this.origy = y;
-  this.v = new Vector(0.0, 0.0);
+  this.direction = null;
+  this.velocity = new Vector(0.0, 0.0);
 };
 
 var Circle = function (_Shape) {

@@ -36,8 +36,10 @@ class Render extends Viewport {
     this.hgap  = 10;
     this.vgap  = 0;
     this.shapes = [];
-    this.dx = 0;
-    this.dy = 0;
+
+    this.speed = 5;  // the magnitude of the distance or for
+    // Physics
+    this.friction = 0.5;
 
     // Initialize mouse
     this.mouse = new Vector(9999, 9999);
@@ -49,13 +51,8 @@ class Render extends Viewport {
   render() {
     this.reset();
     this.draw();
-  new Circle(this.mouse.x, this.mouse.y, new Theme().rgb(5), 200).draw(this.ctx, 1);
+    new Circle(this.mouse.x, this.mouse.y, new Theme().rgb(5), 120).draw(this.ctx, 1);
     RAF(()=>this.render());
-  }
-  listen() {
-    $('#canvas').addEventListener('mousemove', evt => {
-      this.mouse.setPos(evt.clientX, evt.clientY);
-    }, false);
   }
   draw() {
     for (const o of this.shapes) {
@@ -65,22 +62,31 @@ class Render extends Viewport {
 
   }
   update(curObj) {
-    if (this._activate(curObj)) curObj.v.x = 0.5;
-    curObj.x += curObj.v.x;
-  }
 
-  _activate(obj) {
-    [this.dx, this.dy] = [this.mouse.x - obj.x, this.mouse.y - obj.y];
-    let s = Math.floor(Math.sqrt(this.dx * this.dx + this.dy * this.dy));
-
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.mouse.x, this.mouse.y);
-    this.ctx.lineTo(obj.x, obj.y);
-    this.ctx.strokeStyle = '#FFF';
-    this.ctx.stroke();
-    if(s < 200) {
-      return true;
+    this._activate(curObj);
+    if(curObj.direction != null) {
+      curObj.velocity.x = Math.cos(curObj.direction) * this.speed;
+      curObj.velocity.y = Math.sin(curObj.direction) * this.speed;
     }
+
+    curObj.x += curObj.velocity.x;
+    curObj.y += curObj.velocity.y;
+
+  }
+  _activate(curObj) {
+
+    let [dx, dy] = [this.mouse.x - curObj.x, this.mouse.y - curObj.y];
+    let s = Math.floor(Math.sqrt(dx * dx + dy * dy));
+
+    if(s < 120)  {
+      let tangent = dy/dx;
+      this.goto(curObj, tangent);
+    }
+
+  }
+  goto(curObj, tangent) {
+    this.mouse.x < curObj.x ? curObj.direction = Math.atan(tangent) :
+      curObj.direction = (Math.PI - Math.atan(tangent) * -1);
   }
 
   init() {
@@ -121,6 +127,11 @@ class Render extends Viewport {
 
   }
 
+  listen() {
+    $('#canvas').addEventListener('mousemove', evt => {
+      this.mouse.setPos(evt.clientX, evt.clientY);
+    }, false);
+  }
   alignCenter(char) {
     /*
      *  Centering sentence */

@@ -3,7 +3,7 @@ html, body {
   padding: 0;
 }
 div#container {
-  display: relative;
+  position: relative;
 }
 .wrapper {
   width: auto;
