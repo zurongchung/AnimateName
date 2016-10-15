@@ -8,17 +8,38 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Shape = function Shape(x, y, c) {
-  _classCallCheck(this, Shape);
+var Shape = function () {
+  function Shape(x, y, c) {
+    _classCallCheck(this, Shape);
 
-  this.x = x;
-  this.y = y;
-  this.color = c;
-  this.origx = x;
-  this.origy = y;
-  this.direction = null;
-  this.velocity = new Vector(0.0, 0.0);
-};
+    this.x = x;
+    this.y = y;
+    this.color = c;
+    this.origx = x;
+    this.origy = y;
+    this.defForce = 4;
+    this.force = this.defForce;
+    this.direction = 0;
+    this.active = false;
+    this.v = new Vector(0.0, 0.0);
+    this.a = new Vector(0.0, 0.0);
+  }
+
+  _createClass(Shape, [{
+    key: "goto",
+    value: function goto(action, tangent) {
+      return action.x < this.x ? Math.atan(tangent) : Math.PI - Math.atan(tangent) * -1;
+    }
+  }, {
+    key: "setFF",
+    value: function setFF() {
+      // set friction and velocity
+      this.v.setPos(Math.cos(this.direction) * this.force, Math.sin(this.direction) * this.force);
+    }
+  }]);
+
+  return Shape;
+}();
 
 var Circle = function (_Shape) {
   _inherits(Circle, _Shape);
@@ -29,6 +50,7 @@ var Circle = function (_Shape) {
     var _this = _possibleConstructorReturn(this, (Circle.__proto__ || Object.getPrototypeOf(Circle)).call(this, x, y, c));
 
     _this.r = r;
+    _this.mass = r;
     _this.start = 0;
     _this.end = Math.PI * 2;
     _this.acw = false;

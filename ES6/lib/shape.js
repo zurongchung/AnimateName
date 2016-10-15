@@ -5,14 +5,29 @@ class Shape {
     this.color = c;
     this.origx = x;
     this.origy = y;
-    this.direction = null;
-    this.velocity = new Vector(0.0, 0.0);
+    this.defForce = 4;
+    this.force = this.defForce;
+    this.direction = 0;
+    this.active = false;
+    this.v = new Vector(0.0, 0.0);
+    this.a = new Vector(0.0, 0.0);
+  }
+  goto(action, tangent) {
+    return action.x < this.x ? Math.atan(tangent) :
+      Math.PI - Math.atan(tangent) * -1;
+  }
+  setFF() {
+    // set friction and velocity
+    this.v.setPos( Math.cos(this.direction) * this.force,
+      Math.sin(this.direction) * this.force);
+
   }
 }
 class Circle extends Shape {
   constructor(x, y, c, r) {
     super(x, y, c);
     this.r = r;
+    this.mass = r;
     this.start = 0;
     this.end = Math.PI * 2;
     this.acw = false;

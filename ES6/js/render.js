@@ -36,9 +36,11 @@ class Render extends Viewport {
     this.hgap  = 10;
     this.vgap  = 0;
     this.shapes = [];
-
-    this.speed = 5;  // the magnitude of the distance or for
-    // Physics
+    this.dx = 0;
+    this.dy = 0;
+    this.s = 0;
+    this.spiralForce = 60;
+    this.max = 90;
     this.friction = 0.5;
 
     // Initialize mouse
@@ -62,31 +64,68 @@ class Render extends Viewport {
 
   }
   update(curObj) {
+    [this.dx, this.dy] = [this.mouse.x - curObj.x, this.mouse.y - curObj.y];
+    this.s = Math.floor(Math.sqrt(this.dx * this.dx + this.dy * this.dy));
 
     this._activate(curObj);
-    if(curObj.direction != null) {
-      curObj.velocity.x = Math.cos(curObj.direction) * this.speed;
-      curObj.velocity.y = Math.sin(curObj.direction) * this.speed;
-    }
 
-    curObj.x += curObj.velocity.x;
-    curObj.y += curObj.velocity.y;
+    if(curObj.active) {
 
-  }
-  _activate(curObj) {
+      /*
+       * This value of `s` is the length of string or magnitude of
+       * resistance force */
+      let [dx, dy] = [curObj.x - curObj.origx, curObj.y - curObj.origy];
+      let s = Math.floor(Math.sqrt(dx*dx + dy*dy));
 
-    let [dx, dy] = [this.mouse.x - curObj.x, this.mouse.y - curObj.y];
-    let s = Math.floor(Math.sqrt(dx * dx + dy * dy));
+      /*
+       * Given shape (a push) an unbalanced force that will change the
+       * stete of that shape.
+       * The direction of this force usually diagonal.
+       * And Break it down into horizontal force and verticle force.
+       * while mouse touched shape */
+       curObj.v.x = Math.cos(curObj.direction) * curObj.force;
+       curObj.v.y = Math.sin(curObj.direction) * curObj.force;
 
-    if(s < 120)  {
-      let tangent = dy/dx;
-      this.goto(curObj, tangent);
+       /*
+        * Acceleration of this object */
+       curObj.a.x = curObj.v.x / curObj.mass;
+       curObj.a.y = curObj.v.y / curObj.mass;
+
+       curObj.force -= this.friction;
+
+      // moving shape
+      curObj.x += curObj.v.x + curObj.a.x;
+      curObj.y += curObj.v.y + curObj.a.y;
+      /*
+       * If the string has reached maximum length
+       * Stop moving*/
+       if (s > this.max) {
+       }
+
     }
 
   }
   goto(curObj, tangent) {
-    this.mouse.x < curObj.x ? curObj.direction = Math.atan(tangent) :
-      curObj.direction = (Math.PI - Math.atan(tangent) * -1);
+    /*
+     * Calulate the angle of the moving path of that shape */
+    return this.mouse.x < curObj.x ? Math.atan(tangent) :
+      Math.PI - Math.atan(tangent) * -1;
+  }
+  _activate(curObj) {
+    if(this.s < 120)  {
+      /*
+       * Only
+       * change the angle of the path that shape moves
+       * when mouse and shape has been touched */
+      curObj.direction = this.goto(curObj, this.dy/this.dx);
+      if (curObj.active) {
+        /*
+         * Reset the net force when acted by other object */
+        curObj.force = curObj.defForce;
+      }else {
+        curObj.active = true;
+      }
+    }
   }
 
   init() {

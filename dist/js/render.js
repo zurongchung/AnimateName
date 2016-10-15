@@ -72,9 +72,11 @@ var Render = function (_Viewport) {
     _this.hgap = 10;
     _this.vgap = 0;
     _this.shapes = [];
-
-    _this.speed = 5; // the magnitude of the distance or for
-    // Physics
+    _this.dx = 0;
+    _this.dy = 0;
+    _this.s = 0;
+    _this.spiralForce = 60;
+    _this.max = 90;
     _this.friction = 0.5;
 
     // Initialize mouse
@@ -132,33 +134,73 @@ var Render = function (_Viewport) {
   }, {
     key: 'update',
     value: function update(curObj) {
+      var _ref = [this.mouse.x - curObj.x, this.mouse.y - curObj.y];
+      this.dx = _ref[0];
+      this.dy = _ref[1];
+
+      this.s = Math.floor(Math.sqrt(this.dx * this.dx + this.dy * this.dy));
 
       this._activate(curObj);
-      if (curObj.direction != null) {
-        curObj.velocity.x = Math.cos(curObj.direction) * this.speed;
-        curObj.velocity.y = Math.sin(curObj.direction) * this.speed;
-      }
 
-      curObj.x += curObj.velocity.x;
-      curObj.y += curObj.velocity.y;
-    }
-  }, {
-    key: '_activate',
-    value: function _activate(curObj) {
-      var dx = this.mouse.x - curObj.x;
-      var dy = this.mouse.y - curObj.y;
+      if (curObj.active) {
 
-      var s = Math.floor(Math.sqrt(dx * dx + dy * dy));
+        /*
+         * This value of `s` is the length of string or magnitude of
+         * resistance force */
+        var dx = curObj.x - curObj.origx;
+        var dy = curObj.y - curObj.origy;
 
-      if (s < 120) {
-        var tangent = dy / dx;
-        this.goto(curObj, tangent);
+        var s = Math.floor(Math.sqrt(dx * dx + dy * dy));
+
+        /*
+         * Given shape (a push) an unbalanced force that will change the
+         * stete of that shape.
+         * The direction of this force usually diagonal.
+         * And Break it down into horizontal force and verticle force.
+         * while mouse touched shape */
+        curObj.v.x = Math.cos(curObj.direction) * curObj.force;
+        curObj.v.y = Math.sin(curObj.direction) * curObj.force;
+
+        /*
+         * Acceleration of this object */
+        curObj.a.x = curObj.v.x / curObj.mass;
+        curObj.a.y = curObj.v.y / curObj.mass;
+
+        curObj.force -= this.friction;
+
+        // moving shape
+        curObj.x += curObj.v.x + curObj.a.x;
+        curObj.y += curObj.v.y + curObj.a.y;
+        /*
+         * If the string has reached maximum length
+         * Stop moving*/
+        if (s > this.max) {}
       }
     }
   }, {
     key: 'goto',
     value: function goto(curObj, tangent) {
-      this.mouse.x < curObj.x ? curObj.direction = Math.atan(tangent) : curObj.direction = Math.PI - Math.atan(tangent) * -1;
+      /*
+       * Calulate the angle of the moving path of that shape */
+      return this.mouse.x < curObj.x ? Math.atan(tangent) : Math.PI - Math.atan(tangent) * -1;
+    }
+  }, {
+    key: '_activate',
+    value: function _activate(curObj) {
+      if (this.s < 120) {
+        /*
+         * Only
+         * change the angle of the path that shape moves
+         * when mouse and shape has been touched */
+        curObj.direction = this.goto(curObj, this.dy / this.dx);
+        if (curObj.active) {
+          /*
+           * Reset the net force when acted by other object */
+          curObj.force = curObj.defForce;
+        } else {
+          curObj.active = true;
+        }
+      }
     }
   }, {
     key: 'init',
