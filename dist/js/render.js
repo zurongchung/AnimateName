@@ -350,7 +350,7 @@ var Render = function (_Viewport) {
     value: function listen() {
       var _this3 = this;
 
-      $('#canvas').addEventListener('mousemove', function (evt) {
+      $('#canvas').self.addEventListener('mousemove', function (evt) {
         _this3.mouse.setPos(evt.clientX, evt.clientY);
       }, false);
     }

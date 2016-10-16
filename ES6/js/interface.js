@@ -1,5 +1,23 @@
-const $ = document.querySelector.bind(document);
-const css = (el,prop) => parseInt(window.getComputedStyle(el).getPropertyValue(prop));
+//const $ = document.querySelector.bind(document);
+//const css = (el,prop) => parseInt(window.getComputedStyle(el).getPropertyValue(prop));
+
+const $ = prop => {
+  const el = document.querySelector(prop);
+  return new Selector(el);
+}
+class Selector{
+  constructor(element) {
+    this.el = element;
+  }
+  get self() {
+    return this.el;
+  }
+  css(cssProp) {
+    // add a type check for the property provided => String
+   if (typeof cssProp != "string") throw TypeError('Not a string');
+   return parseInt(window.getComputedStyle(this.el).getPropertyValue(cssProp));
+ }
+}
 
 class Interface {
   constructor() {
@@ -8,25 +26,20 @@ class Interface {
   toggle() {
     const panel = $('.hidden-box');
     let classname = '';
-    let state = css(panel, 'top');
+    let state = panel.css('top');
     if (state != 0) {
-      panel.classList.remove('hide');
+      panel.self.classList.remove('hide');
       classname = 'show';
     }else {
-      panel.classList.remove('show');
+      panel.self.classList.remove('show');
       classname = 'hide';
-    } 
-    panel.style.left = `${(document.documentElement.clientWidth -css(panel, 'width'))/2}px`;
-    panel.classList.add(classname);
+    }
+    panel.self.style.left = `${(document.documentElement.clientWidth -
+      panel.css('width'))/2}px`;
+    panel.self.classList.add(classname);
   }
   on() {
-    $('#switch').addEventListener('click', this.toggle, false);
-  }
-
-}
-class Ctrlpanel extends Interface {
-  constructor() {
-    super();
+    $('#switch').self.addEventListener('click', this.toggle, false);
   }
 
 }

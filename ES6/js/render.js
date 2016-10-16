@@ -221,7 +221,7 @@ class Render extends Viewport {
   }
 
   listen() {
-    $('#canvas').addEventListener('mousemove', evt => {
+    $('#canvas').self.addEventListener('mousemove', evt => {
       this.mouse.setPos(evt.clientX, evt.clientY);
     }, false);
   }
