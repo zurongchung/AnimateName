@@ -134,23 +134,25 @@ var Render = function (_Viewport) {
   }, {
     key: 'update',
     value: function update(curObj) {
-      var _ref = [this.mouse.x - curObj.x, this.mouse.y - curObj.y];
-      this.dx = _ref[0];
-      this.dy = _ref[1];
-
-      this.s = Math.floor(Math.sqrt(this.dx * this.dx + this.dy * this.dy));
-
+      /*
+       * I have reached baby bird
+       * and deciding move it to somewhere */
       this._activate(curObj);
-
+      /*
+       * The birdie still sleeping on its nest, dosen't know
+       * the danger is closing
+       * Then i take it to a place far from its nest
+       * Or it wake up and found itself at nowhere
+       * Terrified at first but stronger birdie calmed down
+       * and smart birdie start thinking how to get back home
+       * And it starting do the math. find its way home.
+       */
       if (curObj.active) {
-
-        /*
-         * This value of `s` is the length of string or magnitude of
-         * resistance force */
-        var dx = curObj.x - curObj.origx;
-        var dy = curObj.y - curObj.origy;
-
-        var s = Math.floor(Math.sqrt(dx * dx + dy * dy));
+        this.ctx.beginPath();
+        this.ctx.moveTo(curObj.x, curObj.y);
+        this.ctx.lineTo(curObj.origx, curObj.origy);
+        this.ctx.strokeStyle = "#FFF";
+        this.ctx.stroke();
 
         /*
          * Given shape (a push) an unbalanced force that will change the
@@ -158,23 +160,60 @@ var Render = function (_Viewport) {
          * The direction of this force usually diagonal.
          * And Break it down into horizontal force and verticle force.
          * while mouse touched shape */
+
+        if (curObj.farFromHome && !curObj.trigTrap) {
+          /*
+           * I moved the baby bird to somewhere far from its nest
+           * And baby bird realized it has been moved during sleep
+           * Now it wants to get back to its nest
+           * So it do the math
+           * @speed with a normal speed
+           * @distance  How long the distance between it and its nest
+           * @step How many step or time it gonna take to get there
+           * @easeout It decide when it almost get there it will fly
+           * towards the nest
+           */
+          curObj.direction = this.getback(curObj, curObj.dy / curObj.dx);
+          //curObj.force = curObj.defForce;
+          /*
+           * Its going home, so its not far From Home anymore */
+          curObj.farFromHome = false;
+        }
         curObj.v.x = Math.cos(curObj.direction) * curObj.force;
         curObj.v.y = Math.sin(curObj.direction) * curObj.force;
-
         /*
-         * Acceleration of this object */
+         * Acceleration of the my speed */
         curObj.a.x = curObj.v.x / curObj.mass;
         curObj.a.y = curObj.v.y / curObj.mass;
 
-        curObj.force -= this.friction;
-
-        // moving shape
+        // moving the birdie
         curObj.x += curObj.v.x + curObj.a.x;
         curObj.y += curObj.v.y + curObj.a.y;
         /*
-         * If the string has reached maximum length
-         * Stop moving*/
-        if (s > this.max) {}
+        * Air and/or ground friction slows me down */
+        curObj.force -= this.friction;
+
+        if (Math.round(curObj.force) == 0) {
+          curObj.trigTrap = false;
+          /*
+           * @displacement => mathematical symbol is  `s`
+           * Baby bird has calculated the distance between it and its nest */
+          var _ref = [curObj.x - curObj.origx, curObj.y - curObj.origy];
+          curObj.dx = _ref[0];
+          curObj.dy = _ref[1];
+
+          curObj.distance = Math.floor(Math.sqrt(curObj.dx * curObj.dx + curObj.dy * curObj.dy));
+          curObj.force = curObj.defForce;
+          if (curObj.distance > 0) {
+            curObj.farFromHome = true;
+          }
+          if (curObj.distance == 0) {
+            /*
+             * Home sweet home. The birdie made it.*/
+            curObj.farFromHome = false;
+            curObj.active = false;
+          }
+        }
       }
     }
   }, {
@@ -185,18 +224,34 @@ var Render = function (_Viewport) {
       return this.mouse.x < curObj.x ? Math.atan(tangent) : Math.PI - Math.atan(tangent) * -1;
     }
   }, {
+    key: 'getback',
+    value: function getback(curObj, tangent) {
+      return curObj.x < curObj.origx ? Math.atan(tangent) : Math.PI - Math.atan(tangent) * -1;
+    }
+  }, {
     key: '_activate',
     value: function _activate(curObj) {
-      if (this.s < 120) {
+      /*
+       * This is the distance between me and the sleeping baby bird */
+      var dx = this.mouse.x - curObj.x;
+      var dy = this.mouse.y - curObj.y;
+
+      var s = Math.floor(Math.sqrt(dx * dx + dy * dy));
+      if (s < 120) {
         /*
          * Only
          * change the angle of the path that shape moves
          * when mouse and shape has been touched */
-        curObj.direction = this.goto(curObj, this.dy / this.dx);
+        curObj.direction = this.goto(curObj, dy / dx);
         if (curObj.active) {
           /*
-           * Reset the net force when acted by other object */
-          curObj.force = curObj.defForce;
+           * while birdie going home,
+           * I have already set a trap on its way home
+           * if it triggered that trap, then it will
+           * have to run back for its life.
+           *  */
+          curObj.trigTrap = true;
+          //  curObj.force = curObj.defForce;
         } else {
           curObj.active = true;
         }
@@ -207,7 +262,7 @@ var Render = function (_Viewport) {
     value: function init() {
       this.listen();
       var theme = new Theme();
-      var chars = new Hex('AD');
+      var chars = new Hex('FACE');
       var arrayOfCodes = chars.codes;
       this.alignCenter(chars);
 

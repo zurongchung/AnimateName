@@ -5,22 +5,17 @@ class Shape {
     this.color = c;
     this.origx = x;
     this.origy = y;
-    this.defForce = 4;
+    this.dx = 0;
+    this.dy = 0;
+    this.distance = 0;
+    this.defForce = 10;
     this.force = this.defForce;
     this.direction = 0;
     this.active = false;
+    this.farFromHome = false;
+    this.trigTrap = false;
     this.v = new Vector(0.0, 0.0);
     this.a = new Vector(0.0, 0.0);
-  }
-  goto(action, tangent) {
-    return action.x < this.x ? Math.atan(tangent) :
-      Math.PI - Math.atan(tangent) * -1;
-  }
-  setFF() {
-    // set friction and velocity
-    this.v.setPos( Math.cos(this.direction) * this.force,
-      Math.sin(this.direction) * this.force);
-
   }
 }
 class Circle extends Shape {

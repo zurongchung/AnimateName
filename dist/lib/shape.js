@@ -8,38 +8,26 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Shape = function () {
-  function Shape(x, y, c) {
-    _classCallCheck(this, Shape);
+var Shape = function Shape(x, y, c) {
+  _classCallCheck(this, Shape);
 
-    this.x = x;
-    this.y = y;
-    this.color = c;
-    this.origx = x;
-    this.origy = y;
-    this.defForce = 4;
-    this.force = this.defForce;
-    this.direction = 0;
-    this.active = false;
-    this.v = new Vector(0.0, 0.0);
-    this.a = new Vector(0.0, 0.0);
-  }
-
-  _createClass(Shape, [{
-    key: "goto",
-    value: function goto(action, tangent) {
-      return action.x < this.x ? Math.atan(tangent) : Math.PI - Math.atan(tangent) * -1;
-    }
-  }, {
-    key: "setFF",
-    value: function setFF() {
-      // set friction and velocity
-      this.v.setPos(Math.cos(this.direction) * this.force, Math.sin(this.direction) * this.force);
-    }
-  }]);
-
-  return Shape;
-}();
+  this.x = x;
+  this.y = y;
+  this.color = c;
+  this.origx = x;
+  this.origy = y;
+  this.dx = 0;
+  this.dy = 0;
+  this.distance = 0;
+  this.defForce = 10;
+  this.force = this.defForce;
+  this.direction = 0;
+  this.active = false;
+  this.farFromHome = false;
+  this.trigTrap = false;
+  this.v = new Vector(0.0, 0.0);
+  this.a = new Vector(0.0, 0.0);
+};
 
 var Circle = function (_Shape) {
   _inherits(Circle, _Shape);
