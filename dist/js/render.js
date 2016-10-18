@@ -12,6 +12,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var docEt = document.documentElement;
 var RAF = window.requestAnimationFrame;
+// dots
+var t = 0;
+var speed = 0.1;
+var z = 10;
+var p0 = { x: 500, y: 120 };
+var cp1 = { x: 680, y: 280 };
+var cp2 = { x: 650, y: 550 };
+var p1 = { x: 720, y: 420 };
 
 var Viewport = function () {
   function Viewport() {
@@ -72,15 +80,10 @@ var Render = function (_Viewport) {
     _this.hgap = 10;
     _this.vgap = 0;
     _this.shapes = [];
-    _this.dx = 0;
-    _this.dy = 0;
-    _this.s = 0;
-    _this.spiralForce = 60;
-    _this.max = 90;
-    _this.friction = 0.5;
 
     // Initialize mouse
     _this.mouse = new Vector(9999, 9999);
+    _this.radius = 120;
     return _this;
   }
 
@@ -95,12 +98,75 @@ var Render = function (_Viewport) {
     value: function render() {
       var _this2 = this;
 
-      this.reset();
-      this.draw();
-      new Circle(this.mouse.x, this.mouse.y, new Theme().rgb(5), 120).draw(this.ctx, 1);
+      this.drawWallpaper();
+      //this.reset();
+      //this.draw()
+      this.bezier();
+      this.curvy();
+      //new Circle(this.mouse.x, this.mouse.y, this.radius, new Theme().rgb(5)).draw(this.ctx, 1);
       RAF(function () {
         return _this2.render();
       });
+    }
+  }, {
+    key: 'listen',
+    value: function listen() {
+      var _this3 = this;
+
+      $('#canvas').self.addEventListener('mousemove', function (evt) {
+        _this3.mouse.setPos(evt.clientX, evt.clientY);
+      }, false);
+    }
+  }, {
+    key: 'bezier',
+    value: function bezier() {
+      new Circle(p0.x, p0.y, z - 4, '#FFF').draw(this.ctx, 1);
+      new Circle(p1.x, p1.y, z - 4, '#FFF').draw(this.ctx, 1);
+      new Circle(cp1.x, cp1.y, z, '#FFF').draw(this.ctx, 1);
+      new Circle(cp2.x, cp2.y, z, '#FFF').draw(this.ctx, 1);
+
+      // control line
+      new Line(p0.x, p0.y, cp1.x, cp1.y).draw(this.ctx);
+      new Line(cp1.x, cp1.y, cp2.x, cp2.y).draw(this.ctx);
+      new Line(cp2.x, cp2.y, p1.x, p1.y).draw(this.ctx);
+
+      new Cubic(p0.x, p0.y, cp1.x, cp1.y, cp2.x, cp2.y, p1.x, p1.y).draw(this.ctx);
+    }
+  }, {
+    key: 'curvy',
+    value: function curvy() {
+      if (t >= 1 || t < 0) speed *= -1;
+      speed -= speed * 0.01;
+      t += speed;
+      // point on the line same as starting point
+      var qx = (1 - t) * p0.x + t * cp1.x;
+      var qy = (1 - t) * p0.y + t * cp1.y;
+      // point on curve tangent line
+      var rx = (1 - t) * cp1.x + t * cp2.x;
+      var ry = (1 - t) * cp1.y + t * cp2.y;
+      // point on the line same as ending point
+      var sx = (1 - t) * cp2.x + t * p1.x;
+      var sy = (1 - t) * cp2.y + t * p1.y;
+
+      // line connect three points above
+      new Line(qx, qy, rx, ry, 'rgb(44, 122, 185)').draw(this.ctx);
+      new Line(rx, ry, sx, sy, 'rgb(44, 122, 185)').draw(this.ctx);
+
+      // point on the first moving line
+      var ax = (1 - t) * qx + t * rx;
+      var ay = (1 - t) * qy + t * ry;
+      // point on the second moving line
+      var fx = (1 - t) * rx + t * sx;
+      var fy = (1 - t) * ry + t * sy;
+
+      // line for the tip lies on
+      new Line(ax, ay, fx, fy, 'rgb(186, 57, 68)').draw(this.ctx);
+      // point of the tip
+      var Gx = (1 - t) * ax + t * fx;
+      var Gy = (1 - t) * ay + t * fy;
+
+      // tip of the pen
+      new Circle(Gx, Gy, z - 2, 'rgb(183, 228, 33)').draw(this.ctx);
     }
   }, {
     key: 'draw',
@@ -133,136 +199,13 @@ var Render = function (_Viewport) {
     }
   }, {
     key: 'update',
-    value: function update(curObj) {
-      /*
-       * I have reached baby bird
-       * and deciding move it to somewhere */
-      this._activate(curObj);
-      /*
-       * The birdie still sleeping on its nest, dosen't know
-       * the danger is closing
-       * Then i take it to a place far from its nest
-       * Or it wake up and found itself at nowhere
-       * Terrified at first but stronger birdie calmed down
-       * and smart birdie start thinking how to get back home
-       * And it starting do the math. find its way home.
-       */
-      if (curObj.active) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(curObj.x, curObj.y);
-        this.ctx.lineTo(curObj.origx, curObj.origy);
-        this.ctx.strokeStyle = "#FFF";
-        this.ctx.stroke();
-
-        /*
-         * Given shape (a push) an unbalanced force that will change the
-         * stete of that shape.
-         * The direction of this force usually diagonal.
-         * And Break it down into horizontal force and verticle force.
-         * while mouse touched shape */
-
-        if (curObj.farFromHome && !curObj.trigTrap) {
-          /*
-           * I moved the baby bird to somewhere far from its nest
-           * And baby bird realized it has been moved during sleep
-           * Now it wants to get back to its nest
-           * So it do the math
-           * @speed with a normal speed
-           * @distance  How long the distance between it and its nest
-           * @step How many step or time it gonna take to get there
-           * @easeout It decide when it almost get there it will fly
-           * towards the nest
-           */
-          curObj.direction = this.getback(curObj, curObj.dy / curObj.dx);
-          //curObj.force = curObj.defForce;
-          /*
-           * Its going home, so its not far From Home anymore */
-          curObj.farFromHome = false;
-        }
-        curObj.v.x = Math.cos(curObj.direction) * curObj.force;
-        curObj.v.y = Math.sin(curObj.direction) * curObj.force;
-        /*
-         * Acceleration of the my speed */
-        curObj.a.x = curObj.v.x / curObj.mass;
-        curObj.a.y = curObj.v.y / curObj.mass;
-
-        // moving the birdie
-        curObj.x += curObj.v.x + curObj.a.x;
-        curObj.y += curObj.v.y + curObj.a.y;
-        /*
-        * Air and/or ground friction slows me down */
-        curObj.force -= this.friction;
-
-        if (Math.round(curObj.force) == 0) {
-          curObj.trigTrap = false;
-          /*
-           * @displacement => mathematical symbol is  `s`
-           * Baby bird has calculated the distance between it and its nest */
-          var _ref = [curObj.x - curObj.origx, curObj.y - curObj.origy];
-          curObj.dx = _ref[0];
-          curObj.dy = _ref[1];
-
-          curObj.distance = Math.floor(Math.sqrt(curObj.dx * curObj.dx + curObj.dy * curObj.dy));
-          curObj.force = curObj.defForce;
-          if (curObj.distance > 0) {
-            curObj.farFromHome = true;
-          }
-          if (curObj.distance == 0) {
-            /*
-             * Home sweet home. The birdie made it.*/
-            curObj.farFromHome = false;
-            curObj.active = false;
-          }
-        }
-      }
-    }
-  }, {
-    key: 'goto',
-    value: function goto(curObj, tangent) {
-      /*
-       * Calulate the angle of the moving path of that shape */
-      return this.mouse.x < curObj.x ? Math.atan(tangent) : Math.PI - Math.atan(tangent) * -1;
-    }
-  }, {
-    key: 'getback',
-    value: function getback(curObj, tangent) {
-      return curObj.x < curObj.origx ? Math.atan(tangent) : Math.PI - Math.atan(tangent) * -1;
-    }
-  }, {
-    key: '_activate',
-    value: function _activate(curObj) {
-      /*
-       * This is the distance between me and the sleeping baby bird */
-      var dx = this.mouse.x - curObj.x;
-      var dy = this.mouse.y - curObj.y;
-
-      var s = Math.floor(Math.sqrt(dx * dx + dy * dy));
-      if (s < 120) {
-        /*
-         * Only
-         * change the angle of the path that shape moves
-         * when mouse and shape has been touched */
-        curObj.direction = this.goto(curObj, dy / dx);
-        if (curObj.active) {
-          /*
-           * while birdie going home,
-           * I have already set a trap on its way home
-           * if it triggered that trap, then it will
-           * have to run back for its life.
-           *  */
-          curObj.trigTrap = true;
-          //  curObj.force = curObj.defForce;
-        } else {
-          curObj.active = true;
-        }
-      }
-    }
+    value: function update(curObj) {}
   }, {
     key: 'init',
     value: function init() {
       this.listen();
       var theme = new Theme();
-      var chars = new Hex('FACE');
+      var chars = new Hex('RACG');
       var arrayOfCodes = chars.codes;
       this.alignCenter(chars);
 
@@ -290,9 +233,9 @@ var Render = function (_Viewport) {
 
               var x = _p[0];
               var y = _p[1];
-              var s = _p[2];
+              var _z = _p[2];
 
-              this.livings(x + space + this.ofx, y + this.ofy, theme.rgb(colorIndex), s);
+              this.livings(x + space + this.ofx, y + this.ofy, _z, theme.rgb(colorIndex));
             }
           } catch (err) {
             _didIteratorError3 = true;
@@ -329,30 +272,42 @@ var Render = function (_Viewport) {
     }
   }, {
     key: 'livings',
-    value: function livings(x, y, c, s) {
+    value: function livings(x, y, z, c) {
       /*
        * Save shapes that are appeared on the canvas.
        * An array of shapes that forms our animation.
        */
 
       if (this.type === 'square') {
-        var square = new Square(x, y, c, s);
+        var square = new Square(x, y, z, c);
         //this.square(square);
         this.shapes.push(square);
       } else {
-        var circle = new Circle(x, y, c, s);
+        var circle = new Circle(x, y, z, c);
         //  this.circle(circle);
         this.shapes.push(circle);
       }
     }
   }, {
-    key: 'listen',
-    value: function listen() {
-      var _this3 = this;
+    key: 'drawWallpaper',
+    value: function drawWallpaper() {
+      var _this4 = this;
 
-      $('#canvas').self.addEventListener('mousemove', function (evt) {
-        _this3.mouse.setPos(evt.clientX, evt.clientY);
+      var w = 69;
+      var h = 100;
+      var _ref = [Math.round(this.height / h), Math.round(this.width / w)];
+      var row = _ref[0];
+      var col = _ref[1];
+
+      var img = new Image();
+      img.addEventListener('load', function () {
+        for (var i = 0; i < col; i++) {
+          for (var r = 0; r < row; r++) {
+            _this4.ctx.drawImage(img, i * w, r * h);
+          }
+        }
       }, false);
+      img.src = './assets/img/backdrop.png';
     }
   }, {
     key: 'alignCenter',
@@ -369,7 +324,7 @@ var Render = function (_Viewport) {
   }, {
     key: 'reset',
     value: function reset() {
-      this.ctx.fillStyle = 'black';
+      this.ctx.fillStyle = 'rgba(0,0,0, .65)';
       this.ctx.fillRect(0, 0, this.width, this.height);
     }
   }]);
