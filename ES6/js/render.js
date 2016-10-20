@@ -1,5 +1,9 @@
 const docEt = document.documentElement;
 const RAF   = window.requestAnimationFrame;
+document.force = 15;
+//document.springStrength = 0.1;
+document.friction = 0.05;
+document.rotationForce = 0.0;
 // dots
 let t = 0;
 let speed = 0.1;
@@ -42,79 +46,13 @@ class Render extends Viewport {
     this.hgap  = 10;
     this.vgap  = 0;
     this.shapes = [];
+    this.ball = [];  // exp bezier
 
     // Initialize mouse
     this.mouse = new Vector(9999, 9999);
     this.radius = 120;
   }
-  refresh() {
-    this.resize();
-    this.render();
-  }
-  render() {
-    this.drawWallpaper();
-    //this.reset();
-    //this.draw()
-    this.bezier();
-    this.curvy();
-    //new Circle(this.mouse.x, this.mouse.y, this.radius, new Theme().rgb(5)).draw(this.ctx, 1);
-    RAF(()=>this.render());
-  }
-  listen() {
-    $('#canvas').self.addEventListener('mousemove', evt => {
-      this.mouse.setPos(evt.clientX, evt.clientY);
-    }, false);
-  }
-  bezier() {
-    new Circle(p0.x, p0.y, z-4, '#FFF').draw(this.ctx, 1);
-    new Circle(p1.x, p1.y, z-4, '#FFF').draw(this.ctx, 1);
-    new Circle(cp1.x, cp1.y, z, '#FFF').draw(this.ctx, 1);
-    new Circle(cp2.x, cp2.y, z, '#FFF').draw(this.ctx, 1);
 
-    // control line
-    new Line(p0.x, p0.y, cp1.x, cp1.y).draw(this.ctx);
-    new Line(cp1.x, cp1.y, cp2.x, cp2.y).draw(this.ctx);
-    new Line(cp2.x, cp2.y, p1.x, p1.y).draw(this.ctx);
-
-    new Cubic(p0.x, p0.y, cp1.x, cp1.y,cp2.x,cp2.y,p1.x, p1.y).draw(this.ctx);
-  }
-  curvy() {
-    if (t >= 1 || t < 0) speed *= -1;
-    speed -= speed * 0.01;
-    t += speed;
-    // point on the line same as starting point
-    let qx = (1-t) * p0.x + t* cp1.x;
-    let qy = (1-t) * p0.y + t* cp1.y;
-    // point on curve tangent line
-    let rx = (1-t) * cp1.x + t* cp2.x;
-    let ry = (1-t) * cp1.y + t* cp2.y;
-    // point on the line same as ending point
-    let sx = (1-t) * cp2.x + t* p1.x;
-    let sy = (1-t) * cp2.y + t* p1.y;
-
-    // line connect three points above
-    new Line(qx,qy,rx,ry, 'rgb(44, 122, 185)').draw(this.ctx);
-    new Line(rx,ry,sx,sy, 'rgb(44, 122, 185)').draw(this.ctx);
-
-
-    // point on the first moving line
-    let ax = (1-t) * qx + t* rx;
-    let ay = (1-t) * qy + t* ry;
-    // point on the second moving line
-    let fx = (1-t) * rx + t* sx;
-    let fy = (1-t) * ry + t* sy;
-
-    // line for the tip lies on
-    new Line(ax,ay,fx,fy, 'rgb(186, 57, 68)').draw(this.ctx);
-    // point of the tip
-    let Gx = (1-t) * ax + t* fx;
-    let Gy = (1-t) * ay + t* fy;
-
-
-    // tip of the pen
-    new Circle(Gx, Gy, z-2, 'rgb(183, 228, 33)').draw(this.ctx);
-
-  }
   draw() {
     for (const o of this.shapes) {
       this.update(o);
@@ -123,10 +61,42 @@ class Render extends Viewport {
 
   }
   update(curObj) {
+    /**
+     * to -> s The distance in a straight line between center of the mouse 
+     * and center of the shape
+     */
+    const [dx, dy] = [this.mouse.x - curObj.curPos.x, this.mouse.y - curObj.curPos.y];
+    const s = Math.sqrt(dx*dx + dy*dy);
 
+    let ss = Math.round( Math.sqrt( Math.pow(curObj.curPos.x - curObj.originalPos.x, 2) + 
+    Math.pow(curObj.curPos.y - curObj.originalPos.y, 2)));
+    let distance = document.force;
+
+    if (s < (this.radius + curObj.radius)) {
+      const angle = this.mouse.x < curObj.curPos.x ? Math.atan(dy/dx) :
+      Math.PI - Math.atan(dy/dx) * -1;
+      const shiftx = Math.cos(angle) * document.force;
+      const shifty = Math.sin(angle) * document.force;
+      /**
+       * setting target position*/
+      curObj.targetPos.setPos(curObj.curPos.x + shiftx, curObj.curPos.y + shifty);
+      /**
+       * to --> distance Is when the shape will going  back to original position
+       * if it has been intercept while going towards original position
+       * then this distance has to be increase by the remaining distance
+       */
+      distance += ss;
+    }
+    if(!s < (this.radius + curObj.radius) && ss >= distance) {
+      curObj.targetPos.setPos(curObj.originalPos.x, curObj.originalPos.y);
+    }
+    curObj.update();
   }
 
   init() {
+    // exp bezier
+    this.ball.push( new Cubic(p0.x, p0.y, cp1.x, cp1.y,cp2.x,cp2.y,p1.x, p1.y));
+        
     this.listen();
     const theme = new Theme();
     const chars = new Hex('RACG');
@@ -163,6 +133,24 @@ class Render extends Viewport {
     }
 
   }
+   bezier() {
+    // visual lines
+    new Circle(p0.x, p0.y, z-4, '#FFF').draw(this.ctx, 1);
+    new Circle(p1.x, p1.y, z-4, '#FFF').draw(this.ctx, 1);
+    new Circle(cp1.x, cp1.y, z, '#FFF').draw(this.ctx, 1);
+    new Circle(cp2.x, cp2.y, z, '#FFF').draw(this.ctx, 1);
+
+    // line connect control points
+    new Line(p0.x, p0.y, cp1.x, cp1.y).draw(this.ctx);
+    new Line(cp1.x, cp1.y, cp2.x, cp2.y).draw(this.ctx);
+    new Line(cp2.x, cp2.y, p1.x, p1.y).draw(this.ctx);
+
+    // moving ball
+    const ball = this.ball[0];
+    ball.update(this.ctx);
+    ball.draw(this.ctx);
+
+  }
   drawWallpaper() {
     const [w, h] = [69, 100];
     const [row, col] = [Math.round(this.height/h), Math.round(this.width/w)];
@@ -170,7 +158,10 @@ class Render extends Viewport {
     img.addEventListener('load', ()=> {
       for(let i=0; i<col; i++) {
         for(let r=0; r<row; r++) {
-          this.ctx.drawImage(img, i*w,r*h);
+          this.ctx.save();
+          this.ctx.translate(i*w, r*h);
+          this.ctx.drawImage(img,0,0);
+          this.ctx.restore();
         }
       }
     },false);
@@ -190,4 +181,22 @@ class Render extends Viewport {
     this.ctx.fillStyle = 'rgba(0,0,0, .65)';
     this.ctx.fillRect(0, 0, this.width, this.height);
   }
+    refresh() {
+    this.resize();
+    this.render();
+  }
+  render() {
+    this.drawWallpaper();
+    //this.reset();
+    this.draw()
+    //this.bezier();
+    new Circle(this.mouse.x, this.mouse.y, this.radius, new Theme().rgb(5)).draw(this.ctx, 1);
+    RAF(()=>this.render());
+  }
+  listen() {
+    $('#canvas').self.addEventListener('mousemove', evt => {
+      this.mouse.setPos(evt.clientX, evt.clientY);
+    }, false);
+  }
+ 
 }

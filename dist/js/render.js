@@ -12,6 +12,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var docEt = document.documentElement;
 var RAF = window.requestAnimationFrame;
+document.force = 15;
+//document.springStrength = 0.1;
+document.friction = 0.05;
+document.rotationForce = 0.0;
 // dots
 var t = 0;
 var speed = 0.1;
@@ -80,6 +84,7 @@ var Render = function (_Viewport) {
     _this.hgap = 10;
     _this.vgap = 0;
     _this.shapes = [];
+    _this.ball = []; // exp bezier
 
     // Initialize mouse
     _this.mouse = new Vector(9999, 9999);
@@ -88,87 +93,6 @@ var Render = function (_Viewport) {
   }
 
   _createClass(Render, [{
-    key: 'refresh',
-    value: function refresh() {
-      this.resize();
-      this.render();
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
-
-      this.drawWallpaper();
-      //this.reset();
-      //this.draw()
-      this.bezier();
-      this.curvy();
-      //new Circle(this.mouse.x, this.mouse.y, this.radius, new Theme().rgb(5)).draw(this.ctx, 1);
-      RAF(function () {
-        return _this2.render();
-      });
-    }
-  }, {
-    key: 'listen',
-    value: function listen() {
-      var _this3 = this;
-
-      $('#canvas').self.addEventListener('mousemove', function (evt) {
-        _this3.mouse.setPos(evt.clientX, evt.clientY);
-      }, false);
-    }
-  }, {
-    key: 'bezier',
-    value: function bezier() {
-      new Circle(p0.x, p0.y, z - 4, '#FFF').draw(this.ctx, 1);
-      new Circle(p1.x, p1.y, z - 4, '#FFF').draw(this.ctx, 1);
-      new Circle(cp1.x, cp1.y, z, '#FFF').draw(this.ctx, 1);
-      new Circle(cp2.x, cp2.y, z, '#FFF').draw(this.ctx, 1);
-
-      // control line
-      new Line(p0.x, p0.y, cp1.x, cp1.y).draw(this.ctx);
-      new Line(cp1.x, cp1.y, cp2.x, cp2.y).draw(this.ctx);
-      new Line(cp2.x, cp2.y, p1.x, p1.y).draw(this.ctx);
-
-      new Cubic(p0.x, p0.y, cp1.x, cp1.y, cp2.x, cp2.y, p1.x, p1.y).draw(this.ctx);
-    }
-  }, {
-    key: 'curvy',
-    value: function curvy() {
-      if (t >= 1 || t < 0) speed *= -1;
-      speed -= speed * 0.01;
-      t += speed;
-      // point on the line same as starting point
-      var qx = (1 - t) * p0.x + t * cp1.x;
-      var qy = (1 - t) * p0.y + t * cp1.y;
-      // point on curve tangent line
-      var rx = (1 - t) * cp1.x + t * cp2.x;
-      var ry = (1 - t) * cp1.y + t * cp2.y;
-      // point on the line same as ending point
-      var sx = (1 - t) * cp2.x + t * p1.x;
-      var sy = (1 - t) * cp2.y + t * p1.y;
-
-      // line connect three points above
-      new Line(qx, qy, rx, ry, 'rgb(44, 122, 185)').draw(this.ctx);
-      new Line(rx, ry, sx, sy, 'rgb(44, 122, 185)').draw(this.ctx);
-
-      // point on the first moving line
-      var ax = (1 - t) * qx + t * rx;
-      var ay = (1 - t) * qy + t * ry;
-      // point on the second moving line
-      var fx = (1 - t) * rx + t * sx;
-      var fy = (1 - t) * ry + t * sy;
-
-      // line for the tip lies on
-      new Line(ax, ay, fx, fy, 'rgb(186, 57, 68)').draw(this.ctx);
-      // point of the tip
-      var Gx = (1 - t) * ax + t * fx;
-      var Gy = (1 - t) * ay + t * fy;
-
-      // tip of the pen
-      new Circle(Gx, Gy, z - 2, 'rgb(183, 228, 33)').draw(this.ctx);
-    }
-  }, {
     key: 'draw',
     value: function draw() {
       var _iteratorNormalCompletion = true;
@@ -199,10 +123,44 @@ var Render = function (_Viewport) {
     }
   }, {
     key: 'update',
-    value: function update(curObj) {}
+    value: function update(curObj) {
+      /**
+       * to -> s The distance in a straight line between center of the mouse 
+       * and center of the shape
+       */
+      var dx = this.mouse.x - curObj.curPos.x;
+      var dy = this.mouse.y - curObj.curPos.y;
+
+      var s = Math.sqrt(dx * dx + dy * dy);
+
+      var ss = Math.round(Math.sqrt(Math.pow(curObj.curPos.x - curObj.originalPos.x, 2) + Math.pow(curObj.curPos.y - curObj.originalPos.y, 2)));
+      var distance = document.force;
+
+      if (s < this.radius + curObj.radius) {
+        var angle = this.mouse.x < curObj.curPos.x ? Math.atan(dy / dx) : Math.PI - Math.atan(dy / dx) * -1;
+        var shiftx = Math.cos(angle) * document.force;
+        var shifty = Math.sin(angle) * document.force;
+        /**
+         * setting target position*/
+        curObj.targetPos.setPos(curObj.curPos.x + shiftx, curObj.curPos.y + shifty);
+        /**
+         * to --> distance Is when the shape will going  back to original position
+         * if it has been intercept while going towards original position
+         * then this distance has to be increase by the remaining distance
+         */
+        distance += ss;
+      }
+      if (!s < this.radius + curObj.radius && ss >= distance) {
+        curObj.targetPos.setPos(curObj.originalPos.x, curObj.originalPos.y);
+      }
+      curObj.update();
+    }
   }, {
     key: 'init',
     value: function init() {
+      // exp bezier
+      this.ball.push(new Cubic(p0.x, p0.y, cp1.x, cp1.y, cp2.x, cp2.y, p1.x, p1.y));
+
       this.listen();
       var theme = new Theme();
       var chars = new Hex('RACG');
@@ -289,9 +247,28 @@ var Render = function (_Viewport) {
       }
     }
   }, {
+    key: 'bezier',
+    value: function bezier() {
+      // visual lines
+      new Circle(p0.x, p0.y, z - 4, '#FFF').draw(this.ctx, 1);
+      new Circle(p1.x, p1.y, z - 4, '#FFF').draw(this.ctx, 1);
+      new Circle(cp1.x, cp1.y, z, '#FFF').draw(this.ctx, 1);
+      new Circle(cp2.x, cp2.y, z, '#FFF').draw(this.ctx, 1);
+
+      // line connect control points
+      new Line(p0.x, p0.y, cp1.x, cp1.y).draw(this.ctx);
+      new Line(cp1.x, cp1.y, cp2.x, cp2.y).draw(this.ctx);
+      new Line(cp2.x, cp2.y, p1.x, p1.y).draw(this.ctx);
+
+      // moving ball
+      var ball = this.ball[0];
+      ball.update(this.ctx);
+      ball.draw(this.ctx);
+    }
+  }, {
     key: 'drawWallpaper',
     value: function drawWallpaper() {
-      var _this4 = this;
+      var _this2 = this;
 
       var w = 69;
       var h = 100;
@@ -303,7 +280,10 @@ var Render = function (_Viewport) {
       img.addEventListener('load', function () {
         for (var i = 0; i < col; i++) {
           for (var r = 0; r < row; r++) {
-            _this4.ctx.drawImage(img, i * w, r * h);
+            _this2.ctx.save();
+            _this2.ctx.translate(i * w, r * h);
+            _this2.ctx.drawImage(img, 0, 0);
+            _this2.ctx.restore();
           }
         }
       }, false);
@@ -326,6 +306,35 @@ var Render = function (_Viewport) {
     value: function reset() {
       this.ctx.fillStyle = 'rgba(0,0,0, .65)';
       this.ctx.fillRect(0, 0, this.width, this.height);
+    }
+  }, {
+    key: 'refresh',
+    value: function refresh() {
+      this.resize();
+      this.render();
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this3 = this;
+
+      this.drawWallpaper();
+      //this.reset();
+      this.draw();
+      //this.bezier();
+      new Circle(this.mouse.x, this.mouse.y, this.radius, new Theme().rgb(5)).draw(this.ctx, 1);
+      RAF(function () {
+        return _this3.render();
+      });
+    }
+  }, {
+    key: 'listen',
+    value: function listen() {
+      var _this4 = this;
+
+      $('#canvas').self.addEventListener('mousemove', function (evt) {
+        _this4.mouse.setPos(evt.clientX, evt.clientY);
+      }, false);
     }
   }]);
 

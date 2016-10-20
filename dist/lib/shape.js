@@ -12,9 +12,11 @@ var Shape = function Shape(x, y, z, c) {
   _classCallCheck(this, Shape);
 
   this.color = c;
+  this.mass = z;
   this.curPos = new Vector(x, y, z);
   this.originalPos = new Vector(x, y, z);
-  this.v = new Vector(0.0, 0.0);
+  this.targetPos = new Vector(x, y);
+  this.velocity = new Vector(0.0, 0.0);
 };
 
 var Circle = function (_Shape) {
@@ -49,6 +51,27 @@ var Circle = function (_Shape) {
       }
 
       ctx.closePath();
+    }
+  }, {
+    key: 'update',
+    value: function update() {
+      var strength = document.springStrength;
+      var _ref = [document.friction, document.rotationForce];
+      var friction = _ref[0];
+      var rotationFroce = _ref[1];
+      var dx = this.targetPos.x - this.curPos.x;
+      var dy = this.targetPos.y - this.curPos.y;
+
+      var ax = dx / this.mass - rotationFroce * dy;
+      var ay = dy / this.mass + rotationFroce * dx;
+      //console.log(rotationFroce)
+      this.velocity.x += ax;
+      this.velocity.x -= this.velocity.x * friction;
+      this.curPos.x += this.velocity.x;
+
+      this.velocity.y += ay;
+      this.velocity.y -= this.velocity.y * friction;
+      this.curPos.y += this.velocity.y;
     }
   }]);
 
@@ -131,6 +154,8 @@ var Cubic = function (_Curve) {
 
     _this3.cp1x = cp1x;
     _this3.cp1y = cp1y;
+    _this3.t = 0.2;
+    _this3.speed = 0.1;
     return _this3;
   }
 
@@ -143,6 +168,42 @@ var Cubic = function (_Curve) {
       ctx.lineWidth = 4;
       ctx.strokeStyle = this.color;
       ctx.stroke();
+    }
+  }, {
+    key: 'update',
+    value: function update(ctx) {
+      if (this.t >= 1 || this.t < 0) this.speed *= -1;
+      this.speed -= this.speed * 0.01;
+      this.t += this.speed;
+      // point on the line same as starting point
+      var qx = (1 - this.t) * this.x + this.t * this.cpx;
+      var qy = (1 - this.t) * this.y + this.t * this.cpy;
+      // point on curve tangent line
+      var rx = (1 - this.t) * this.cpx + this.t * this.cp1x;
+      var ry = (1 - this.t) * this.cpy + this.t * this.cp1y;
+      // point on the line same as ending point
+      var sx = (1 - this.t) * this.cp1x + this.t * this.ex;
+      var sy = (1 - this.t) * this.cp1y + this.t * this.ey;
+
+      // line connect three points above
+      new Line(qx, qy, rx, ry, 'rgb(44, 122, 185)').draw(ctx);
+      new Line(rx, ry, sx, sy, 'rgb(44, 122, 185)').draw(ctx);
+
+      // point on the first moving line
+      var ax = (1 - this.t) * qx + this.t * rx;
+      var ay = (1 - this.t) * qy + this.t * ry;
+      // point on the second moving line
+      var fx = (1 - this.t) * rx + this.t * sx;
+      var fy = (1 - this.t) * ry + this.t * sy;
+
+      // line for the tip lies on
+      new Line(ax, ay, fx, fy, 'rgb(186, 57, 68)').draw(ctx);
+      // point of the tip
+      var Gx = (1 - this.t) * ax + this.t * fx;
+      var Gy = (1 - this.t) * ay + this.t * fy;
+
+      // tip of the pen
+      new Circle(Gx, Gy, 7, 'rgb(183, 228, 33)').draw(ctx);
     }
   }]);
 
