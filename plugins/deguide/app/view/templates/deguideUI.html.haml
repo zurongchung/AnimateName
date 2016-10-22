@@ -1,0 +1,33 @@
+-# the top most wrapper
+.de-panel
+  / the value control area
+  .main-contents.row
+    %form
+      - for j in (1..2) do
+        - i = j > 1 ? 0 : 2
+        - col = j % 2 == 0 ? 'col-right' : 'col-left'
+        - t = 1
+        / ==== column ====
+        %div{:class => [col, 'columns']}
+          
+          - 5.times do
+            - i = 4 if t > 2 && t < 5
+            .field-flex-box
+              -# icon 
+              .icon-wrapper
+                %a{:href => '#', :class => ['icon', 'distrubute']}
+                  -# SVG here
+              -# value field
+              .value-wrapper
+                %input{:class => 'valueField',:type => 'text', :autocomplete => 'off', :placeholder => @hints[i]}
+            - i += 1
+            - t += 1
+        
+  .gen-btn-wrapper.row
+    %button.gen-btn
+  .quick-setting.icon-wrapper.row
+    %ul
+      - 7.times do
+        %li{:class => ['icon-vert-align', 'icon-horz-align']}
+          %a{:class => ['icon', ]}
+            -# SVG here

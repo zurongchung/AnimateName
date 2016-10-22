@@ -1,0 +1,48 @@
+@import 'func/func'
+$ratio: 1.618
+$multiplier: 2
+$width: 340px
+$height: $width * $ratio
+$max-width: $width * $multiplier
+$max-height: $height * $multiplier
+$min-width: $width / $multiplier
+$min-height: $height / $multiplier
+$pd: 10px
+
+// Themes
+$primary: '#fff'
+
+/*********** 
+ * common  *
+ ***********/
+ul li 
+  list-style: none
+a
+  display: block
+  
+.de-panel
+  width: $width
+  height: $height
+  max-width: $max-width
+  max-height: $max-height
+  min-width: $min-width
+  min-height: $min-height
+  padding: 0px $pd
+  background-color: $primary
+  border: 1px solid black
+  .main-contents
+    width: $width - $pd * 2
+    height: pcent($height, .85)
+
+    form
+      display: flex
+
+.columns
+  width: 50%
+  flex: 1 1 auto
+.icon-wrapper, .value-wrapper
+  height: 26px
+.icon-wrapper
+  width: 26px / ($width / $multiplier) * 100%
+.field-flex-box
+  display: flex

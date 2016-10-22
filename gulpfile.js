@@ -20,8 +20,14 @@ gulp.task('transform', function() {
   var model = gulp.src("ES6/model/*.js")
     .pipe(babel())
     .pipe(gulp.dest("dist/model"));
+/**
+ * deguide plugins
+ */
+  var deguide = gulp.src("plugins/deguide/app/ES6/*.js")
+    .pipe(babel())
+    .pipe(gulp.dest("plugins/deguide/app/assets/javascripts"));
 
-  return [controller, main, lib, model];
+  return [controller, main, lib, model, deguide];
 
 });
 
@@ -29,8 +35,10 @@ var sassOpts = {
   errLogToConsole: true,
   outputStyle: 'expanded'
 };
-var sassIn = 'stylus/sass/**/*.sass';
-var sassOut = 'assets/css/';
+//var sassIn = 'stylus/sass/**/*.sass';
+//var sassOut = 'assets/css/';
+var sassIn = 'plugins/deguide/app/sass/**/*.sass'
+var sassOut = 'plugins/deguide/app/assets/css/'
 gulp.task('sass', function() {
   return gulp.src(sassIn)
              .pipe(somaps.init())

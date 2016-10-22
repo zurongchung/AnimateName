@@ -1,0 +1,1 @@
+{"version":3,"file":"func/func.css","sources":["func/func.sass"],"sourcesContent":["@function pcent($total, $percentage) {\n  @return $total * $percentage; }\n"],"mappings":"","names":[],"sourceRoot":"/source/"}

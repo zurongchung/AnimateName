@@ -1,0 +1,50 @@
+/***********
+ * common  *
+ ***********/
+ul li {
+  list-style: none;
+}
+
+a {
+  display: block;
+}
+
+.de-panel {
+  width: 340px;
+  height: 550.12px;
+  max-width: 680px;
+  max-height: 1100.24px;
+  min-width: 170px;
+  min-height: 275.06px;
+  padding: 0px 10px;
+  background-color: "#fff";
+  border: 1px solid black;
+}
+
+.de-panel .main-contents {
+  width: 320px;
+  height: 467.602px;
+}
+
+.de-panel .main-contents form {
+  display: flex;
+}
+
+.columns {
+  width: 50%;
+  flex: 1 1 auto;
+}
+
+.icon-wrapper, .value-wrapper {
+  height: 26px;
+}
+
+.icon-wrapper {
+  width: 15.29412%;
+}
+
+.field-flex-box {
+  display: flex;
+}
+
+/*# sourceMappingURL=maps/ui.css.map */
