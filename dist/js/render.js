@@ -10,7 +10,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var docEt = document.documentElement;
+var docElem = document.documentElement;
 var RAF = window.requestAnimationFrame;
 document.force = 15;
 //document.springStrength = 0.1;
@@ -29,15 +29,15 @@ var Viewport = function () {
   function Viewport() {
     _classCallCheck(this, Viewport);
 
-    this.canvas.width = docEt.clientWidth;
-    this.canvas.height = docEt.clientHeight;
+    this.canvas.width = docElem.clientWidth;
+    this.canvas.height = docElem.clientHeight;
   }
 
   _createClass(Viewport, [{
     key: 'resize',
     value: function resize() {
-      this.width = docEt.clientWidth;
-      this.height = docEt.clientHeight;
+      this.width = docElem.clientWidth;
+      this.height = docElem.clientHeight;
     }
   }, {
     key: 'canvas',

@@ -6,36 +6,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 //const $ = document.querySelector.bind(document);
 //const css = (el,prop) => parseInt(window.getComputedStyle(el).getPropertyValue(prop));
-
-var $ = function $(prop) {
-  var el = document.querySelector(prop);
-  return new Selector(el);
-};
-
-var Selector = function () {
-  function Selector(element) {
-    _classCallCheck(this, Selector);
-
-    this.el = element;
-  }
-
-  _createClass(Selector, [{
-    key: 'css',
-    value: function css(cssProp) {
-      // add a type check for the property provided => String
-      if (typeof cssProp != "string") throw TypeError('Not a string');
-      return parseInt(window.getComputedStyle(this.el).getPropertyValue(cssProp));
-    }
-  }, {
-    key: 'self',
-    get: function get() {
-      return this.el;
-    }
-  }]);
-
-  return Selector;
-}();
-
 var Interface = function () {
   function Interface() {
     _classCallCheck(this, Interface);

@@ -26,8 +26,14 @@ gulp.task('transform', function() {
   var deguide = gulp.src("plugins/deguide/app/ES6/*.js")
     .pipe(babel())
     .pipe(gulp.dest("plugins/deguide/app/assets/javascripts"));
+/**
+ * common library
+ */
+  var jquery = gulp.src("libs/ES6/*.js")
+    .pipe(babel())
+    .pipe(gulp.dest("libs/dist"));
 
-  return [controller, main, lib, model, deguide];
+  return [controller, main, lib, model, deguide, jquery];
 
 });
 
@@ -54,7 +60,7 @@ gulp.task('sass:watch', function(){
 });
 
 gulp.task('js:watch', function() {
-  gulp.watch('ES6/**/*.js', ['transform'], function(event) {
+  gulp.watch(['libs/ES6/**/*.js', 'ES6/**/*.js', 'plugins/deguide/app/ES6/**/*.js'], ['transform'], function(event) {
     gutil.log('Ecma6 File ' + event.path + ' was transformed into Ecma5.');
   })
 });

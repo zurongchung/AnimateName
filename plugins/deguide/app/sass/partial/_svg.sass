@@ -1,0 +1,18 @@
+$icon-size: 26px
+$guidesColor: #42aaec
+svg.vector_icon
+  width: $icon-size
+  height: $icon-size
+g .cls-1
+  fill: #e0e0e0 !important
+g .cls-2 
+  //fill: #bfbcbc !important
+svg#guidesBox
+  pointer-events: none
+path.gline
+  stroke: $guidesColor
+  stroke-width: 1
+  pointer-events: stroke
+  &:hover
+    stroke-width: 4
+    cursor: move

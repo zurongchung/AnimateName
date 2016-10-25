@@ -4,6 +4,9 @@
   .main-contents.row
     %form
       - for j in (1..2) do
+        -# to --> ico is icon index
+        - ico = j > 1 ? 0 : 5
+        -# to --> i is input field placeholder index
         - i = j > 1 ? 0 : 2
         - col = j % 2 == 0 ? 'col-right' : 'col-left'
         - t = 1
@@ -16,18 +19,20 @@
               -# icon 
               .icon-wrapper
                 %a{:href => '#', :class => ['icon', 'distrubute']}
-                  -# SVG here
+                  = @icons[ico]
               -# value field
               .value-wrapper
                 %input{:class => 'valueField',:type => 'text', :autocomplete => 'off', :placeholder => @hints[i]}
             - i += 1
             - t += 1
+            - ico += 1
         
-  .gen-btn-wrapper.row
-    %button.gen-btn
-  .quick-setting.icon-wrapper.row
+  .gen-btn.row
+  .quick-setting.row
     %ul
+      - qico = 0
       - 7.times do
         %li{:class => ['icon-vert-align', 'icon-horz-align']}
-          %a{:class => ['icon', ]}
-            -# SVG here
+          %a{:class => ['icon']}
+            = @quickSettingIcon[qico]
+            - qico += 1

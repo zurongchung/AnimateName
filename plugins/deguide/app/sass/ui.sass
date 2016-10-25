@@ -1,7 +1,9 @@
-@import 'func/func'
+@import 'partial/func/func'
+@import 'partial/inputTag'
+@import 'partial/svg'
 $ratio: 1.618
 $multiplier: 2
-$width: 340px
+$width: 280px
 $height: $width * $ratio
 $max-width: $width * $multiplier
 $max-height: $height * $multiplier
@@ -9,17 +11,34 @@ $min-width: $width / $multiplier
 $min-height: $height / $multiplier
 $pd: 10px
 
+
 // Themes
-$primary: '#fff'
+$primary: #2c2f32
+$accent: #da7a61
 
 /*********** 
  * common  *
  ***********/
+html, body
+  min-height: 100%
 ul li 
   list-style: none
+ul
+  padding: 0px
+  margin: 0px
 a
   display: block
-  
+a.icon
+  min-width: $icon-size
+  min-height: $icon-size
+  width: $icon-size
+  height: $icon-size
+/*************
+ *  guides   *
+ *************/
+.guides-container
+  position: absolute
+  pointer-events: none
 .de-panel
   width: $width
   height: $height
@@ -29,20 +48,67 @@ a
   min-height: $min-height
   padding: 0px $pd
   background-color: $primary
-  border: 1px solid black
+  //border: 1px solid black
   .main-contents
-    width: $width - $pd * 2
-    height: pcent($height, .85)
+    width: $width
+    //height: pcent($height, .85)
 
     form
       display: flex
 
 .columns
-  width: 50%
-  flex: 1 1 auto
+  width: ($width - $pd * 2) / 2 
+  flex: 1 0 auto
+
 .icon-wrapper, .value-wrapper
-  height: 26px
+  height: $icon-size
+  flex: 0 0 auto
 .icon-wrapper
-  width: 26px / ($width / $multiplier) * 100%
+  order: 1
+  min-width: $icon-size
+  width: $icon-size / ($width / $multiplier) * 100%
+.value-wrapper
+  order: 2
+  margin-left: $pd
 .field-flex-box
   display: flex
+  flex-direction: row
+  justify-content: center
+  padding-top: $pd * 2
+
+/***********
+ *  input  *
+ ***********/
+.valueField
+  display: block
+  width: (($width - $pd * 2) / 2 - $icon-size) * (3/4)
+  height: $icon-size
+  text-align: center
+
+/************
+ *  button  *
+ ************/
+.gen-btn
+  cursor: pointer
+  height: 45px
+  background: $accent
+  margin: $pd * 2 0px
+
+/*******************
+ *  quick setting  *
+ *******************/
+.quick-setting
+  width: $width
+  height: $icon-size
+  min-height: $icon-size
+  & ul
+    display: flex
+    flex-direction: row
+    justify-content: center
+    
+.icon-horz-align
+  cursor: pointer
+  flex: 0 0 auto
+  width: $icon-size
+  margin: 0 $pd /2
+      

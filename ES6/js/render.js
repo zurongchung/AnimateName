@@ -1,4 +1,4 @@
-const docEt = document.documentElement;
+const docElem = document.documentElement;
 const RAF   = window.requestAnimationFrame;
 document.force = 15;
 //document.springStrength = 0.1;
@@ -12,8 +12,8 @@ const [p0, cp1, cp2, p1] = [{x: 500, y: 120}, {x: 680, y: 280},
   {x: 650, y: 550}, {x: 720, y: 420}];
 class Viewport {
   constructor() {
-    this.canvas.width = docEt.clientWidth;
-    this.canvas.height = docEt.clientHeight;
+    this.canvas.width = docElem.clientWidth;
+    this.canvas.height = docElem.clientHeight;
   }
   get canvas() {
     return document.getElementById('canvas');
@@ -34,8 +34,8 @@ class Viewport {
     this.canvas.height = val;
   }
   resize() {
-    this.width = docEt.clientWidth;
-    this.height = docEt.clientHeight;
+    this.width = docElem.clientWidth;
+    this.height = docElem.clientHeight;
   }
 
 }
