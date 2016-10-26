@@ -29,14 +29,12 @@
                 %input{:id => name, :class => 'valueField',:type => 'text', :autocomplete => 'off', :placeholder => hints}
             - i += 1
         
-  .gen-btn.row
+  %div(id = "gen-btn" class= "row")
   .quick-setting.row
     %ul
       - qico = 0
-      - 7.times do
+      - for name in @quickGuideID do
         %li{:class => ['icon-vert-align', 'icon-horz-align']}
-          - iconclass = 'icon'
-          - iconclass = ['icon','clear-btn'] if qico == 3
-          %a{:class => iconclass}
-            = @quickSettingIcon[qico]
+          %a{:class => 'icon', :id => name}
+            = @quickGuideIcons[qico]
             - qico += 1

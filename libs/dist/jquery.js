@@ -21,7 +21,22 @@ var Selector = function () {
     value: function css(cssProp) {
       // add a type check for the property provided => String
       if (typeof cssProp != "string") throw TypeError('Not a string');
-      return parseInt(window.getComputedStyle(this.el).getPropertyValue(cssProp));
+      return parseInt(window.getComputedStyle(this.self).getPropertyValue(cssProp));
+    }
+    /**
+     * Event listener
+     * Bubbles up throughs the DOM:
+     *  => default is  `false`
+     */
+
+  }, {
+    key: "listenTo",
+    value: function listenTo(type, callback) {
+      var bubbles = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+      this.self.addEventListener(type, function (event) {
+        callback(event);
+      }, bubbles);
     }
   }, {
     key: "self",

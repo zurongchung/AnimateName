@@ -133,6 +133,32 @@ var DeGuide = function () {
       }
     }
   }, {
+    key: 'algoQuickGuides',
+    value: function algoQuickGuides(target) {
+      var properties = [];
+      switch (target) {
+        case 'left':
+          properties = [0, 0, 0, 'V', this.canvasHeight];
+          break;
+        case 'right':
+          properties = [-1, this.canvasWidth, 0, 'V', this.canvasHeight];
+          break;
+        case 'top':
+          properties = [0, 0, 0, 'H', this.canvasWidth];
+          break;
+        case 'bottom':
+          properties = [-1, 0, this.canvasHeight, 'H', this.canvasWidth];
+          break;
+        case 'row-mid':
+          properties = [0.5, 0, this.canvasHeight / 2, 'H', this.canvasWidth];
+          break;
+        case 'col-mid':
+          properties = [0.5, this.canvasWidth / 2, 0, 'V', this.canvasHeight];
+          break;
+      }
+      this.createGuides.apply(this, _toConsumableArray(properties));
+    }
+  }, {
     key: 'createGuides',
     value: function createGuides(ord, dx, dy, orientation, to) {
       var line = document.createElementNS(this.xmlns, 'path');
@@ -143,16 +169,14 @@ var DeGuide = function () {
     }
   }, {
     key: 'getGuides',
-    value: function getGuides() {
-      this.runAlgorithm();
+    value: function getGuides(target) {
+      if (target == 'gen-btn') {
+        this.runAlgorithm();
+      } else {
+        this.algoQuickGuides(target);
+      }
       return this.guides;
     }
-  }, {
-    key: 'gen',
-    value: function gen() {}
-  }, {
-    key: 'draw',
-    value: function draw() {}
   }]);
 
   return DeGuide;
@@ -163,14 +187,19 @@ var UI = function () {
     _classCallCheck(this, UI);
 
     this.values = [];
+    this.quickGuideIDs = ['left', 'row-mid', 'top', 'bottom', 'col-mid', 'right'];
     this.IDs = ['width', 'columns', 'margin_bottom', 'margin_right', 'horiz_gutters', 'height', 'rows', 'margin_top', 'margin_left', 'vert_gutters'];
     this.elements = this.getValueFieldElements();
-    this.svgParent = $('#groupGuides').self;
+    this.pathParent = $('#groupGuides').self;
+    this.againstNonNumbers = /[^\d]/;
+    this.numbers = /\d/;
   }
 
   _createClass(UI, [{
     key: 'getValueFieldElements',
     value: function getValueFieldElements() {
+      var _this = this;
+
       var node = [];
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
@@ -182,11 +211,11 @@ var UI = function () {
 
           var input_tag = $('#' + target).self;
           node.push(input_tag);
-          input_tag.addEventListener('blur', function () {
-            if (input_tag.value != '') {
+          $('#' + target).listenTo('blur', function (e) {
+            if (!_this.againstNonNumbers.test(input_tag.value) && input_tag.value != '') {
               input_tag.value += 'px';
             }
-          }, false);
+          });
         };
 
         for (var _iterator = this.IDs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
@@ -226,10 +255,8 @@ var UI = function () {
           var node = _step2.value;
 
           var value = 0;
-          var nodeValue = parseInt(node.value);
-          if (nodeValue.toString() != 'NaN') {
-            value = parseInt(nodeValue);
-            console.log(value);
+          if (this.numbers.test(node.value)) {
+            value = parseInt(node.value);
           }
           this.values.push(value);
         }
@@ -251,18 +278,72 @@ var UI = function () {
       return this.values;
     }
   }, {
-    key: 'appendSelfTo',
-    value: function appendSelfTo(nodes) {
-      var _svgParent;
+    key: 'gen',
+    value: function gen() {
+      var _this2 = this;
 
-      (_svgParent = this.svgParent).append.apply(_svgParent, _toConsumableArray(nodes)); // some browser may not support  `append()`    
+      $('#gen-btn').listenTo('click', function (e) {
+        var guideProp = _this2.getValues();
+        var guide = new (Function.prototype.bind.apply(DeGuide, [null].concat(_toConsumableArray(guideProp))))();
+        _this2.appendSelfTo(guide.getGuides(e.currentTarget.id));
+      });
     }
   }, {
     key: 'clear',
     value: function clear() {
-      while (this.svgParent.firstChild) {
-        this.svgParent.removeChild(this.svgParent.firstChild);
+      var _this3 = this;
+
+      $('#clear-btn').listenTo('click', function (e) {
+        while (_this3.pathParent.firstChild) {
+          _this3.pathParent.removeChild(_this3.pathParent.firstChild);
+        }
+      });
+    }
+  }, {
+    key: 'quickGuide',
+    value: function quickGuide() {
+      var _this4 = this;
+
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = this.quickGuideIDs[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var id = _step3.value;
+
+          $('#' + id).listenTo('click', function (e) {
+            _this4.appendSelfTo(new DeGuide().getGuides(e.currentTarget.id));
+          });
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
       }
+    }
+  }, {
+    key: 'attachListener',
+    value: function attachListener() {
+      this.gen();
+      this.clear();
+      this.quickGuide();
+    }
+  }, {
+    key: 'appendSelfTo',
+    value: function appendSelfTo(nodes) {
+      var _pathParent;
+
+      (_pathParent = this.pathParent).append.apply(_pathParent, _toConsumableArray(nodes)); // some browser may not support  `append()`    
     }
   }]);
 
@@ -271,15 +352,6 @@ var UI = function () {
 
 document.addEventListener('DOMContentLoaded', function () {
   console.log('DOM loaded');
-  var svg = new UI();
-  // generator button
-  $('.gen-btn').self.addEventListener('click', function () {
-    var guideProp = svg.getValues();
-    var guide = new (Function.prototype.bind.apply(DeGuide, [null].concat(_toConsumableArray(guideProp))))();
-    svg.appendSelfTo(guide.getGuides());
-  }, false);
-  // clear button
-  $('.clear-btn').self.addEventListener('click', function () {
-    svg.clear();
-  }, false);
+  var ui = new UI();
+  ui.attachListener();
 });

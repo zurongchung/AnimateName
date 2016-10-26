@@ -83,6 +83,30 @@ class DeGuide {
       }
     }
   }
+  algoQuickGuides(target) {
+    let properties = [];    
+    switch (target) {
+      case 'left':
+        properties = [0, 0, 0, 'V', this.canvasHeight];  
+        break;
+      case 'right':
+        properties = [-1, this.canvasWidth, 0, 'V', this.canvasHeight];
+        break;
+      case 'top':
+        properties = [0, 0, 0, 'H', this.canvasWidth];          
+        break;
+      case 'bottom':
+        properties = [-1, 0, this.canvasHeight, 'H', this.canvasWidth];      
+        break;     
+      case 'row-mid':
+        properties = [0.5, 0, this.canvasHeight/2, 'H', this.canvasWidth];
+        break;
+      case 'col-mid':
+        properties = [0.5, this.canvasWidth/2, 0, 'V', this.canvasHeight];
+        break; 
+    }
+    this.createGuides(...properties);    
+  }
   createGuides(ord, dx,dy,orientation,to) {
     let line = document.createElementNS(this.xmlns, 'path');
     line.classList.add('gline');
@@ -90,38 +114,38 @@ class DeGuide {
     line.setAttribute(`data-${orientation}-order`, ord);
     this.guides.push(line);
   }
-  getGuides() {
-    this.runAlgorithm();
+  getGuides(target) {
+    if (target == 'gen-btn') {
+      this.runAlgorithm();
+    }else {
+      this.algoQuickGuides(target);
+    }
     return this.guides; 
   }
-  
-  gen() {
-
-  }
-  draw() {
-
-  }
-  
 }
 class UI {
   constructor() {
     this.values = [];
+    this.quickGuideIDs = ['left', 'row-mid', 'top', 'bottom',
+    'col-mid', 'right'];
     this.IDs = ['width','columns', 'margin_bottom', 
     'margin_right', 'horiz_gutters','height', 'rows', 
     'margin_top', 'margin_left', 'vert_gutters'];
     this.elements = this.getValueFieldElements();
-    this.svgParent = $('#groupGuides').self;
+    this.pathParent = $('#groupGuides').self;
+    this.againstNonNumbers = /[^\d]/;
+    this.numbers = /\d/;
   }
   getValueFieldElements() {
     let node = [];
     for (let target of this.IDs) {
       let input_tag = $(`#${target}`).self;
       node.push(input_tag);
-      input_tag.addEventListener('blur', () => {
-        if (input_tag.value != '') {
+      $(`#${target}`).listenTo('blur', e => {
+        if (!(this.againstNonNumbers.test(input_tag.value)) && input_tag.value != '') {
           input_tag.value += 'px';
         }
-      }, false);
+      });
     }
     return node;
   }
@@ -132,36 +156,46 @@ class UI {
     this.values = [];
     for (let node of this.elements) {
       let value = 0;
-      let nodeValue = parseInt(node.value);
-      if (nodeValue.toString() != 'NaN') {
-        value = parseInt(nodeValue);
-        console.log(value);
+      if (this.numbers.test(node.value)) {
+        value = parseInt(node.value);
       }
       this.values.push(value);
     }
     return this.values;
   }
-  appendSelfTo(nodes) {
-    this.svgParent.append(...nodes); // some browser may not support  `append()`    
+  gen() {
+    $('#gen-btn').listenTo('click', e => {
+      let guideProp = this.getValues();
+      let guide = new DeGuide(...guideProp);
+      this.appendSelfTo(guide.getGuides(e.currentTarget.id));
+    });
   }
   clear() {
-    while (this.svgParent.firstChild) {
-      this.svgParent.removeChild(this.svgParent.firstChild);
+    $('#clear-btn').listenTo('click', e => {
+      while (this.pathParent.firstChild) {
+        this.pathParent.removeChild(this.pathParent.firstChild);
+      }
+    });
+  }
+  quickGuide() {
+    for (const id of this.quickGuideIDs) {
+      $(`#${id}`).listenTo('click', e =>{
+        this.appendSelfTo(new DeGuide().getGuides(e.currentTarget.id));        
+      });
     }
+  }
+  attachListener() {
+    this.gen();
+    this.clear();
+    this.quickGuide();
+  }
+  appendSelfTo(nodes) {
+    this.pathParent.append(...nodes); // some browser may not support  `append()`    
   }
 }
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded');
-  const svg = new UI();
-  // generator button
-  $('.gen-btn').self.addEventListener('click', () => { 
-    let guideProp = svg.getValues();
-    let guide = new DeGuide(...guideProp);
-    svg.appendSelfTo(guide.getGuides());
-  }, false);
-  // clear button
-  $('.clear-btn').self.addEventListener('click', () => {
-    svg.clear();
-  }, false);
+  const ui = new UI();
+  ui.attachListener();
 
 });
