@@ -10,16 +10,16 @@ var docElem = document.documentElement;
 
 var DeGuide = function () {
   function DeGuide() {
-    var row = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+    var width = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
     var col = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-    var w = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-    var h = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-    var hg = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
-    var vg = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
-    var ml = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : 0;
-    var mr = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 0;
-    var mt = arguments.length > 8 && arguments[8] !== undefined ? arguments[8] : 0;
-    var mb = arguments.length > 9 && arguments[9] !== undefined ? arguments[9] : 0;
+    var mb = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    var mr = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+    var hgutter = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
+    var height = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
+    var row = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : 0;
+    var mt = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 0;
+    var ml = arguments.length > 8 && arguments[8] !== undefined ? arguments[8] : 0;
+    var vgutter = arguments.length > 9 && arguments[9] !== undefined ? arguments[9] : 0;
 
     _classCallCheck(this, DeGuide);
 
@@ -33,14 +33,14 @@ var DeGuide = function () {
     /**
      * gutters
      */
-    var _ref2 = [w, h];
+    var _ref2 = [width, height];
     this.w = _ref2[0];
     this.h = _ref2[1];
 
     /**
      * Margins
      */
-    var _ref3 = [hg.vg];
+    var _ref3 = [hgutter, vgutter];
     this.horizgaps = _ref3[0];
     this.vertgaps = _ref3[1];
     var _ref4 = [ml, mr];
@@ -73,14 +73,6 @@ var DeGuide = function () {
   _createClass(DeGuide, [{
     key: 'runAlgorithm',
     value: function runAlgorithm() {
-      //this.w = 60;
-      //this.columns = 5
-      //this.horizgaps = 10;
-      this.rows = 5;
-      //this.h = 40;
-      this.vertgaps = 10;
-      //this.fullScreen();
-
       !this.columns && !this.w ? console.log('Skip columns') : this.algoColumns();
       !this.rows && !this.h ? console.log('Skip rows') : this.algoRows();
     }
@@ -104,7 +96,6 @@ var DeGuide = function () {
          * calculate width if only columns are known */
         this.w = canvasWidth / this.columns;
       }
-
       var i = 0;
       for (; i <= this.columns; i++) {
         this.dx = i * (this.w + this.horizgaps) + this.ml;
@@ -167,31 +158,128 @@ var DeGuide = function () {
   return DeGuide;
 }();
 
-var SVG = function () {
-  function SVG(nodes) {
-    _classCallCheck(this, SVG);
+var UI = function () {
+  function UI() {
+    _classCallCheck(this, UI);
 
-    this.nodes = nodes;
+    this.values = [];
+    this.IDs = ['width', 'columns', 'margin_bottom', 'margin_right', 'horiz_gutters', 'height', 'rows', 'margin_top', 'margin_left', 'vert_gutters'];
+    this.elements = this.getValueFieldElements();
+    this.svgParent = $('#groupGuides').self;
   }
 
-  _createClass(SVG, [{
+  _createClass(UI, [{
+    key: 'getValueFieldElements',
+    value: function getValueFieldElements() {
+      var node = [];
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        var _loop = function _loop() {
+          var target = _step.value;
+
+          var input_tag = $('#' + target).self;
+          node.push(input_tag);
+          input_tag.addEventListener('blur', function () {
+            if (input_tag.value != '') {
+              input_tag.value += 'px';
+            }
+          }, false);
+        };
+
+        for (var _iterator = this.IDs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          _loop();
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      return node;
+    }
+    /**
+     * Have values from UI panel
+     */
+
+  }, {
+    key: 'getValues',
+    value: function getValues() {
+      this.values = [];
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = this.elements[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var node = _step2.value;
+
+          var value = 0;
+          var nodeValue = parseInt(node.value);
+          if (nodeValue.toString() != 'NaN') {
+            value = parseInt(nodeValue);
+            console.log(value);
+          }
+          this.values.push(value);
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+            _iterator2.return();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+
+      return this.values;
+    }
+  }, {
     key: 'appendSelfTo',
-    value: function appendSelfTo() {
-      var svg = $('#guidesBox').self;
-      svg.append.apply(svg, _toConsumableArray(this.nodes)); // some browser may not support  `append()`    
+    value: function appendSelfTo(nodes) {
+      var _svgParent;
+
+      (_svgParent = this.svgParent).append.apply(_svgParent, _toConsumableArray(nodes)); // some browser may not support  `append()`    
+    }
+  }, {
+    key: 'clear',
+    value: function clear() {
+      while (this.svgParent.firstChild) {
+        this.svgParent.removeChild(this.svgParent.firstChild);
+      }
     }
   }]);
 
-  return SVG;
+  return UI;
 }();
 
 document.addEventListener('DOMContentLoaded', function () {
   console.log('DOM loaded');
-  var _ref9 = [docElem.clientWidth, docElem.clientHeight];
-  var w = _ref9[0];
-  var h = _ref9[1];
-
-  var guides = new DeGuide();
-  var svg = new SVG(guides.getGuides());
-  svg.appendSelfTo();
+  var svg = new UI();
+  // generator button
+  $('.gen-btn').self.addEventListener('click', function () {
+    var guideProp = svg.getValues();
+    var guide = new (Function.prototype.bind.apply(DeGuide, [null].concat(_toConsumableArray(guideProp))))();
+    svg.appendSelfTo(guide.getGuides());
+  }, false);
+  // clear button
+  $('.clear-btn').self.addEventListener('click', function () {
+    svg.clear();
+  }, false);
 });

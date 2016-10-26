@@ -1,15 +1,15 @@
 const docElem = document.documentElement;
 class DeGuide {
-  constructor(row=0, col=0, w=0, h=0, hg=0, vg=0, ml=0, mr=0, mt=0, mb=0) {
+  constructor(width=0,col=0,mb=0,mr=0,hgutter=0, height=0,row=0,mt=0,ml=0,vgutter=0) {
     [this.rows, this.columns] = [row, col];
     /**
      * guide width and height
      */
-    [this.w, this.h] = [w, h];
+    [this.w, this.h] = [width, height];
     /**
      * gutters
      */
-    [this.horizgaps, this.vertgaps]  = [hg. vg];
+    [this.horizgaps, this.vertgaps]  = [hgutter, vgutter];
     /**
      * Margins
      */
@@ -28,14 +28,6 @@ class DeGuide {
     this.xmlns = "http://www.w3.org/2000/svg";
   }
   runAlgorithm() {
-    //this.w = 60;
-    //this.columns = 5
-    //this.horizgaps = 10;
-    this.rows = 5;
-    //this.h = 40;
-    this.vertgaps = 10;
-    //this.fullScreen();
-
     (!this.columns && !this.w) ? console.log('Skip columns') : this.algoColumns();
     (!this.rows && !this.h) ? console.log('Skip rows') : this.algoRows();
     
@@ -57,7 +49,6 @@ class DeGuide {
        * calculate width if only columns are known */
       this.w = canvasWidth / this.columns;
     }
-
     let i = 0;
     for (; i <= this.columns; i++) {
       this.dx = i * (this.w + this.horizgaps) + this.ml;
@@ -103,6 +94,7 @@ class DeGuide {
     this.runAlgorithm();
     return this.guides; 
   }
+  
   gen() {
 
   }
@@ -111,19 +103,65 @@ class DeGuide {
   }
   
 }
-class SVG {
-  constructor(nodes) {
-    this.nodes = nodes;
+class UI {
+  constructor() {
+    this.values = [];
+    this.IDs = ['width','columns', 'margin_bottom', 
+    'margin_right', 'horiz_gutters','height', 'rows', 
+    'margin_top', 'margin_left', 'vert_gutters'];
+    this.elements = this.getValueFieldElements();
+    this.svgParent = $('#groupGuides').self;
   }
-  appendSelfTo() {
-    let svg = $('#guidesBox').self;
-    svg.append(...this.nodes); // some browser may not support  `append()`    
+  getValueFieldElements() {
+    let node = [];
+    for (let target of this.IDs) {
+      let input_tag = $(`#${target}`).self;
+      node.push(input_tag);
+      input_tag.addEventListener('blur', () => {
+        if (input_tag.value != '') {
+          input_tag.value += 'px';
+        }
+      }, false);
+    }
+    return node;
+  }
+  /**
+   * Have values from UI panel
+   */
+  getValues() {
+    this.values = [];
+    for (let node of this.elements) {
+      let value = 0;
+      let nodeValue = parseInt(node.value);
+      if (nodeValue.toString() != 'NaN') {
+        value = parseInt(nodeValue);
+        console.log(value);
+      }
+      this.values.push(value);
+    }
+    return this.values;
+  }
+  appendSelfTo(nodes) {
+    this.svgParent.append(...nodes); // some browser may not support  `append()`    
+  }
+  clear() {
+    while (this.svgParent.firstChild) {
+      this.svgParent.removeChild(this.svgParent.firstChild);
+    }
   }
 }
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded');
-  let [w, h] = [docElem.clientWidth, docElem.clientHeight];
-  const guides = new DeGuide();
-  const svg = new SVG(guides.getGuides());
-  svg.appendSelfTo();
+  const svg = new UI();
+  // generator button
+  $('.gen-btn').self.addEventListener('click', () => { 
+    let guideProp = svg.getValues();
+    let guide = new DeGuide(...guideProp);
+    svg.appendSelfTo(guide.getGuides());
+  }, false);
+  // clear button
+  $('.clear-btn').self.addEventListener('click', () => {
+    svg.clear();
+  }, false);
+
 });

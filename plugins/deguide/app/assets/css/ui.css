@@ -16,13 +16,13 @@ svg#guidesBox {
   pointer-events: none;
 }
 
-path.gline {
+g#groupGuides {
   stroke: #42aaec;
   stroke-width: 1;
   pointer-events: stroke;
 }
 
-path.gline:hover {
+g#groupGuides path.gline:hover {
   stroke-width: 4;
   cursor: move;
 }
