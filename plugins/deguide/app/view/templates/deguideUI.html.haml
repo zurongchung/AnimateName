@@ -4,35 +4,37 @@
   .main-contents.row
     %form
       - for j in (1..2) do
-        -# to --> ico is icon index
-        - ico = j > 1 ? 0 : 5
-        -# to --> i is input field placeholder index
-        - i = j > 1 ? 0 : 2
-        - col = j % 2 == 0 ? 'col-right' : 'col-left'
-        - t = 1
+        - id = @colLeftID
+        - icons = @colLeftIcons
+        - if j == 2
+          - id = @colRightID
+          - icons = @colRightIcons
+        
+        - column = j % 2 == 0 ? 'col-right' : 'col-left'
         / ==== column ====
-        %div{:class => [col, 'columns']}
-          
-          - 5.times do
-            - i = 4 if t > 2 && t < 5
+        %div{:class => [column, 'columns']}
+          -# to --> i is input field id and placeholder index
+          - i = 0
+          - for name in id do
             .field-flex-box
               -# icon 
               .icon-wrapper
                 %a{:href => '#', :class => ['icon', 'distrubute']}
-                  = @icons[ico]
+                  = icons[i]
               -# value field
               .value-wrapper
-                %input{:class => 'valueField',:type => 'text', :autocomplete => 'off', :placeholder => @hints[i]}
+                - hints = name
+                - hints = 'margin' if i > 1 and i < 4
+                - hints = "gutter" if i == 4
+                %input{:id => name, :class => 'valueField',:type => 'text', :autocomplete => 'off', :placeholder => hints}
             - i += 1
-            - t += 1
-            - ico += 1
         
-  .gen-btn.row
+  %div(id = "gen-btn" class= "row")
   .quick-setting.row
     %ul
       - qico = 0
-      - 7.times do
+      - for name in @quickGuideID do
         %li{:class => ['icon-vert-align', 'icon-horz-align']}
-          %a{:class => ['icon']}
-            = @quickSettingIcon[qico]
+          %a{:class => 'icon', :id => name}
+            = @quickGuideIcons[qico]
             - qico += 1

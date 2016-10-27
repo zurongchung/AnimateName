@@ -1,15 +1,15 @@
 const docElem = document.documentElement;
 class DeGuide {
-  constructor(row=0, col=0, w=0, h=0, hg=0, vg=0, ml=0, mr=0, mt=0, mb=0) {
+  constructor(width=0,col=0,mb=0,mr=0,hgutter=0, height=0,row=0,mt=0,ml=0,vgutter=0) {
     [this.rows, this.columns] = [row, col];
     /**
      * guide width and height
      */
-    [this.w, this.h] = [w, h];
+    [this.w, this.h] = [width, height];
     /**
      * gutters
      */
-    [this.horizgaps, this.vertgaps]  = [hg. vg];
+    [this.horizgaps, this.vertgaps]  = [hgutter, vgutter];
     /**
      * Margins
      */
@@ -28,14 +28,6 @@ class DeGuide {
     this.xmlns = "http://www.w3.org/2000/svg";
   }
   runAlgorithm() {
-    //this.w = 60;
-    //this.columns = 5
-    //this.horizgaps = 10;
-    this.rows = 5;
-    //this.h = 40;
-    this.vertgaps = 10;
-    //this.fullScreen();
-
     (!this.columns && !this.w) ? console.log('Skip columns') : this.algoColumns();
     (!this.rows && !this.h) ? console.log('Skip rows') : this.algoRows();
     
@@ -57,7 +49,6 @@ class DeGuide {
        * calculate width if only columns are known */
       this.w = canvasWidth / this.columns;
     }
-
     let i = 0;
     for (; i <= this.columns; i++) {
       this.dx = i * (this.w + this.horizgaps) + this.ml;
@@ -92,6 +83,30 @@ class DeGuide {
       }
     }
   }
+  algoQuickGuides(target) {
+    let properties = [];    
+    switch (target) {
+      case 'left':
+        properties = [0, 0, 0, 'V', this.canvasHeight];  
+        break;
+      case 'right':
+        properties = [-1, this.canvasWidth, 0, 'V', this.canvasHeight];
+        break;
+      case 'top':
+        properties = [0, 0, 0, 'H', this.canvasWidth];          
+        break;
+      case 'bottom':
+        properties = [-1, 0, this.canvasHeight, 'H', this.canvasWidth];      
+        break;     
+      case 'row-mid':
+        properties = [0.5, 0, this.canvasHeight/2, 'H', this.canvasWidth];
+        break;
+      case 'col-mid':
+        properties = [0.5, this.canvasWidth/2, 0, 'V', this.canvasHeight];
+        break; 
+    }
+    this.createGuides(...properties);    
+  }
   createGuides(ord, dx,dy,orientation,to) {
     let line = document.createElementNS(this.xmlns, 'path');
     line.classList.add('gline');
@@ -99,31 +114,88 @@ class DeGuide {
     line.setAttribute(`data-${orientation}-order`, ord);
     this.guides.push(line);
   }
-  getGuides() {
-    this.runAlgorithm();
+  getGuides(target) {
+    if (target == 'gen-btn') {
+      this.runAlgorithm();
+    }else {
+      this.algoQuickGuides(target);
+    }
     return this.guides; 
   }
-  gen() {
-
-  }
-  draw() {
-
-  }
-  
 }
-class SVG {
-  constructor(nodes) {
-    this.nodes = nodes;
+class UI {
+  constructor() {
+    this.values = [];
+    this.quickGuideIDs = ['left', 'row-mid', 'top', 'bottom',
+    'col-mid', 'right'];
+    this.IDs = ['width','columns', 'margin_bottom', 
+    'margin_right', 'horiz_gutters','height', 'rows', 
+    'margin_top', 'margin_left', 'vert_gutters'];
+    this.elements = this.getValueFieldElements();
+    this.pathParent = $('#groupGuides').self;
+    this.againstNonNumbers = /[^\d]/;
+    this.numbers = /\d/;
   }
-  appendSelfTo() {
-    let svg = $('#guidesBox').self;
-    svg.append(...this.nodes); // some browser may not support  `append()`    
+  getValueFieldElements() {
+    let node = [];
+    for (let target of this.IDs) {
+      let input_tag = $(`#${target}`).self;
+      node.push(input_tag);
+      $(`#${target}`).listenTo('blur', e => {
+        if (!(this.againstNonNumbers.test(input_tag.value)) && input_tag.value != '') {
+          input_tag.value += 'px';
+        }
+      });
+    }
+    return node;
+  }
+  /**
+   * Have values from UI panel
+   */
+  getValues() {
+    this.values = [];
+    for (let node of this.elements) {
+      let value = 0;
+      if (this.numbers.test(node.value)) {
+        value = parseInt(node.value);
+      }
+      this.values.push(value);
+    }
+    return this.values;
+  }
+  gen() {
+    $('#gen-btn').listenTo('click', e => {
+      let guideProp = this.getValues();
+      let guide = new DeGuide(...guideProp);
+      this.appendSelfTo(guide.getGuides(e.currentTarget.id));
+    });
+  }
+  clear() {
+    $('#clear-btn').listenTo('click', e => {
+      while (this.pathParent.firstChild) {
+        this.pathParent.removeChild(this.pathParent.firstChild);
+      }
+    });
+  }
+  quickGuide() {
+    for (const id of this.quickGuideIDs) {
+      $(`#${id}`).listenTo('click', e =>{
+        this.appendSelfTo(new DeGuide().getGuides(e.currentTarget.id));        
+      });
+    }
+  }
+  attachListener() {
+    this.gen();
+    this.clear();
+    this.quickGuide();
+  }
+  appendSelfTo(nodes) {
+    this.pathParent.append(...nodes); // some browser may not support  `append()`    
   }
 }
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded');
-  let [w, h] = [docElem.clientWidth, docElem.clientHeight];
-  const guides = new DeGuide();
-  const svg = new SVG(guides.getGuides());
-  svg.appendSelfTo();
+  const ui = new UI();
+  ui.attachListener();
+
 });

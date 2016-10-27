@@ -10,16 +10,16 @@ var docElem = document.documentElement;
 
 var DeGuide = function () {
   function DeGuide() {
-    var row = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+    var width = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
     var col = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-    var w = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-    var h = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-    var hg = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
-    var vg = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
-    var ml = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : 0;
-    var mr = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 0;
-    var mt = arguments.length > 8 && arguments[8] !== undefined ? arguments[8] : 0;
-    var mb = arguments.length > 9 && arguments[9] !== undefined ? arguments[9] : 0;
+    var mb = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    var mr = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+    var hgutter = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
+    var height = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
+    var row = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : 0;
+    var mt = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 0;
+    var ml = arguments.length > 8 && arguments[8] !== undefined ? arguments[8] : 0;
+    var vgutter = arguments.length > 9 && arguments[9] !== undefined ? arguments[9] : 0;
 
     _classCallCheck(this, DeGuide);
 
@@ -33,14 +33,14 @@ var DeGuide = function () {
     /**
      * gutters
      */
-    var _ref2 = [w, h];
+    var _ref2 = [width, height];
     this.w = _ref2[0];
     this.h = _ref2[1];
 
     /**
      * Margins
      */
-    var _ref3 = [hg.vg];
+    var _ref3 = [hgutter, vgutter];
     this.horizgaps = _ref3[0];
     this.vertgaps = _ref3[1];
     var _ref4 = [ml, mr];
@@ -73,14 +73,6 @@ var DeGuide = function () {
   _createClass(DeGuide, [{
     key: 'runAlgorithm',
     value: function runAlgorithm() {
-      //this.w = 60;
-      //this.columns = 5
-      //this.horizgaps = 10;
-      this.rows = 5;
-      //this.h = 40;
-      this.vertgaps = 10;
-      //this.fullScreen();
-
       !this.columns && !this.w ? console.log('Skip columns') : this.algoColumns();
       !this.rows && !this.h ? console.log('Skip rows') : this.algoRows();
     }
@@ -104,7 +96,6 @@ var DeGuide = function () {
          * calculate width if only columns are known */
         this.w = canvasWidth / this.columns;
       }
-
       var i = 0;
       for (; i <= this.columns; i++) {
         this.dx = i * (this.w + this.horizgaps) + this.ml;
@@ -142,6 +133,32 @@ var DeGuide = function () {
       }
     }
   }, {
+    key: 'algoQuickGuides',
+    value: function algoQuickGuides(target) {
+      var properties = [];
+      switch (target) {
+        case 'left':
+          properties = [0, 0, 0, 'V', this.canvasHeight];
+          break;
+        case 'right':
+          properties = [-1, this.canvasWidth, 0, 'V', this.canvasHeight];
+          break;
+        case 'top':
+          properties = [0, 0, 0, 'H', this.canvasWidth];
+          break;
+        case 'bottom':
+          properties = [-1, 0, this.canvasHeight, 'H', this.canvasWidth];
+          break;
+        case 'row-mid':
+          properties = [0.5, 0, this.canvasHeight / 2, 'H', this.canvasWidth];
+          break;
+        case 'col-mid':
+          properties = [0.5, this.canvasWidth / 2, 0, 'V', this.canvasHeight];
+          break;
+      }
+      this.createGuides.apply(this, _toConsumableArray(properties));
+    }
+  }, {
     key: 'createGuides',
     value: function createGuides(ord, dx, dy, orientation, to) {
       var line = document.createElementNS(this.xmlns, 'path');
@@ -152,46 +169,189 @@ var DeGuide = function () {
     }
   }, {
     key: 'getGuides',
-    value: function getGuides() {
-      this.runAlgorithm();
+    value: function getGuides(target) {
+      if (target == 'gen-btn') {
+        this.runAlgorithm();
+      } else {
+        this.algoQuickGuides(target);
+      }
       return this.guides;
     }
-  }, {
-    key: 'gen',
-    value: function gen() {}
-  }, {
-    key: 'draw',
-    value: function draw() {}
   }]);
 
   return DeGuide;
 }();
 
-var SVG = function () {
-  function SVG(nodes) {
-    _classCallCheck(this, SVG);
+var UI = function () {
+  function UI() {
+    _classCallCheck(this, UI);
 
-    this.nodes = nodes;
+    this.values = [];
+    this.quickGuideIDs = ['left', 'row-mid', 'top', 'bottom', 'col-mid', 'right'];
+    this.IDs = ['width', 'columns', 'margin_bottom', 'margin_right', 'horiz_gutters', 'height', 'rows', 'margin_top', 'margin_left', 'vert_gutters'];
+    this.elements = this.getValueFieldElements();
+    this.pathParent = $('#groupGuides').self;
+    this.againstNonNumbers = /[^\d]/;
+    this.numbers = /\d/;
   }
 
-  _createClass(SVG, [{
+  _createClass(UI, [{
+    key: 'getValueFieldElements',
+    value: function getValueFieldElements() {
+      var _this = this;
+
+      var node = [];
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        var _loop = function _loop() {
+          var target = _step.value;
+
+          var input_tag = $('#' + target).self;
+          node.push(input_tag);
+          $('#' + target).listenTo('blur', function (e) {
+            if (!_this.againstNonNumbers.test(input_tag.value) && input_tag.value != '') {
+              input_tag.value += 'px';
+            }
+          });
+        };
+
+        for (var _iterator = this.IDs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          _loop();
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      return node;
+    }
+    /**
+     * Have values from UI panel
+     */
+
+  }, {
+    key: 'getValues',
+    value: function getValues() {
+      this.values = [];
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = this.elements[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var node = _step2.value;
+
+          var value = 0;
+          if (this.numbers.test(node.value)) {
+            value = parseInt(node.value);
+          }
+          this.values.push(value);
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+            _iterator2.return();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+
+      return this.values;
+    }
+  }, {
+    key: 'gen',
+    value: function gen() {
+      var _this2 = this;
+
+      $('#gen-btn').listenTo('click', function (e) {
+        var guideProp = _this2.getValues();
+        var guide = new (Function.prototype.bind.apply(DeGuide, [null].concat(_toConsumableArray(guideProp))))();
+        _this2.appendSelfTo(guide.getGuides(e.currentTarget.id));
+      });
+    }
+  }, {
+    key: 'clear',
+    value: function clear() {
+      var _this3 = this;
+
+      $('#clear-btn').listenTo('click', function (e) {
+        while (_this3.pathParent.firstChild) {
+          _this3.pathParent.removeChild(_this3.pathParent.firstChild);
+        }
+      });
+    }
+  }, {
+    key: 'quickGuide',
+    value: function quickGuide() {
+      var _this4 = this;
+
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = this.quickGuideIDs[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var id = _step3.value;
+
+          $('#' + id).listenTo('click', function (e) {
+            _this4.appendSelfTo(new DeGuide().getGuides(e.currentTarget.id));
+          });
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+    }
+  }, {
+    key: 'attachListener',
+    value: function attachListener() {
+      this.gen();
+      this.clear();
+      this.quickGuide();
+    }
+  }, {
     key: 'appendSelfTo',
-    value: function appendSelfTo() {
-      var svg = $('#guidesBox').self;
-      svg.append.apply(svg, _toConsumableArray(this.nodes)); // some browser may not support  `append()`    
+    value: function appendSelfTo(nodes) {
+      var _pathParent;
+
+      (_pathParent = this.pathParent).append.apply(_pathParent, _toConsumableArray(nodes)); // some browser may not support  `append()`    
     }
   }]);
 
-  return SVG;
+  return UI;
 }();
 
 document.addEventListener('DOMContentLoaded', function () {
   console.log('DOM loaded');
-  var _ref9 = [docElem.clientWidth, docElem.clientHeight];
-  var w = _ref9[0];
-  var h = _ref9[1];
-
-  var guides = new DeGuide();
-  var svg = new SVG(guides.getGuides());
-  svg.appendSelfTo();
+  var ui = new UI();
+  ui.attachListener();
 });

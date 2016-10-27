@@ -6,12 +6,16 @@ class HTML
     @main = '../../deguide/app/view/templates/application.html.haml'
     @appUI  = '../../deguide/app/view/templates/deguideUI.html.haml'
     @output = '../../deguide/app/public/deguide.html'
-    @hints = ['width', 'columns', 'height', 'rows','margin', 'gutters']
-    @icons = [Svg.icon_width, Svg.icon_columns, Svg.icon_marginBottom, Svg.icon_marginRight, 
-    Svg.icon_HGutter, Svg.icon_height, Svg.icon_rows, Svg.icon_marginTop, 
-    Svg.icon_marginLeft, Svg.icon_VGutter]
-    @quickSettingIcon = [Svg.icon_leftBorder, Svg.icon_HMidPoint, Svg.icon_topBorder,
-    Svg.icon_clear, Svg.icon_bottomBorder, Svg.icon_VMidPoint, Svg.icon_rightBorder]
+    @quickGuideID = ['left','row-mid','top', 'clear-btn',
+    'bottom', 'col-mid', 'right']
+    @colLeftID = ['height', 'rows', 'margin_top', 'margin_bottom', 'vert_gutters']
+    @colRightID = ['width', 'columns', 'margin_left', 'margin_right', 'horiz_gutters']    
+    @colRightIcons = [Svg.icon_width, Svg.icon_columns,Svg.icon_marginLeft,  Svg.icon_marginRight, 
+    Svg.icon_HGutter]
+    @colLeftIcons = [Svg.icon_height, Svg.icon_rows, Svg.icon_marginTop, 
+    Svg.icon_marginBottom, Svg.icon_VGutter]
+    @quickGuideIcons = [Svg.icon_leftBorder, Svg.icon_rowMidPoint, Svg.icon_topBorder,
+    Svg.icon_clear, Svg.icon_bottomBorder, Svg.icon_columnMidPoint, Svg.icon_rightBorder]
   end
   def render
     contents = File.read(@main)

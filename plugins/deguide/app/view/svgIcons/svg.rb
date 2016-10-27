@@ -223,12 +223,12 @@ module Svg
     </svg>
     }
   end
-  def Svg.icon_HMidPoint
+  def Svg.icon_rowMidPoint
     return %Q{#{viewport(300, 148)}
       <defs>
         <style>.cls-1{fill:#adadad;}</style>
       </defs>
-      <g class="#{COMCLS} h-mid-point">
+      <g class="#{COMCLS} row-mid-point">
           <path class="cls-1" d="M130.8,30h7.55L145.2,0h10.28l6.85,30h6.87a1.3,1.3,0,0,1,1.15,1.95l-19.2,21.37a1.33,1.33,0,0,1-2.3,0L129.65,32A1.3,1.3,0,0,1,130.8,30Z"/>
           <path class="cls-1" d="M130.8,118h7.55l6.85,30h10.28l6.85-30h6.87a1.3,1.3,0,0,0,1.15-2l-19.2-21.38a1.33,1.33,0,0,0-2.3,0L129.65,116A1.31,1.31,0,0,0,130.8,118Z"/>
           <rect class="cls-1" x="140" y="-76" width="20" height="300" transform="translate(224 -76) rotate(90)"/>
@@ -236,12 +236,12 @@ module Svg
     </svg>
     }
   end
-  def Svg.icon_VMidPoint
+  def Svg.icon_columnMidPoint
     return %Q{#{viewport(148)}
       <defs>
         <style>.cls-1{fill:#adadad;}</style>
       </defs>
-      <g class="#{COMCLS} v-mid-point">
+      <g class="#{COMCLS} col-mid-point">
           <path class="cls-1" d="M30,169.2v-7.55L0,154.8V144.52l30-6.85V130.8a1.3,1.3,0,0,1,1.95-1.15l21.37,19.2a1.33,1.33,0,0,1,0,2.3L32,170.35A1.3,1.3,0,0,1,30,169.2Z"/>
           <path class="cls-1" d="M118,169.2v-7.55l30-6.85V144.52l-30-6.85V130.8a1.3,1.3,0,0,0-2-1.15l-21.38,19.2a1.33,1.33,0,0,0,0,2.3L116,170.35A1.31,1.31,0,0,0,118,169.2Z"/>
           <rect class="cls-1" x="64" width="20" height="300"/>

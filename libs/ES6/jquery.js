@@ -12,6 +12,16 @@ class Selector{
   css(cssProp) {
     // add a type check for the property provided => String
    if (typeof cssProp != "string") throw TypeError('Not a string');
-   return parseInt(window.getComputedStyle(this.el).getPropertyValue(cssProp));
+   return parseInt(window.getComputedStyle(this.self).getPropertyValue(cssProp));
  }
+ /**
+  * Event listener
+  * Bubbles up throughs the DOM:
+  *  => default is  `false`
+  */
+  listenTo(type, callback, bubbles=false) {
+    this.self.addEventListener(type, event => {
+      callback(event);
+    }, bubbles);
+  }
 }
